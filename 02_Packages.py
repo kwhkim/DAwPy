@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.11.2
+#       jupytext_version: 1.11.3
 #   kernelspec:
 #     display_name: rtopython2-pip
 #     language: python
@@ -39,21 +39,57 @@
 # %% [markdown]
 # ## 2.1 패키지 설치
 
+# %% [markdown]
+# #### 용어 설명
+#
+# * 모듈 : 파이썬에서 재사용 가능한 최소 단위로 순수 모듈과 확장 모듈이 있다
+#   - 순수 모듈(pure module) : 파이썬으로 쓰여진 .py 파일
+#   - 확장 모듈(extension module) : C, C++, Java 등의 다른 컴파일 언어로 쓰여졌다.  
+#
+# * 배포 패키지와 임포트 패키지 : 둘다 보통 패키지로도 불린다. 파이썬 공식 사이트의 용어 구분에 따르면, 배포 패키지란 배포를 목적으로 여러 파일을 압출한 **파일**이다. 임포트 패키지란 파이썬에 `import`로 불러들일 수 있는 모듈이다. 보통 패키지는 여러 모듈로 구성된다. 
+
+# %% [markdown]
+# * [두 가지 의미의 패키지](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
+#     - 배포 패키지
+#     - 임포트 패키지
+#
+# * 모듈 : basic unit of **code reusability** in Python, existing in one of two types
+#     - 순수 모듈(pure module) : 파이썬으로 쓰여졌으면 하나의 .py 파일에 담겨 있다.
+#     - 확장 모듈(extension module) : 파이썬의 저수준 언어(예. C/C++)로 쓰여졌으며 하나의 dynamically loadable pre-compiled file에 담겨 있다. (예. e.g. a shared object (.so) file for Python extensions on Unix, a DLL (given the .pyd extension) for Python extensions on Windows, or a Java class file for Jython extensions.)
+#
+# * 패키지 설치 방법
+#     - 전역적으로 vs 지역적으로?
+#     - 패키지 격리
+#
+# * [venv](https://docs.python.org/3/library/venv.html)
+
+
 # %%
-* [두 가지 의미의 패키지](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
-    - 배포 패키지
-    - 임포트 패키지
+## 파이썬에서 가상 환경(Virtual Environment) 
+## R의 환경(Environment)
 
-* 모듈
-    - 순수 모듈(pure module) : https://packaging.python.org/glossary/#term-Pure-Module
-    - 확장 모듈(extension module) : https://packaging.python.org/glossary/#term-Extension-Module
+## 파이썬에서 가상 환경이 필요한 이유 : 
+##  패키지들의 상호 의존성 : 어떤 패키지는 다른 패키지의 특정한 버전을 필요로 한다.
+##                     버전 하위 호환성이 깨지는 경우
+##  
+##  R의 경우 CRAN에 등록된 패키지들은 이런 패키지 사이의 호환성을 계속 테스트하기 때문에
+##   패키지의 버전이 문제가 되는 경우가 거의 없다. 대부분 최신의 버전을 사용하면 된다.
 
-* 패키지 설치 방법
-    - 전역적으로 vs 지역적으로?
-    - 패키지 격리
+## python -m mod : run library module as a script (terminates option list)
+## conda base에서 venv test를 실행하면? source test/bin/activate
+## (test) (base) kwhkim@...
 
-* [venv](https://docs.python.org/3/library/venv.html)
-
+# %% [markdown]
+# ### conda channels(with `-c` or `--channel`)
+#
+# ```
+# conda install -c conda-forge matplotlib
+# ```
+#
+# * defaults
+# * conda-forge
+# * r
+# * 
 
 # %% [raw]
 # source ~/.bashrc  # conda에 필요한 설정이 포함되어 있기 때문??? 구체적으로 어떤 것들???
@@ -62,25 +98,35 @@
 # conda env list
 # conda install [PACKAGE-NAME]
 # pip install [PACKAGE-NAME]
-
+#
 # conda config --append channels conda-forge
 # -> condarc
 #    order of channels matter
-# 
+#
 # conda env export --file environment.yml
 # conda env create -n conda-env -f /path/to/environment.yml # duplicate
 # conda env update -n conda-env -f /path/to/environment.yml # update
-
+#
 # R environment
 # conda create -n r-env r-base
 # Conda’s R packages are available from the R channel of Anaconda Cloud, which is included by default in Conda’s default_channels
-
+#
 # Revisions track changes to your environment over time, allowing you to easily remove packages and all of their dependencies
 # conda list --revisions
-
-#As you build more projects, each with their own environment, you’ll begin to quickly accumulate tarballs from packages you’ve installed.
-#To get rid of them and free up some disc space, run:
+#
+# As you build more projects, each with their own environment, you’ll begin to quickly accumulate tarballs from packages you’ve installed.
+# To get rid of them and free up some disc space, run:
 # % conda clean --all                     # no active env needed 
+#
+# defusedxml-0.7.1-pyhd8ed1ab_0.tar.bz2         23 KB
+# backports.functools_lru_cache-1.6.4-pyhd8ed1ab_0.tar.bz2       9 KB
+# libtiff-4.3.0-h1167814_1.tar.bz2             621 KB
+# testpath-0.5.0-pyhd8ed1ab_0.tar.bz2           86 KB
+#
+# ---------------------------------------------------
+# Total:                                     433.8 MB
+#
+# Proceed ([y]/n)? 
 
 
 # %%
@@ -89,13 +135,61 @@
 # What is conda channels?
 # https://docs.conda.io/projects/conda/en/latest/user-guide/concepts/channels.html
 
+# cf. PyPI : Python Package Index
+# https://pypi.org
+
+# Installing Packages in Python : https://packaging.python.org/en/latest/tutorials/installing-packages/
+
 # !!!
+
+# %% [markdown]
+# ### Python과 R 비교
+#
+# * 패키지/모듈/스크립트 불러오기(Python : packname, filename.py, R: packname, filename.R)
+#
+# |대상    |  상황   | Python | R    |
+# |:------|:-------|:-------|:-----|
+# |패키지 실행    |R/Python 콘솔/스크립트 내에서 |`import packname` | `library(packname)` |
+# |패키지 실행   | 운영체제 명령프롬프트/쉘       |`python -m packname` |    |
+# |패키지 삭제   | 운영체제 명령프롬프트/쉘       |`del sys.modules["packname"]; del packname` | `detach("package:packname")`|
+# |모듈/스크립트 실행| R/Python 콘솔/스크립트 내에서 |`import filename` | `source('filename.R')` |
+# |모듈/스크립트 실행| 운영체제 명령프롬프트/쉘       |`python filename.py` | `Rscript filename.R` |
 
 # %%
 # 만약 python 설치 후 python 또는 pip이 실행되지 않는다면
 # PATH에 Python의 folder와 Python/Scripts를 포함시킨다.
 # # echo %PATH%
 # # echo $PATH
+
+# %%
+import itertools
+
+# %%
+count = itertools.count
+
+itertools.count = 10
+
+# then later
+itertools.count = count
+
+# %%
+itertools.count
+
+# %%
+import itertools
+count = itertools.count
+
+itertools.count = 10
+
+
+import sys
+
+del sys.modules['itertools']
+del itertools
+
+import itertools
+
+itertools.count
 
 # %% [markdown]
 # ## 패키지 관리 관련
@@ -114,15 +208,15 @@
 # * `conda`
 #
 # * `venv`와 `conda`의 가장 큰 차이
-#   - conda는 language-agnostic!
+#   - conda는 language-agnostic! (python이 아니라 다른 언어로 씌여진 package도 관리할 수 있고, 
 #
 # * pip : pip is a python package manager
 # * venv : environment manager for Python
 # * conda : language-agnostic package & environment manager
 #   - ensure dependecies are satisfied
 #   위의 세 개 비교 : https://conda.io/projects/conda/en/latest/commands.html#conda-vs-pip-vs-virtualenv-commands
-
-
+#
+#
 
 # %% [raw]
 # D:\pipenv\test>pipenv --python 3.8
@@ -216,15 +310,26 @@ print(np.__name__) # 임포트된 모듈의 이름
 
 __builtins__
 dir(__builtins__)
+
+import sys
 sys.builtin_module_names
 # 'atexit', 'builtins', 'errno', 'faulthandler', 'gc', 'itertools', 'marshal', 'posix', 'pwd', 'sys', 'time', 'xxsubtype')
+# %%
 import itertools # itertools can not be imported
-from itertools import test
+#from itertools import test
 # itertools has
 #   def test(a):
-# so you 
+# %%
+itertools.test()
 
+# %%
+from itertools import test
+
+# %%
+
+# %%
 # list all importable modules
+import pkgutil
 for x in pkgutil.iter_modules():
     #print(dir(x))
     #break
@@ -239,9 +344,79 @@ for x in pkgutil.iter_modules():
 #   - scope and namespaces : `dir()`
 #   - dundar attribute of name
 #      - Double underscores are referred to as dunders because they appear quite often in the Python code and it's easier to use the shorten “dunder” instead of “double underscore”.
+#      이중밑줄(?)
 #      - https://wiki.python.org/moin/DunderAlias
 #   - importlib.reload ( library for import )
 #   - how to organize packages
+# %%
+itertools.count
+
+# %%
+for x in itertools.count(3,2):
+    if x > 30: 
+        break
+    print(x, end = ' ')
+
+# %%
+itertools.count = 10;
+print(itertools.count)
+
+# %%
+import itertools
+itertools.count
+
+# %%
+# ?importlib.reload
+
+# %%
+from itertools import count
+
+# %%
+del sys.modules['itertools']; del itertools
+
+# %%
+itertools
+
+# %%
+count
+
+# %%
+import importlib
+importlib.reload(itertools)
+itertools.count
+
+# %%
+import numpy as np
+
+# %%
+np.any([True, False])
+
+# %%
+np.any = None
+
+# %%
+a = np.any
+
+# %%
+a
+
+# %%
+
+# %%
+np.any([True, False])
+
+# %%
+importlib.reload(np)
+
+# %%
+np.any([True, False])
+
+# %%
+dir(np)
+
+# %%
+dir(itertools)
+
 # %% [markdown]
 # ## 2.3 패키지 불러오기/확인하기/제거하기
 
@@ -260,6 +435,108 @@ print(allmodules)
 d_allmodules = {name:sys.modules[name] for name in modulenames}
 print(d_allmodules)
 d_allmodules.keys()
+# %%
+import numpy as np
+
+# %%
+np
+
+# %%
+numpy
+
+# %%
+import pandas as pd
+
+# %%
+set([1,2,3])
+
+# %%
+pandas
+
+# %%
+pd
+
+# %%
+type(globals())
+
+# %%
+
+# %%
+import re
+re.match('^_\\d{1,}$', '_80')
+
+# %%
+
+# %%
+from pprint import pprint
+
+# %%
+from np import any # import numpy as np 와 같은 alias를 쓸 수 없음
+# 그래서 이건 어디서 알 수 있다?
+# sys.modules.keys()
+
+# %%
+
+# %%
+pprint(sorted(list(sys.modules.keys()))) # importable modules???
+
+# %%
+import types
+def imports():
+    modules = list(sys.modules.keys())
+    for name, val in globals().items():
+        if isinstance(val, types.ModuleType):
+            if val.__name__ in modules: # 이건 불필요한가???
+            #if True:
+            #if not re.match('^_\\d{1,}$', name): # and not re.match('^__.*__$', name):
+            # jupyter notebook의 output _1, _2, ...와
+            # __builtins__, __builtins__는 제외
+                yield (name, val.__name__)
+[x for x in imports()]
+
+# %%
+sys.modules
+
+# %%
+dir(sys.modules['builtins'])
+
+# %%
+sys.modules.keys()
+
+
+# %%
+def search(original=True):
+    import Ax_rutils
+    import sys
+
+    # listing all packages imported
+    modulenames = set(sys.modules) & set(globals())
+    if original:
+        return set([sys.modules[name].__name__ for name in modulenames])
+    else:
+        return modulenames
+    
+search()
+
+# %%
+search(original=False)
+
+# %%
+[x for x in globals().keys() if x.startswith('p')]
+
+# %%
+x = globals()
+x.keys()
+
+
+# %%
+def f():
+    return globals()
+
+
+# %%
+f().keys()
+
 # %%
 type(allmodules[0])
 
@@ -359,7 +636,10 @@ sys.modules.pop('re')
 sys.modules['re']
 
 # %%
-# alias?
+
+# %%
+# #?alias 
+#alias?  #
 __builtins__
 sys.modules['builtins']
 
@@ -497,5 +777,7 @@ pcIdentity = un+'@'+hostname
 #
 # # pip installable
 #   - dfply, pydatasets
+
+# %%
 
 # %%
