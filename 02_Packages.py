@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.11.3
+#       jupytext_version: 1.11.2
 #   kernelspec:
 #     display_name: rtopython2-pip
 #     language: python
@@ -15,12 +15,31 @@
 # ---
 
 # %% [markdown]
-# # Python의 패키지
-# !!! 설명을 모듈 -> 패키지로 가야 하지 않을까?
-#          모듈은 함수, 변수 정의를 모아 놓은 것?
-# !!! 포함되어야 할 내용
-# !!! 다른 디렉토리의 모듈 import
-# !!! 용어 패키지 vs 모듈
+#
+# # 파이썬의 패키지
+
+# %% [markdown]
+# > R 사용자를 위한 안내: 파이썬의 **패키지**는 R의 **패키지**와 거의 동일한 역할을 한다. 다른 점은 파이썬이 통계 분석 외에도 여러 가지 다방면의 목적을 위해 사용되는 범용 언어라서 패키지 역시 엄청나게 다양한 목적을 위해 만들어진다. 그리고 한 패키지가 다른 패키지를 사용하기도 하는데 이때 파이썬에서는 패키지 사이의 버전이 중요하다. 왜냐하면 한 패키지 버전이 달라지면 이를 사용하는 다른 패키지가 작동하지 않기도 하기 때문이다. 파이썬 버전 자체도 문제가 되기도 한다. 그렇기 때문에 파이썬에서는 파이썬의 버전과 패키지의 버전, 그리고 패키지들 사이의 버전이 중요하다. 그런데 운영체제에 파이썬을 설치할 경우 하나의 버전만을 사용할 수 있다. 그래서 사람들은 **가상환경**을 사용하여 여러 버전의 파이썬을 사용하거나, 여러 버전의 패키지를 사용한다. 
+#
+# > R 사용자는 대부분 최신의 R, 그리고 최신의 패키지를 사용하지만, 파이썬 사용자는 필요에 따라 구 버전의 파이썬을 사용하기도 하고, 구 버전의 패키지를 사용하기도 한다. 그리고 이렇게 다양한 버전의 파이썬, 패키지를 한 컴퓨터에서 사용 가능하게 하기 위해 **가상환경**을 사용한다. 
+#
+# > R의 스크립트에 해당하는 파일을 파이썬에서는 모듈(module)이라고 부른다.
+
+# %% [markdown]
+# 보통 확장자 `.py` 파일에는 파이썬 명령문들이 들어간다. 특정한 목적을 위해 파이썬 언어로 작성된 `.py` 파일을 모듈(Module)이라고 한다(좀더 정확히는 순수모듈이라고 한다. 자세한 설명은 아래 용어 설명 참조). 그리고 특정한 목적을 위해 만들어진 여러 모듈을 모아 패키지를 만든다.
+
+# %% [markdown]
+# #### 용어 설명
+#
+# * 모듈 : 파이썬에서 재사용 가능한 최소 단위로 순수 모듈과 확장 모듈이 있다
+#   - 순수 모듈(pure module) : 파이썬으로 쓰여진 .py 파일
+#   - 확장 모듈(extension module) : C, C++, Java 등의 다른 컴파일 언어로 쓰여졌다.  
+#
+# * 배포 패키지와 임포트 패키지 : 둘다 보통 패키지로도 불린다. 파이썬 공식 사이트의 용어 구분에 따르면, 배포 패키지란 배포를 목적으로 여러 파일을 압출한 **파일**이다. 임포트 패키지란 파이썬에 `import`로 불러들일 수 있는 모듈이다. 보통 패키지는 여러 모듈로 구성된다. 
+
+# %%
+
+# %%
 
 # %%
 #https://www.it4nextgen.com/purpose-of-channels-in-anaconda/
@@ -40,13 +59,24 @@
 # ## 2.1 패키지 설치
 
 # %% [markdown]
-# #### 용어 설명
+# 파이썬에서 패키지 설치는 보통 운영체제의 커맨드 라인(유닉스의 쉘 또는 윈도우의 명령 프롬프트)에서 진행된다. 파이썬에서 패키지를 설치하는 방법은 여러 가지이지만, 가장 기본적인 방법은 `pip`이라는 패키지를 사용하는 것이다. PiP은 **P**iP **i**nstalls **P**ackages의 약자로 패키지를 설치하는 무엇이라는 의미이다. 그런데 `pip` 역시 패키지이다. 그렇다면 `pip`은 어떻게 설치하는가? 그렇기 때문에 보통 패키지 `pip`은 파이썬과 함께 배포된다. 
+
+# %%
+
+# %%
+import sys
+sys.path
+
+# %%
+
+# %% [markdown]
+# * 복잡한 파이썬
 #
-# * 모듈 : 파이썬에서 재사용 가능한 최소 단위로 순수 모듈과 확장 모듈이 있다
-#   - 순수 모듈(pure module) : 파이썬으로 쓰여진 .py 파일
-#   - 확장 모듈(extension module) : C, C++, Java 등의 다른 컴파일 언어로 쓰여졌다.  
+# 프로그래밍을 하다 보면 자주 적용되는 패턴이 있고, 보통은 새로운 언어를 배울 때에도 당연히 적용될 것이라 가정하기 싶다. 하지만 새로운 언어를 배울 때 조심해야 하는 부분도 바로 그 지점이다. 새로운 언어에 대한 좀더 포괄적인 이해가 없다면 제대로 작동하는 소스 코드를 되도록 수정하지 말고 실행하는 것이 좋다.
 #
-# * 배포 패키지와 임포트 패키지 : 둘다 보통 패키지로도 불린다. 파이썬 공식 사이트의 용어 구분에 따르면, 배포 패키지란 배포를 목적으로 여러 파일을 압출한 **파일**이다. 임포트 패키지란 파이썬에 `import`로 불러들일 수 있는 모듈이다. 보통 패키지는 여러 모듈로 구성된다. 
+# 예를 들어, 대부분의 컴퓨터 없는 `a=3` 또는 `a = 3` 또는 `a= 3`이 모두 같은 의미를 나타낸다. 하지만 linux bash shell에서 `b=3`은 작동하지만 `b = 3`, `b= 3`은 모두 `command not found` 오류를 발생할 것이다. 대부분의 언어에서 `a="str"`과 `a='str'`는 동일한 결과를 산출한다. 하지만 SQL에서는 문자열을 나타내기 위해서 반드시 `'`를 써야 하며, `"`를 쓸 수 없다. 
+
+# %%
 
 # %% [markdown]
 # * [두 가지 의미의 패키지](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
@@ -155,6 +185,52 @@
 # |모듈/스크립트 실행| R/Python 콘솔/스크립트 내에서 |`import filename` | `source('filename.R')` |
 # |모듈/스크립트 실행| 운영체제 명령프롬프트/쉘       |`python filename.py` | `Rscript filename.R` |
 
+# %% [markdown]
+# 파이썬의 경우 패키지를 실행하는 것과 모듈을 실행하는 것이 모두 `import` 문(statement)로 구현된다. 그리고 패키지를 운영체제 커맨드 라인에서 실행할 수 있다. 그런데 패키지를 `import`할 때는 보통 패키지의 함수나 객체를 활용하려는 것이지 패키지가 무엇인가를 주도적으로 실행하길 바라지 않는다. 그럼에도 파이썬은 운영체제 커맨트 라인에서 패키지를 실행할 수 있다. 이 경우에는 단순히 함수나 객체를 **정의**하는 것을 바라는 것이 아닐 것이다. 왜냐하면 그 경우에는 어떤 패키지를 실행해도 아무 결과없이 종료될 것이기 때문이다.
+#
+# 그래서 파이썬에서는 `import`로 다른 모듈 또는 콘솔에서 수입(import)되는 경우와 커맨드 라인에서 직접 실행되는 경우를 구분할 수 있는 방법이 있다. 자동으로 생성되는 `__name__`이라는 전역 변수는 `import`되는 경우에는 해당 모듈의 이름이 저장되지만, 운영체제 커맨드 라인에서 실행될 때에는 `__main__`이라는 문자열이 저장된다. 그래서 많은 파이썬 모듈에서 다음과 같은 부분을 확인할 수 있다.
+#
+# ```
+# if __name__ == "__main__":
+#     main()
+# ```
+#
+# 만약에 모듈이 운영체제 커맨드 라인에서 실행이 된다면, `main`이라는 함수를 실행한다.
+
+# %% [markdown]
+# <예제>
+# 다음의 모듈 `check_happy.py`는 함수 `question1`, `question2`를 정의한다.
+#
+# ```
+# def question1():
+#     return input("Are you happy today?")
+#  
+# def question2():
+#     return input("Are you happy yesterday?")
+#     
+# a1 = question1()
+#     
+# if __name__ == "__main__":    
+#     a2 = question2()
+#     
+#     if a1=='Y' and a2=='Y':
+#         print('Good. You seems to be happy all the time')
+#     else:
+#         print("It's okay. keep it up.")
+# ```
+
+# %% [markdown]
+# 파이썬 콘솔에서 `import check_happy.py`를 해보자. 그리고 운영체제 커맨드 라인에서 `python check_happy.py`(또는 `python3 check_happy.py`)를 해보자. 결과가 어떻게 다른가?
+
+# %% [markdown]
+# 계속 해서 파이썬 콘솔에서 `check_happy.question2()`를 해보자.
+
+# %%
+# 만약 python 설치 후 python 또는 pip이 실행되지 않는다면
+# PATH에 Python의 folder와 Python/Scripts를 포함시킨다.
+# # echo %PATH%
+# # echo $PATH
+
 # %%
 # 만약 python 설치 후 python 또는 pip이 실행되지 않는다면
 # PATH에 Python의 folder와 Python/Scripts를 포함시킨다.
@@ -232,6 +308,25 @@ itertools.count
 # Successfully created virtual environment!
 # Virtualenv location: C:\Users\Home\.virtualenvs\test-SXprqnij
 # Creating a Pipfile for this project...
+
+# %%
+
+# %% [markdown]
+# 파이썬은 R과 다르게 여러 버전의 파이썬과 패키지를 쓰는 경우가 많기 때문에 현재 사용하고 있는 파이썬의 버전과 패키지의 버전을 확인해야 하는 경우가 생기곤 한다. 
+
+# %%
+import sys
+sys.version
+
+# %%
+
+# %%
+import sys
+sys.executable
+
+# %%
+
+# %%
 
 # %% [markdown]
 # ## 2.2 패키지 관련 정보
@@ -424,6 +519,28 @@ dir(itertools)
 # ### 임포트 된 모듈 확인
 
 # %%
+import numpy as np
+
+# %%
+'np' in set(globals())
+
+# %%
+'numpy' in set(globals())
+
+# %%
+np.__name__ # alias(별칭)이 아니라 원래 이름
+
+# %%
+'np' in sys.modules.keys()
+
+# %%
+'numpy' in sys.modules.keys()
+
+# %%
+
+
+
+# %%
 import Ax_rutils
 import sys
 
@@ -476,14 +593,26 @@ from np import any # import numpy as np 와 같은 alias를 쓸 수 없음
 # sys.modules.keys()
 
 # %%
+pprint()
+
+# %%
+# ?pprint
 
 # %%
 pprint(sorted(list(sys.modules.keys()))) # importable modules???
 
 # %%
+import pprint
+import sys
+
+# %%
+pprint.pprint(sorted(list(sys.modules.keys())))
+
+# %%
 import types
+import sys
 def imports():
-    modules = list(sys.modules.keys())
+    modules = list(sys.modules.keys())    
     for name, val in globals().items():
         if isinstance(val, types.ModuleType):
             if val.__name__ in modules: # 이건 불필요한가???
@@ -492,7 +621,114 @@ def imports():
             # jupyter notebook의 output _1, _2, ...와
             # __builtins__, __builtins__는 제외
                 yield (name, val.__name__)
-[x for x in imports()]
+                
+{x for x in imports()}
+
+# %%
+import math
+import check_happy
+
+# %%
+
+# %%
+sys.builtin_module_names
+
+# %%
+import sys
+
+sys.a = 3
+
+import importlib
+importlib.reload(sys)
+
+print(sys.a)
+
+sys.builtin_module_names
+
+del sys.modules['sys']
+del sys
+
+# Hmmm... There no way to import sys again?
+
+import sys # works fine here
+print(sys.a)
+
+# %%
+sys.builtin_module_names = None
+sys.a = 3
+import sys
+print(sys.a)
+
+# %%
+del sys.modules['sys']
+del sys
+import sys
+
+# %%
+sys.builtin_module_names
+
+# %%
+import sys
+import types
+def imports():
+    modules = list(sys.modules.keys())
+    aliasnames = {}
+    filenames = {}
+    b_builtins = {}
+    for name, val in globals().items():
+        if isinstance(val, types.ModuleType):
+            if val.__name__ not in aliasnames:
+                aliasnames[val.__name__] = [name]                
+                filenames[val.__name__] = getattr(val, '__file__', None)
+                b_builtins[val.__name__] = val.__name__ in sys.builtin_module_names
+                if hasattr(val, '__file__'):
+                    #filenames[val.__name__] = val.__file__
+                    pass
+                #else:
+                #    filenames[val.__name__] = val.__file__
+            else:
+                aliasnames[val.__name__].append(name)                
+        
+    return aliasnames, filenames, b_builtins
+
+
+
+# %%
+import csv
+
+# %%
+import numpy
+
+# %%
+imports()
+
+# %%
+sys.builtin_module_names
+
+# %%
+# Python Module Index
+# https://docs.python.org/3.8/py-modindex.html
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+__builtins__.print == print
+
+# %%
+with open("C:\\Users\\Home\\miniconda3\\envs\\rtopython2-pip\\lib\\csv.py", 'rt') as f:
+    for x in f.readlines():
+        print(x, end='')
+
+# %%
+[(name, val.__name__) for name, val in globals().items() if isinstance(val, types.ModuleType)]
+
+# %%
 
 # %%
 sys.modules
@@ -630,7 +866,7 @@ re.findall('a', 'abc')
 sorted(sys.modules.keys())
 
 # %%
-sys.modules.pop('re')
+m = sys.modules.pop('re')
 
 # %%
 sys.modules['re']
@@ -781,3 +1017,271 @@ pcIdentity = un+'@'+hostname
 # %%
 
 # %%
+
+# %%
+
+# %%
+
+# %%
+sys.byteorder
+
+# %%
+sys.builtin_module_names[0:5]
+#A tuple of strings giving the names of all modules that are compiled into this Python interpreter. 
+# (This information is not available in any other way — modules.keys() only lists the imported modules.)
+
+# %%
+sys.modules.keys() # import numpy 를 하면 numpy.random도 사용할 수 있다 # imported modules
+
+# %%
+
+# %%
+__name__
+
+# %%
+from __future__ import print_function
+from sys import getsizeof, stderr
+from itertools import chain
+from collections import deque
+try:
+    from reprlib import repr
+except ImportError:
+    pass
+
+def total_size(o, handlers={}, verbose=False):
+    """ Returns the approximate memory footprint an object and all of its contents.
+
+    Automatically finds the contents of the following builtin containers and
+    their subclasses:  tuple, list, deque, dict, set and frozenset.
+    To search other containers, add handlers to iterate over their contents:
+
+        handlers = {SomeContainerClass: iter,
+                    OtherContainerClass: OtherContainerClass.get_elements}
+
+    """
+    dict_handler = lambda d: chain.from_iterable(d.items())
+    all_handlers = {tuple: iter,
+                    list: iter,
+                    deque: iter,
+                    dict: dict_handler,
+                    set: iter,
+                    frozenset: iter,
+                   }
+    all_handlers.update(handlers)     # user handlers take precedence
+    seen = set()                      # track which object id's have already been seen
+    default_size = getsizeof(0)       # estimate sizeof object without __sizeof__
+
+    def sizeof(o):
+        if id(o) in seen:       # do not double count the same object
+            return 0
+        seen.add(id(o))
+        s = getsizeof(o, default_size)
+
+        if verbose:
+            print(s, type(o), repr(o), file=stderr)
+
+        for typ, handler in all_handlers.items():
+            if isinstance(o, typ):
+                s += sum(map(sizeof, handler(o)))
+                break
+        return s
+
+    return sizeof(o)
+
+
+##### Example call #####
+
+if __name__ == '__main__':
+    d = dict(a=1, b=2, c=3, d=[4,5,6,7], e='a string of chars')
+    print(total_size(d, verbose=True))
+
+# %%
+a = [1]*100
+b = [2]*100
+c = [a,b]
+
+# %%
+sys.getsizeof(c)
+
+# %%
+total_size(c)
+
+# %%
+
+# %%
+import sys
+
+# %%
+sys.stdout
+
+# %%
+sys.getwindowsversion()
+
+# %%
+sys.int_info
+
+# %%
+sys.int_info=None
+
+# %%
+sys.int_info
+
+# %%
+import sys
+
+# %%
+sys.int_info
+
+# %%
+# Did not reload
+
+# %%
+del sys.modules['sys']
+
+# %%
+del sys
+
+# %%
+import sys
+
+# %%
+sys.int_info
+
+# %%
+sys.stdout
+
+# %%
+sys.modules['numpy']
+
+# %%
+import numpy
+
+# %%
+sys.stdout
+
+# %%
+sys.modules['numpy']
+
+# %%
+del sys.modules['numpy']
+
+# %%
+import numpy
+
+# %%
+dir(site)
+
+# %%
+import site
+
+# %% [markdown]
+# Importing this module will append site-specific paths to the module search path and add a few builtins, unless -S was used. In that case, this module can be safely imported with no automatic modifications to the module search path or additions to the builtins. To explicitly trigger the usual site-specific additions, call the site.main() function.
+
+# %%
+import sys
+sys.path
+
+# %%
+import site
+sys.path
+# '' meaning???
+
+# %%
+site.PREFIXES
+
+# %%
+site.PREFIXES[0] == site.PREFIXES[1]
+
+# %%
+site.USER_SITE
+
+# %%
+
+# %%
+
+# %%
+# 파이썬 모듈 Index : https://docs.python.org/3.8/py-modindex.html
+
+
+# %%
+sys.modules
+
+# %%
+# # 지워버리기?
+
+# %%
+m = sys.modules.pop('re')
+
+# %%
+import sys
+import types
+def imports():
+    modules = list(sys.modules.keys())
+    aliasnames = {}
+    filenames = {}
+    b_builtins = {}
+    for name, val in globals().items():
+        if isinstance(val, types.ModuleType):
+            if val.__name__ not in aliasnames:
+                aliasnames[val.__name__] = [name]                
+                filenames[val.__name__] = getattr(val, '__file__', None)
+                b_builtins[val.__name__] = val.__name__ in sys.builtin_module_names
+                if hasattr(val, '__file__'):
+                    #filenames[val.__name__] = val.__file__
+                    pass
+                #else:
+                #    filenames[val.__name__] = val.__file__
+            else:
+                aliasnames[val.__name__].append(name)                
+        
+    return aliasnames, filenames, b_builtins
+
+
+# %%
+imports()
+
+# %%
+m
+
+# %%
+dir(m)
+
+# %% [markdown]
+# 특정 패키지의 특정 버전 함수를 사용하고 싶다면?
+# 패키지 소스의 setup.py를 보면 `python_requires='>=3.5, !=3.9.*'` 와 같은 버전을 특정하는 부분을 볼 수 있다. 
+#
+# 패키지 히스토리 또는 릴리즈 노트를 확인하자.
+
+# %%
+# !pip freeze > requirements.txt 
+
+# %%
+# #!pip install -r requirements
+
+# %%
+
+# %% [markdown]
+# PyPI(Python Package Index): online code repository, anyone anywhere can upload packages
+#
+# https://pypi.org
+#
+# * distribution package - a bundled version of your package which is ready to install
+#   - source distribution : source 
+#   - wheel distribution : slightly processed, smaller, faster, ...
+#   
+#
+
+# %%
+#you can build source and wheel distributions from the terminal using this command
+#python setup.py sdist bdist_wheel #source distribution, wheel distribution
+# dist/*.whl, dist/*.tar.gz, /build, /...egg-info
+
+# %%
+# upload
+# twine upload dist/*
+# twine upload -r testpypi dist/*
+
+# %%
+# install
+# pip install ...
+# pip install --index-url https://test/pypi.orgsimple --extra-index-url https://pypi.org/simple ...
