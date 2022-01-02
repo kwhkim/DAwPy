@@ -59,12 +59,44 @@
 #   - 파이썬 표준 라이브러리에 포함된 패키지와 모듈 리스트는  https://docs.python.org/3.8/library/index.html 에서 확인할 수 있다.
 #   - 내장 모듈을 포함한다
 #   - 외장 모듈은 보통 파이썬 폴더 안의 `Lib` 폴더에서 찾을 수 있다.
+#   - 내장 모듈 빌트인즈(`builtins`)에는 내장 함수(built-in function)들이 정의되어 있다. `__builtin__`, `__builtins__`은 모두 내장 모듈 `builtins`를 가리킨다. 내장 모듈의 함수는 `builtins.print`로 쓸 필요없이 그냥 `print`로 쓸 수 있다.
 # * 직접 만든 모듈 : 자신이 만든 모듈도 `import` 문으로 불러들일 수 있다. 이때 모듈 파일의 위치가 중요하다. 
 # * 제3자 패키지
 #   - 파이썬 설치 후 `pip install` 등을 통해 설치된 제3자 패키지는 보통 파이썬 폴더의 안의 `Lib/site-packages/`에서 찾을 수 있다.
 #   
-# 해당 파일의 위치는 `import json`과 같이 패키지를 불러들인 후, `json.__file__`과 같이 `.__file__` 속성을 통해 확인할 수 있다.
-# `print(json.__doc__)`으로 패키지 설명도 확인할 수 있다.
+# 해당 파일의 위치는 `import json`과 같이 패키지를 불러들인 후, `json.__file__`과 같이 `.__file__` 속성을 통해 확인할 수 있다(하지만 항상 정확하지 않기 때문에 https://docs.python.org/3.8/library/index.html 에서 확인할 필요가 있다. 예. zipimport)
+# `print(json.__doc__)`으로 패키지 설명도 확인할 수 있다. `import`된 모듈은 `sys.modules`에 사전 형식으로 기록된다.
+
+# %%
+for x in sys.modules.keys():    
+    try:
+        fn = sys.modules[x].__file__
+    except AttributeError:        
+        fn = ""        
+    if fn is None:
+        fn = ""
+        
+    if x in sys.builtin_module_names:        
+        print(f"{x:20} builtin module  {fn:40}")        
+        #pass
+    else:
+        #if fn=="":
+        print(f"{x:20} standard module {fn:40}")
+## builtin module without __file__
+#  zipimport, __main__, mpl_toolkits, zope, typing.io, typing.re,
+#  cython_runtime, _cython_0_29_21, six.moves, __mp_main__
+
+# %%
+for x in sys.modules.keys():
+    if x not in sys.builtin_module_names:
+        print(x)
+
+
+# %%
+__builtins__ == sys.modules['builtins']
+
+# %%
+__builtin__ == sys.modules['builtins']
 
 # %%
 import json
@@ -73,7 +105,65 @@ json.__file__
 # %%
 print(json.__doc__)
 
+# %% [markdown]
+# #### `import` 순서
+#
+# 현재 디렉토리에 `time.py`라는 모듈을 만들었다고 해보자. 현재 디렉토리에 같은 이름의 파일을 생성할 수 없으므로 `import time`를 하면 `time.py`를 임포트하게 될 것이다. 정말 그럴까?
+#
+# 다른 디렉토리에도 `time.py`라는 파일이 존재할 수 있다. 그리고 내장 모듈 또는 파이썬 표준 라이브러리에 `time`이라는 이름의 모듈 또는 패키지가 존재할 수도 있다. 따라서 `import`가 라이브러리 또는 모듈을 찾는 순서가 중요하다.
+#
+# `import`는 먼저 이미 임포트가 된 모듈/패키지를 사전 형식으로 저장하고 있는 `sys.modules`에서 찾는다. 만약 이미 임포트되어 있다면 이미 임포트되어 있는 대상을 사용한다(예. `import numpy as np`). 두 번째로 `sys.builtin_module_names`에서 이름을 찾는다. 만약 내장 모듈이라면 내장 모듈을 임포트한다. 그리고 마지막으로 `sys.path`를 확인한다. `sys.path`에는 파이썬이 모듈 또는 라이브러리를 찾을 때 확인하는 폴더가 순서대로 저장되어 있다. 보통 가장 첫 번째 원소는 현재 디렉토리이고, 파이썬 표준 라이브러리의 내장 모듈을 저장하는 폴더(보통 `Lib`)도 포함된다.
+#
+# 그렇다면 `time.py`는 몇 번째 순서인가? 1. `sys.modules` 2. `sys.builtin_module_names` 3. `sys.path`
+# `time.py`가 현재 디렉토리에 있으므로 3. `sys.path`의 첫 번째 원소에 해당한다. 하지만 `time`은 보통 1번과 2번에 모두 해당한다. 따라서 임포트가 되지 않는다(저자는 `sys.modules`와 `sys.builtin_module_names`에서 `time`을 삭제해보았지만 그래도 임포트할 수 없었다.)
+#
+# 같은 파이썬 표준 라이브러리에 속하지만 `os`는 내장 모듈이 아니다. 그래서 현재 디렉토리에 `os.py`가 있을 경우 1번에서 `os`를 삭제하면 현재 디렉토리의 `os.py`를 임포트할 수 있다. 
+
 # %%
+'os' in sys.modules.keys()
+
+# %%
+'os' in sys.builtin_module_names
+
+# %%
+del sys.modules['os']
+
+# %%
+import os
+
+# %%
+
+# %%
+'time' in sys.modules.keys()
+
+# %%
+del sys.modules['os']
+del os
+
+# %%
+'os' in sys.builtin_module_names
+
+# %%
+import os
+
+# %%
+import itertools
+
+# %%
+del sys.modules['itertools']
+del itertools
+
+# %%
+sys.builtin_module_names
+
+# %%
+'itertools' in sys.builtin_module_names
+
+# %%
+sys.builtin_module_names = tuple((x for x in sys.builtin_module_names if x != 'itertools'))
+
+# %%
+import itertools
 
 # %%
 import sys
@@ -1333,3 +1423,39 @@ dir(m)
 # install
 # pip install ...
 # pip install --index-url https://test/pypi.orgsimple --extra-index-url https://pypi.org/simple ...
+
+# %%
+import sys
+sys.builtin_module_names
+
+# %%
+import builtins
+
+# %%
+eval("ArithmeticError")
+
+# %%
+dir(builtins)
+
+# %%
+for x in dir(builtins):
+    if not getattr(sys.modules['builtins'], x) == eval(x):
+        print(x, getattr(sys.modules['builtins'], x) == eval(x))
+        
+# __doc__, __loader__, __name__, __package__, __spec__ 은 모두 현재 모듈에 대한 것이다
+
+# %%
+builtins.__IPYTHON__
+
+# %%
+__IPYTHON__
+
+# %%
+for x in dir(sys.modules['builtins']):
+    if not getattr(sys.modules['builtins'], x) == eval(x):
+        print(x, getattr(sys.modules['builtins'], x) == eval(x))
+
+# %%
+dir()
+
+# %%
