@@ -26,6 +26,20 @@
 # > R의 스크립트에 해당하는 파일(*.R)을 파이썬에서는 모듈(module)(*.py)이라고 부른다.
 
 # %% [markdown]
+# ## 전체 구성
+#
+# * 모듈/패키지/라이브러리
+#   - `import`로 모듈 불러들이기
+#   - 불러들인 모듈 확인하기
+#   - 모듈 정보 확인
+#   - 모듈 제거
+#   
+# * 가상환경의 구성
+#   - 가상환경 구성 패키지 종류
+#   - conda
+#
+
+# %% [markdown]
 # 보통 확장자 `.py` 파일에는 파이썬 명령문들이 들어간다. 특정한 목적을 위해 파이썬 언어로 작성된 `.py` 파일을 모듈(Module)이라고 한다(좀더 정확히는 순수모듈이라고 한다. 자세한 설명은 아래 용어 설명 참조). 그리고 특정한 목적을 위해 만들어진 여러 모듈을 모아 패키지를 만든다.
 
 # %% [markdown]
@@ -39,15 +53,29 @@
 #
 # #### **모듈**, **패키지**, **라이브러리(Library)**
 #
-# **모듈**이란 코드 재사용의 최소 단위로 순수 모듈의 경우 `.py`로 끝나는 파일 하나를 생각하면 된다. 모듈의 길이가 길어지면 필요에 따라 모듈 파일을 두 개 이상으로 나누기도 하고, 복잡한 기능을 조직화하기 위해 디렉토리를 나눠 모듈을 저장하기도 한다. 이렇게 여러 모듈을 모아놓은 것을 **패키지**라고 한다. 보통 하나의 패키지는 하나의 주제로 통합할 수 있는 여러 기능들이 여러 모듈에 나눠 담겨 있다. **라이브러리**는 여러 패키지들을 모아 부르는 말이다. 예를 들어 파이썬 표준 라이브러리(The Python Standard Library; https://docs.python.org/3.8/library/index.html)에는 보통 파이썬과 함께 배포되는 자주 쓰이는 패키지 또는 모듈을 담고 있다. 파이썬 표준 라이브러리에 속하지 않는 패키지를 보통 제3자 패키지(third-party package)라고 부른다. 파이썬(제1자)이 만들지 않았고, 내(제2자)가 만들지도 않았다는 의미이다.
+# **모듈**이란 코드 재사용의 최소 단위로 순수 모듈의 경우 `.py`로 끝나는 파일 하나를 생각하면 된다. 모듈의 길이가 길어지면 필요에 따라 모듈 파일을 두 개 이상으로 나누기도 하고, 복잡한 기능을 조직화하기 위해 디렉토리를 나눠 모듈을 저장하기도 한다. 이렇게 여러 모듈을 모아놓은 것을 **패키지**라고 한다.[^module] 보통 하나의 패키지는 하나의 주제로 통합할 수 있는 여러 기능들이 여러 모듈에 나눠 담겨 있다. **라이브러리**는 여러 패키지들을 모아 부르는 말이다. 예를 들어 파이썬 표준 라이브러리(The Python Standard Library; https://docs.python.org/3.8/library/index.html)에는 보통 파이썬과 함께 배포되는 자주 쓰이는 패키지 또는 모듈을 담고 있다. 파이썬 표준 라이브러리에 속하지 않는 패키지를 보통 제3자 패키지(third-party package)라고 부른다. 파이썬(제1자)이 만들지 않았고, 내(제2자)가 만들지도 않았다는 의미이다.
 #
 # * 내장 모듈 
 #   - 내장(built-in) 모듈은 다른 모듈과 달리 파일로 존재하지 않고, Python 안에 존재하는 C로 쓰여진 모듈이다.
 #   - 내장 모듈을 불러들이기 위해서는 다른 모듈과 마찬가지로 `import` 문을 쓴다.
 #   - 하지만 그렇게 불러들인 모듈의 `.__file__`은 존재하지 않는다(예. `import sys; sys.__file__`)
 #   - 내장 모듈 리스트는 `sys.builtin_module_names`로 확인할 수 있다. 
+#   
+# [^module]: 하지만 파이썬 내에서는 이런 구분 없이 import의 결과는 모두 module이라고 표시하는 듯 하다. `import`한 결과를 출력해보면 `<module '...' from 'C:\\Users\\Home\\...\\__init__.py'>`와 같이 모두 `module`로 표시된다. 만약 패키지로 디렉토리를 구성한다면 파일 이름은 모두 `__init__.py`가 된다.
 #
 #
+
+# %%
+import psutil
+psutil
+
+# %%
+from matplotlib import pyplot
+
+# %%
+import matplotlib.pyplot
+
+# %%
 
 # %% [markdown]
 # ### 파이썬의 `import` 문
@@ -66,109 +94,377 @@
 #   
 # 해당 파일의 위치는 `import json`과 같이 패키지를 불러들인 후, `json.__file__`과 같이 `.__file__` 속성을 통해 확인할 수 있다(하지만 항상 정확하지 않기 때문에 https://docs.python.org/3.8/library/index.html 에서 확인할 필요가 있다. 예. zipimport)
 # `print(json.__doc__)`으로 패키지 설명도 확인할 수 있다. `import`된 모듈은 `sys.modules`에 사전 형식으로 기록된다.
+#
+# #### `import` 사용법
+#
+# 1. 패키지/모듈 불러들이기 `import numpy`
+# 2. 패키지에서 서브패키지 불러들이기 `import matplotlib.pyplot`, `from matplotlib import pyplot`
+# 3. 패키지/모듈에서 함수 불러들이기 `from numpy import abs`
+# 4. 서브패키지에서 함수 불러들이기 `from matplotlib.pyplot import scatter`
+#
+# ##### `as`로 별칭 만들기
+#
+# 1. `import numpy as np`
+# 2. `import matplotlib.pyplot as plt`, `from matplotlib import pyplt as plt`
+# 3. `from numpy import abs as ab`
+# 4. `from matplotlib.pyplot import scatter as sct`
 
 # %%
-for x in sys.modules.keys():    
-    try:
-        fn = sys.modules[x].__file__
-    except AttributeError:        
-        fn = ""        
-    if fn is None:
-        fn = ""
+import numpy as np 
+# import numpy를 하면 numpy의 모든 subpackage를 활용할 수 있다. 
+# 예. np.random 등
+
+# %%
+import matplotlib.pyplot as plt
+
+# %%
+from matplotlib import pyplot as plt
+
+# %%
+from numpy import abs as ab
+
+# %%
+from matplotlib.pyplot import scatter as sct
+
+# %% [markdown]
+# ### import된 모듈 정보 확인
+
+# %%
+np.__file__  # 패키지를 저장하고 있는 파일
+
+# %%
+print(np.__doc__)  # 패키지 안내 documentation
+
+# %%
+# 그 밖에 거의 모든 패키지가 가지고 있는 속성(정보)
+np.__loader__
+
+# %%
+np.__name__  # 별칭 말고 원래 이름
+
+# %%
+plt.__package__  # 서브패키지의 경우 패키지 이름
+
+# %%
+np.__spec__
+
+# %%
+plt.__spec__
+
+# %%
+np.math.__spec__
+
+# %%
+np.__version__
+
+# %%
+plt.__version__
+
+
+# %% [markdown]
+# ### import된 모듈/패키지 리스트
+
+# %%
+def imported():
+    import sys
+    import types
+    modules = list(sys.modules.keys())
+    aliasnames = {}
+    filenames = {}
+    b_builtins = {}
+    for name, val in globals().items():
+        if isinstance(val, types.ModuleType):
+            if val.__name__ not in aliasnames:
+                aliasnames[val.__name__] = [name]                
+                filenames[val.__name__] = getattr(val, '__file__', None)
+                b_builtins[val.__name__] = val.__name__ in sys.builtin_module_names
+                if hasattr(val, '__file__'):
+                    #filenames[val.__name__] = val.__file__
+                    pass
+                #else:
+                #    filenames[val.__name__] = val.__file__
+            else:
+                aliasnames[val.__name__].append(name)                
         
-    if x in sys.builtin_module_names:        
-        print(f"{x:20} builtin module  {fn:40}")        
-        #pass
-    else:
-        #if fn=="":
-        print(f"{x:20} standard module {fn:40}")
-## builtin module without __file__
-#  zipimport, __main__, mpl_toolkits, zope, typing.io, typing.re,
-#  cython_runtime, _cython_0_29_21, six.moves, __mp_main__
-
-# %%
-for x in sys.modules.keys():
-    if x not in sys.builtin_module_names:
-        print(x)
+    # module object name(alias), 파일, 빌트인 모듈 여부
+    return aliasnames, filenames, b_builtins 
 
 
 # %%
-__builtins__ == sys.modules['builtins']
+imported()
 
 # %%
-__builtin__ == sys.modules['builtins']
+import pandas as pd
 
 # %%
+imported()
+
+# %% [markdown]
+# ### import된 모듈/패키지 제거
+
+# %%
+import sys
+
+del sys.modules['pandas']  # sys.module에 해당하는 패키지와
+del pd                     # 해당 패키지를 가리키는 모든 변수(별칭 포함)
+
+# %%
+imported()
+
+# %% [markdown]
+# ### import된 모듈이 수정된 경우 다시 불러오기
+#
+# * 내장 모듈이 아니라면 `importlib.reload()`로 가능하다
+# * 만약 내장 모듈이라면 모듈을 제거한 후 다시 불러와야 한다.
+
+# %%
+import os
+
+# %%
+imported()
+
+# %%
+import importlib
+importlib.reload(os) 
+
+# %% [markdown]
+# ### 오류를 사전에 방지하는 법
+#
+# 모듈(스크립트)을 만들 때 파이썬 표준 모듈(내장 모듈 포함)과 PyPI에 등록된 제 3자 모듈 이름을 사용하지 말자. 
+
+# %% [markdown]
+# #### 파이썬 내장 모듈 리스트
+
+# %%
+import sys
+" ".join(sys.builtin_module_names)
+
+# %% [markdown]
+# #### 파이썬 표준 라이브러리
+#
+# * 리스트 : [https://docs.python.org/3.8/py-modindex.html](https://docs.python.org/3.8/py-modindex.html)
+
+# %%
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from unicodedata import normalize
+
+df_func = pd.read_html('https://docs.python.org/3.8/py-modindex.html')[0]
+
+df_func.columns = ['_', 'function', 'description']
+
+#df_func['description'].str.len()
+#df_func['function']st.len() > 1
+
+#pysl = df_func[df_func['function'].str.len() > 1].function.str.replace("\\s*[(](Unix|Windows|Tk|Linux|Linux, FreeBSD)[)]", "", regex=True).tolist()
+pysl = df_func[df_func['function'].str.len() > 1].function.str.\
+           replace("\\s*[(](Unix|Windows|Tk|Linux|FreeBSD)(, (Unix|Windows|Tk|Linux|FreeBSD))*[)]", "", regex=True).tolist()
+
+# %%
+" ".join(pysl) # https://stackoverflow.com/questions/6463918/how-can-i-get-a-list-of-all-the-python-standard-library-modules
+
+# %% [markdown]
+# ### PyPI(Python Package Index; )에 등록된 패키지
+#
+# 파이파이(PyPI; Python Package Index; https://pypi.org)는 온라인 코드 저장소로 누구나 패키지를 올릴 수 있다. 
+#
+# 두 가지 종류의 배포가 있다.
+#  
+# * 소스 배포 : 소스
+# * 휠(wheel) 배포 : 소스가 처리되어 작고 빠르게 설치 가능한 배포
+#
+# 전체 리스트는 https:/pypi.org/simple/ 또는 https://www.kaggle.com/rtatman/list-of-pypi-packages 에서 확인할 수 있다. 
+
+# %%
+### PyPI의 패키지 리스트 다운로드
+
+# Download from https://www.kaggle.com/rtatman/list-of-pypi-packages/version/479
+import zipfile
+zip = zipfile.ZipFile(r'C:\Users\Home\Downloads\simple.zip', mode='r')
+dat = zip.read('simple')
+text_html = dat.decode('utf8')
+
+# Url : https://pypi.org/simple/
+import requests 
+text_html = requests.get("https://pypi.org/simple/").text
+
+
+
+import html
+
+from bs4 import BeautifulSoup 
+soup = BeautifulSoup(text_html)  # 'html5lib'
+
+found = soup.findAll('a')
+
+package_names = [x.text for x in found]
+
+package_names
+
+# %%
+import requests
 import json
-json.__file__
+import re       
+import pandas as pd
+
+patt1 = re.compile('from\\s+([A-Za-z_][A-Za-z0-9_.]*)\\s+import\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*$', re.MULTILINE)
+patt2 = re.compile('(?<!from)\\s+[^\\s]+\\s+import\\s+([A-Za-z_][A-Za-z0-9_.]*)\\s*$', re.MULTILINE)
+
+res = []
+
+#npack = 200; mpack = 100
+
+npack = len(package_names)
+mpack = 1000
+
+for ipack, package in enumerate(package_names[:npack]):
+    if ipack % mpack == 0 and ipack != 0:
+        dat = pd.DataFrame(res)
+        dat.to_csv('dat_pypi/dat_pypi_'+"{:06d}".format(ipack)+'.csv')
+        print('* SAVED to '+'dat_pypi_'+"{:06d}".format(ipack)+'.csv')
+        res = []
+    try:
+        url = requests.get('https://pypi.org/pypi/'+package+'/json')
+        text = url.text
+        #print(type(text))
+        dat_pack = json.loads(text)
+    except Exception as e:
+        print(package, str(e))
+        continue    
+    desc = dat_pack['info']['description']
+    f1 = patt1.findall(desc)
+    f2 = patt2.findall(desc)    
+    name_import = ''
+    if len(f1) > 0:
+        name_import = f1[0][0].split('.')[0]
+    elif len(f2) > 0:
+        name_import = f2[0].split('.')[0]    
+    if len(f1) or len(f2):
+        print(package, name_import)
+        res.append((package, name_import))
+
+dat = pd.DataFrame(res)
+dat.to_csv('dat_pypi/dat_pypi_'+"{:06d}".format(ipack)+'.csv')
+print('* SAVED to '+'dat_pypi_'+"{:06d}".format(ipack)+'.csv')
+
 
 # %%
-print(json.__doc__)
+# stdlib-list란 패키지도 있지만 버전 3.5까지만 업데이트 되었다.
+
+# %%
+# #%pip install stdlib-list
+
+# %%
+import stdlib_list
+
+# %%
+stdlib_list.stdlib_list(version="3.8")
+
+# %%
+# stdlib_list.fetch.fetch_list(version="3.8")
+
+# %% [markdown]
+# ### 사용 가능한 모듈/패키지 확인
+
+# %% [markdown]
+# #### pip 또는 conda로 설치한 패키지 확인
+
+# %%
+# %conda list
+# %pip list
+
+# %% [markdown]
+# #### import 가능한 모든 모듈/패키지 확인 
+# 1. `help('modules')` : jupyter notebook에서는 다운됨
+
+# %%
+help('modules')  # import 가능한 모든 모듈
+
+# %% [markdown]
+# 2. 패키지 `pkgutil` 활용 
+
+# %%
+import pkgutil
+
+def show_acceptable_modules():
+    line = '-' * 100
+    print('{}\n{:^30}|{:^20}\n{}'.format(line, 'Module', 'Location', line))
+    for entry in pkgutil.iter_modules():
+        print('{:30}| {}'.format(entry[1], entry[0].path))
+        
+show_acceptable_modules()
+
+# %%
+set(remains) - set(remains2)
+
+# %%
 
 # %% [markdown]
 # #### `import` 순서
 #
 # 현재 디렉토리에 `time.py`라는 모듈을 만들었다고 해보자. 현재 디렉토리에 같은 이름의 파일을 생성할 수 없으므로 `import time`를 하면 `time.py`를 임포트하게 될 것이다. 정말 그럴까?
 #
-# 다른 디렉토리에도 `time.py`라는 파일이 존재할 수 있다. 그리고 내장 모듈 또는 파이썬 표준 라이브러리에 `time`이라는 이름의 모듈 또는 패키지가 존재할 수도 있다. 따라서 `import`가 라이브러리 또는 모듈을 찾는 순서가 중요하다.
+# 다른 디렉토리에도 `time.py`라는 파일이 존재할 수 있다. 그리고 내장 모듈 또는 파이썬 표준 라이브러리에 `time`이라는 이름의 모듈 또는 패키지가 존재할 수도 있다. 따라서 `import`가 모듈을 찾는 순서가 중요하다.
 #
-# `import`는 먼저 이미 임포트가 된 모듈/패키지를 사전 형식으로 저장하고 있는 `sys.modules`에서 찾는다. 만약 이미 임포트되어 있다면 이미 임포트되어 있는 대상을 사용한다(예. `import numpy as np`). 두 번째로 `sys.builtin_module_names`에서 이름을 찾는다. 만약 내장 모듈이라면 내장 모듈을 임포트한다. 그리고 마지막으로 `sys.path`를 확인한다. `sys.path`에는 파이썬이 모듈 또는 라이브러리를 찾을 때 확인하는 폴더가 순서대로 저장되어 있다. 보통 가장 첫 번째 원소는 현재 디렉토리이고, 파이썬 표준 라이브러리의 내장 모듈을 저장하는 폴더(보통 `Lib`)도 포함된다.
+# `import`는 먼저 이미 임포트가 된 모듈/패키지를 사전 형식으로 저장하고 있는 `sys.modules`에서 `import` 대상을 찾는다. 만약 이미 임포트되어 있다면 이미 임포트되어 있는 대상을 사용한다[^already_import]. 두 번째로 `sys.builtin_module_names`에서 이름을 찾는다. 만약 내장 모듈이라면 내장 모듈을 임포트한다. 그리고 마지막으로 `sys.path`를 확인한다. `sys.path`에는 파이썬이 모듈 또는 라이브러리를 찾을 때 확인하는 폴더가 순서대로 저장되어 있다.[^syspath] 보통 `sys.path`의 가장 첫 번째 원소는 현재 실행하는 모듈이 존재하는 디렉토리[^currentwd]이고, `sys.path`에는 파이썬 표준 라이브러리의 내장 모듈을 저장하는 폴더(보통 `Lib`)도 포함된다.
 #
 # 그렇다면 `time.py`는 몇 번째 순서인가? 1. `sys.modules` 2. `sys.builtin_module_names` 3. `sys.path`
-# `time.py`가 현재 디렉토리에 있으므로 3. `sys.path`의 첫 번째 원소에 해당한다. 하지만 `time`은 보통 1번과 2번에 모두 해당한다. 따라서 임포트가 되지 않는다(저자는 `sys.modules`와 `sys.builtin_module_names`에서 `time`을 삭제해보았지만 그래도 임포트할 수 없었다.)
+# `time.py`가 현재 디렉토리에 있으므로 3. `sys.path`의 첫 번째 원소에 해당한다. 하지만 `time`은 보통 1번과 2번에 모두 해당한다. 따라서 임포트가 되지 않는다.[^importtry]
 #
-# 같은 파이썬 표준 라이브러리에 속하지만 `os`는 내장 모듈이 아니다. 그래서 현재 디렉토리에 `os.py`가 있을 경우 1번에서 `os`를 삭제하면 현재 디렉토리의 `os.py`를 임포트할 수 있다. 
+# 같은 파이썬 표준 라이브러리에 속하지만 `os`는 내장 모듈이 아니다. 그래서 현재 디렉토리에 `os.py`가 있을 경우 1번에서 `os`를 삭제하면 현재 디렉토리의 `os.py`를 임포트할 수 있다. 이때 주의할 점은 이렇게 `os.py`를 임포트하면 파이썬이 내부적으로 쓰는 `os`와 현재 우리가 쓰는 `os`는 서로 다른 모듈이 된다.
+#
+# [^syspath]: `sys.path`의 디렉토리는 파이썬을 설치할 때 설정 사항이 반영되어 있거나 `PYTHONPATH`라는 운영체제 환경변수가 반영되어 결정된다.
+#
+# [^already_import]: `import numpy as np`와 같이 별칭(alias)을 사용할 때에도 마찬가지이다.
+#
+# [^currentwd]: 보통 현재 실행 중인 모듈을 포함하는 디렉토리는 현재 작업 디렉토리(`os.getcwd()`의 결과)가 된다. 하지만 `os.chdir()`로 현재 작업 폴더를 바꿔도 `sys.path[0]`은 변경되지 않는다. 만약 `python ../test.py`와 같이 모폴더의 모듈을 실행하면 현재 디렉토리(`os.getcwd()`)와 모듈을 포함하는 디렉토리(`sys.path[0]`)가 다르다.
+#
+# [^importtry]: 저자는 `sys.modules`와 `sys.builtin_module_names`에서 `time`을 삭제해보았지만 그래도 임포트할 수 없었다.
 
 # %%
-'os' in sys.modules.keys()
-
-# %%
-'os' in sys.builtin_module_names
-
-# %%
-del sys.modules['os']
-
-# %%
-import os
-
-# %%
-
-# %%
-'time' in sys.modules.keys()
-
-# %%
-del sys.modules['os']
-del os
-
-# %%
-'os' in sys.builtin_module_names
+import sys
+sys.path[0]
 
 # %%
 import os
+os.getcwd() # get current working directory
 
 # %%
-import itertools
+os.chdir("R") # change directory
 
 # %%
-del sys.modules['itertools']
-del itertools
-
-# %%
-sys.builtin_module_names
-
-# %%
-'itertools' in sys.builtin_module_names
-
-# %%
-sys.builtin_module_names = tuple((x for x in sys.builtin_module_names if x != 'itertools'))
-
-# %%
-import itertools
+os.getcwd()
 
 # %%
 import sys
 sys.path
 
+# %% [markdown]
+# #### 패키지냐? 모듈이냐?
+#
+# 패키지는 패키지 이름의 디렉토리를 구성하고 그 안에 `__init__.py`가 있어서 패키지를 `import` 하면 우선 `__init__.py`를 실행한다. 모듈은 모듈 이름의 `.py` 파일로 존재한다. 만약 같은 디렉토리 안에 동일한 이름의 모듈과 패키지가 동시 존재한다면 무엇이 `import` 될까? 저자의 실험 결과에 따르면 패키지가 `import`  된다.
+
+# %%
+import sillyenough
+
+# %% [markdown]
+# 만약 제3자 패키지와 같은 이름의 패키지가 실행 폴더에 있다면 어떨까? 저자는 현재 환경에 제3자 패키지 `numpy`를 설치하였다. 그리고 실행 폴더에 `numpy`라는 폴더를 만들었다. `import numpy` 결과를 보자.
+
+# %%
+import numpy
+
+# %% [markdown]
+# 저자가 만든 폴더가 임포트되었다. 문제는 여기에 그치지 않는다. 내부적으로 `numpy`를 임포트하는 `pandas`를 임포트 해보자.
+
+# %%
+import pandas
+
+
+# %%
+
+# %%
+
 # %%
 
 # %%
@@ -176,6 +472,71 @@ sys.path
 # %%
 
 # %%
+def source(path):
+    if path[-1]=='/' or path[-1]=='\\': 
+        path = path[:-1]
+    path0, packagename = os.path.split(path)
+    path0 = os.path.abspath(path0)
+    print(f"path={path0}, module/package = {packagename}")
+    if os.path.isfile(path):
+        #print("This is file")
+        if packagename[-3:] == ".py":
+            filename = packagename
+            packagename = packagename[:-3]
+        print(packagename)
+        
+        if packagename in sys.builtin_module_names:
+            print(f"!! PACKAGE {packagename} is one of builtin modules")
+            print(f"!! Here is the list of builtin modules")
+            print(" ".join(sys.builtin_module_names))
+            raise ValueError("Use different filename")
+
+        if packagename in sys.modules.keys():
+            if hasattr(sys.modules[packagename], "__file__"):
+                print(f"!  PACKAGE {packagename} is already imported from {sys.modules[packagename].__file__}")
+            else:
+                print(f"!  PACKAGE {packagename} is already imported")
+            raise ValueError("Remove the package from sys.module or use different name")
+        
+        if sys.path[0] != path0 and os.path.isfile(os.path.join(sys.path[0], filename)):
+            print(f'Filename {filename} Exist in the sys.path[0] = {sys.path[0]}')
+            raise ValueError("Better use Different Name")
+        
+        sys.path.insert(1, path0)        
+        module = __import__(packagename)
+        sys.path.pop(1)
+        return module
+            
+    elif os.path.isdir(path):
+        pass
+    else:
+        raise OSError("Not Found")
+    
+
+
+# %%
+hasattr(sys.modules["os"], "__file__")
+
+# %%
+"abcd.py"[:-3]
+
+# %%
+source("time.py")
+
+# %%
+source("time.py")
+
+# %%
+source("R/check_happy.py")
+
+# %%
+source("R/check_happy2.py")
+
+# %%
+import pandas
+
+# %%
+# 만약 패키지와 모듈이 같은 폴더 내에 있다면, 모듈 먼저
 
 # %%
 #https://www.it4nextgen.com/purpose-of-channels-in-anaconda/
@@ -198,12 +559,6 @@ sys.path
 # 파이썬에서 패키지 설치는 보통 운영체제의 커맨드 라인(유닉스의 쉘 또는 윈도우의 명령 프롬프트)에서 진행된다. 파이썬에서 패키지를 설치하는 방법은 여러 가지이지만, 가장 기본적인 방법은 `pip`이라는 패키지를 사용하는 것이다. PiP은 **P**iP **i**nstalls **P**ackages의 약자로 패키지를 설치하는 무엇이라는 의미이다. 그런데 `pip` 역시 패키지이다. 그렇다면 `pip`은 어떻게 설치하는가? 그렇기 때문에 보통 패키지 `pip`은 파이썬과 함께 배포된다. 만약 `pip`이 없다면 https://bootstrap.pypa.io/get-pip.py에서 `pip`을 다운로드하는 모듈을 다운로드할 수 있다.
 #
 #
-
-# %%
-
-# %%
-import sys
-sys.path
 
 # %%
 
@@ -324,7 +679,7 @@ sys.path
 # |모듈/스크립트 실행| 운영체제 명령프롬프트/쉘       |`python filename.py` | `Rscript filename.R` |
 
 # %% [markdown]
-# 파이썬의 경우 패키지를 실행하는 것과 모듈을 실행하는 것이 모두 `import` 문(statement)로 구현된다. 그리고 패키지를 운영체제 커맨드 라인에서 실행할 수 있다. 그런데 패키지를 `import`할 때는 보통 패키지의 함수나 객체를 활용하려는 것이지 패키지가 무엇인가를 주도적으로 실행하길 바라지 않는다. 그럼에도 파이썬은 운영체제 커맨트 라인에서 패키지를 실행할 수 있다. 이 경우에는 단순히 함수나 객체를 **정의**하는 것을 바라는 것이 아닐 것이다. 왜냐하면 그 경우에는 어떤 패키지를 실행해도 아무 결과없이 종료될 것이기 때문이다.
+# 파이썬의 경우 패키지를 실행하는 것과 모듈을 실행하는 것이 모두 `import` 문(statement)로 구현된다. 그리고 패키지를 운영체제 커맨드 라인에서 실행할 수 있다. 그런데 파이썬 내에서 패키지를 `import`할 때는 보통 패키지의 함수나 객체를 활용하려는 것이지 패키지가 무엇인가를 주도적으로 실행하길 바라지 않는다. 그럼에도 파이썬은 운영체제 커맨트 라인에서 패키지를 실행할 수 있다. 이 경우에는 단순히 함수나 객체를 **정의**하는 것을 바라는 것이 아닐 것이다. 왜냐하면 그 경우에는 어떤 패키지를 실행해도 아무 결과없이 종료될 것이기 때문이다.
 #
 # 그래서 파이썬에서는 `import`로 다른 모듈 또는 콘솔에서 수입(import)되는 경우와 커맨드 라인에서 직접 실행되는 경우를 구분할 수 있는 방법이 있다. 자동으로 생성되는 `__name__`이라는 전역 변수는 `import`되는 경우에는 해당 모듈의 이름이 저장되지만, 운영체제 커맨드 라인에서 실행될 때에는 `__main__`이라는 문자열이 저장된다. 그래서 많은 파이썬 모듈에서 다음과 같은 부분을 확인할 수 있다.
 #
@@ -375,38 +730,8 @@ sys.path
 # # echo %PATH%
 # # echo $PATH
 
-# %%
-import itertools
-
-# %%
-count = itertools.count
-
-itertools.count = 10
-
-# then later
-itertools.count = count
-
-# %%
-itertools.count
-
-# %%
-import itertools
-count = itertools.count
-
-itertools.count = 10
-
-
-import sys
-
-del sys.modules['itertools']
-del itertools
-
-import itertools
-
-itertools.count
-
 # %% [markdown]
-# ## 패키지 관리 관련
+# ## 사용 가능한 가상 환경
 #
 # reference 
 #   - ref/A Guide to Python’s Virtual Environments | by Matthew Sarmiento | Towards Data Science.pdf
@@ -477,6 +802,8 @@ sys.executable
 # #!pip show numpy
 
 # %%
+
+# %%
 import numpy
 print(numpy.__version__)
 
@@ -503,17 +830,7 @@ print(np.__name__) # 임포트된 모듈의 이름
 
 # 패키지내 각 디렉토리에는 __init__.py 가 반드시 존재해야 합니다. __init__.py 파일은 비어있을수도 있고, 패키지내에 포함된 모듈들의 정보를 제공하기도 합니다.
 
-# !!!TODO https://realpython.com/python-modules-packages/
-#         https://wikidocs.net/1418
-#         https://docs.python.org/3.8/tutorial/modules.html#id2
-# 
-
-# https://realpython.com/lessons/python-modules-packages-overview/
-# modular programming
-#   - simplicity, maintainablitiy, reusability, scoping
-# 
-#   - module search path `sys.path` <- PYTHONPATH or builtin defaults
-#     
+    
 #     1. builtins(import builtins) : 
 #        The compiled-in module names are in sys.builtin_module_names. 
 #        For all importable modules, see pkgutil.iter_modules
@@ -660,222 +977,23 @@ dir(itertools)
 import numpy as np
 
 # %%
-'np' in set(globals())
+'np' in globals()
 
 # %%
-'numpy' in set(globals())
+'numpy' in globals()
 
 # %%
 np.__name__ # alias(별칭)이 아니라 원래 이름
+
+# %%
+# sys.modules에는 이미 임포트된 모듈이
+# 딕셔너리로 저장된다. 이때 키는 (별칭이 아니라) 원래 이름이다.
 
 # %%
 'np' in sys.modules.keys()
 
 # %%
 'numpy' in sys.modules.keys()
-
-# %%
-
-
-
-# %%
-import Ax_rutils
-import sys
-
-# listing all packages imported
-modulenames = set(sys.modules) & set(globals())
-allmodules = [sys.modules[name] for name in modulenames]
-print(allmodules)
-
-d_allmodules = {name:sys.modules[name] for name in modulenames}
-print(d_allmodules)
-d_allmodules.keys()
-# %%
-import numpy as np
-
-# %%
-np
-
-# %%
-numpy
-
-# %%
-import pandas as pd
-
-# %%
-set([1,2,3])
-
-# %%
-pandas
-
-# %%
-pd
-
-# %%
-type(globals())
-
-# %%
-
-# %%
-import re
-re.match('^_\\d{1,}$', '_80')
-
-# %%
-
-# %%
-from pprint import pprint
-
-# %%
-from np import any # import numpy as np 와 같은 alias를 쓸 수 없음
-# 그래서 이건 어디서 알 수 있다?
-# sys.modules.keys()
-
-# %%
-pprint()
-
-# %%
-# ?pprint
-
-# %%
-pprint(sorted(list(sys.modules.keys()))) # importable modules???
-
-# %%
-import pprint
-import sys
-
-# %%
-pprint.pprint(sorted(list(sys.modules.keys())))
-
-# %%
-import types
-import sys
-def imports():
-    modules = list(sys.modules.keys())    
-    for name, val in globals().items():
-        if isinstance(val, types.ModuleType):
-            if val.__name__ in modules: # 이건 불필요한가???
-            #if True:
-            #if not re.match('^_\\d{1,}$', name): # and not re.match('^__.*__$', name):
-            # jupyter notebook의 output _1, _2, ...와
-            # __builtins__, __builtins__는 제외
-                yield (name, val.__name__)
-                
-{x for x in imports()}
-
-# %%
-import math
-import check_happy
-
-# %%
-
-# %%
-sys.builtin_module_names
-
-# %%
-import sys
-
-sys.a = 3
-
-import importlib
-importlib.reload(sys)
-
-print(sys.a)
-
-sys.builtin_module_names
-
-del sys.modules['sys']
-del sys
-
-# Hmmm... There no way to import sys again?
-
-import sys # works fine here
-print(sys.a)
-
-# %%
-sys.builtin_module_names = None
-sys.a = 3
-import sys
-print(sys.a)
-
-# %%
-del sys.modules['sys']
-del sys
-import sys
-
-# %%
-sys.builtin_module_names
-
-# %%
-import sys
-import types
-def imports():
-    modules = list(sys.modules.keys())
-    aliasnames = {}
-    filenames = {}
-    b_builtins = {}
-    for name, val in globals().items():
-        if isinstance(val, types.ModuleType):
-            if val.__name__ not in aliasnames:
-                aliasnames[val.__name__] = [name]                
-                filenames[val.__name__] = getattr(val, '__file__', None)
-                b_builtins[val.__name__] = val.__name__ in sys.builtin_module_names
-                if hasattr(val, '__file__'):
-                    #filenames[val.__name__] = val.__file__
-                    pass
-                #else:
-                #    filenames[val.__name__] = val.__file__
-            else:
-                aliasnames[val.__name__].append(name)                
-        
-    return aliasnames, filenames, b_builtins
-
-
-
-# %%
-import csv
-
-# %%
-import numpy
-
-# %%
-imports()
-
-# %%
-sys.builtin_module_names
-
-# %%
-# Python Module Index
-# https://docs.python.org/3.8/py-modindex.html
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-__builtins__.print == print
-
-# %%
-with open("C:\\Users\\Home\\miniconda3\\envs\\rtopython2-pip\\lib\\csv.py", 'rt') as f:
-    for x in f.readlines():
-        print(x, end='')
-
-# %%
-[(name, val.__name__) for name, val in globals().items() if isinstance(val, types.ModuleType)]
-
-# %%
-
-# %%
-sys.modules
-
-# %%
-dir(sys.modules['builtins'])
-
-# %%
-sys.modules.keys()
 
 
 # %%
@@ -1028,6 +1146,9 @@ sys.modules['builtins']
 ### 하지만 어디에? (conda installed? pip installed? ...)
 
 # %%
+# %conda list --revisions
+
+# %%
 # listing available packages
 # from https://stackoverflow.com/questions/5632980/list-of-all-imports-in-python-3
 import shutil
@@ -1045,12 +1166,6 @@ show_acceptable_modules()
 ##               conda list --revisions
 
 
-# !!! modules created by modifying the PYTHONPATH (e.g. local project imports)
-
-# built-in modules, available modules, loaded modules
-sys.builtin_module_names
-show_acceptable_modules() # load 가능한 packages... conda list?
-sys.modules  # list of imported modules
 
 # %%
 # pip freeze
@@ -1096,11 +1211,6 @@ print([x for x in dir() if (not x.startswith('_') and not x in ['In', 'Out', 'ex
 #'xxx'.startswith('xxx')
 
 # %%
-## locals() 활용하기
-## !!! locals(), globals(), vars()의 차이?
-# https://stackoverflow.com/questions/7969949/whats-the-difference-between-globals-locals-and-vars
-# https://stackoverflow.com/questions/32003472/difference-between-locals-and-globals-and-dir-in-python
-## 
 
 # %%
 l = locals(); 
@@ -1113,10 +1223,7 @@ l = locals();
 # ## 2.6 재현성을 위해 python 정보 남기기
 
 # %%
-import sys
-sys.platform
-
-# %%
+# 파이썬 버전
 print(sys.version)
 
 
@@ -1124,25 +1231,10 @@ print(sys.version)
 # ## 그밖에
 
 # %%
-import sys
-import socket
-import random
-import pwd  # works only on mac and linux?
-import os
-hostname = socket.gethostname()
+import get_pcinfo
 
-def get_username():
-    return pwd.getpwuid( os.getuid() )[ 0 ]    
+get_pcinfo.main()
 
-un = get_username()
-
-print('hostname = {}, user_name = {}'.format(hostname, un))
-pcIdentity = un+'@'+hostname
-
-# %% [markdown]
-# * windows에서는 pwd 모듈이 없음
-# * `sys.platform`이 `win`으로 시작하면 다른 방법을 강구해야?
-# !!! windows에서 pwd 모듈을 대체하는 방법???
 # %% [markdown]
 #
 # # conda installable 
@@ -1167,9 +1259,6 @@ sys.byteorder
 sys.builtin_module_names[0:5]
 #A tuple of strings giving the names of all modules that are compiled into this Python interpreter. 
 # (This information is not available in any other way — modules.keys() only lists the imported modules.)
-
-# %%
-sys.modules.keys() # import numpy 를 하면 numpy.random도 사용할 수 있다 # imported modules
 
 # %%
 
@@ -1338,11 +1427,7 @@ site.USER_SITE
 # %%
 
 # %%
-# 파이썬 모듈 Index : https://docs.python.org/3.8/py-modindex.html
 
-
-# %%
-sys.modules
 
 # %%
 # # 지워버리기?
@@ -1353,7 +1438,7 @@ m = sys.modules.pop('re')
 # %%
 import sys
 import types
-def imports():
+def imported():
     modules = list(sys.modules.keys())
     aliasnames = {}
     filenames = {}
@@ -1399,14 +1484,7 @@ dir(m)
 # %%
 
 # %% [markdown]
-# PyPI(Python Package Index): online code repository, anyone anywhere can upload packages
 #
-# https://pypi.org
-#
-# * distribution package - a bundled version of your package which is ready to install
-#   - source distribution : source 
-#   - wheel distribution : slightly processed, smaller, faster, ...
-#   
 #
 
 # %%
@@ -1451,11 +1529,152 @@ builtins.__IPYTHON__
 __IPYTHON__
 
 # %%
+
+# %% [markdown]
+# # ===========
+
+# %% [markdown]
+# ## 참고 자료
+#
+# ### Reading list
+#
+# * https://realpython.com/python-modules-packages/
+# * https://wikidocs.net/1418
+# * https://docs.python.org/3.8/tutorial/modules.html#id2
+#
+#
+#
+
+# %% [markdown]
+# ## locals() 활용하기
+#
+# ### locals(), globals(), vars()의 차이?
+# * https://stackoverflow.com/questions/7969949/whats-the-difference-between-globals-locals-and-vars
+# * https://stackoverflow.com/questions/32003472/difference-between-locals-and-globals-and-dir-in-python
+#
+
+# %%
 for x in dir(sys.modules['builtins']):
     if not getattr(sys.modules['builtins'], x) == eval(x):
         print(x, getattr(sys.modules['builtins'], x) == eval(x))
 
 # %%
-dir()
 
 # %%
+### stdlib_list와 python module list 비교
+
+m = ['_abc',
+'_ast',
+'_asyncio',
+'_bisect',
+'_blake2',
+'_bootlocale',
+'_bz2',
+'_codecs',
+'_codecs_cn',
+'_codecs_hk',
+'_codecs_iso2022',
+'_codecs_jp',
+'_codecs_kr',
+'_codecs_tw',
+'_collections',
+'_collections_abc',
+'_compat_pickle',
+'_compression',
+'_contextvars',
+'_crypt',
+'_csv',
+'_ctypes',
+'_ctypes_test',
+'_curses',
+'_curses_panel',
+'_datetime',
+'_dbm',
+'_decimal',
+'_elementtree',
+'_frozen_importlib',
+'_frozen_importlib_external',
+'_functools',
+'_gdbm',
+'_hashlib',
+'_heapq',
+'_imp',
+'_io',
+'_json',
+'_locale',
+'_lsprof',
+'_lzma',
+'_markupbase',
+'_md5',
+'_multibytecodec',
+'_multiprocessing',
+'_opcode',
+'_operator',
+'_osx_support',
+'_pickle',
+'_posixshmem',
+'_posixsubprocess',
+'_py_abc',
+'_pydecimal',
+'_pyio',
+'_queue',
+'_random',
+'_sha1',
+'_sha256',
+'_sha3',
+'_sha512',
+'_signal',
+'_sitebuiltins',
+'_socket',
+'_sqlite3',
+'_sre',
+'_ssl',
+'_stat',
+'_statistics',
+'_string',
+'_strptime',
+'_struct',
+'_symtable',
+'_testbuffer',
+'_testcapi',
+'_testimportmultiple',
+'_testinternalcapi',
+'_testmultiphase',
+'_threading_local',
+'_tkinter',
+'_tracemalloc',
+'_uuid',
+'_warnings',
+'_weakref',
+'_weakrefset',
+'_xxsubinterpreters',
+'_xxtestfuzz',
+'antigravity',
+'genericpath',
+'idlelib',
+'ntpath',
+'nturl2path',
+'opcode',
+'posixpath',
+'pydoc_data',
+'pyexpat',
+'sre_compile',
+'sre_constants',
+'sre_parse',
+'this',
+'xxlimited',
+'xxsubtype']
+for i in range(0, len(m)):
+    module = m[i]
+    #print(i, module)
+    try:
+        __import__(module)
+        print(module, module in sys.builtin_module_names)
+    except Exception  as e:
+        pass
+        #print(e, i, module)
+        #print(module in sys.builtin_module_names)
+    
+# 19  _crypt
+# 23 _curses
+#
