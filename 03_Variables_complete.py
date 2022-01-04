@@ -342,7 +342,17 @@ print(inspect.getsource(np.sum)) # 다른 모듈에서 정의된 함수
 
 # %% [markdown]
 # # 3.2 파이썬의 데이터타입(자료형)
-# # 3.2.1 데이터타입(Data types
+
+# %% [markdown]
+# # 3.2.1 데이터타입(Data types)
+
+# %% [markdown]
+# 파이썬의 기본적인(내장 모듈에서 정의된) 데이터 타입은 https://docs.python.org/ko/3.8/library/index.html 에서 확인할 수 있습니다. `dir(__builtins__)`을 통해서도 모듈 빌트인(`builtins`)에 정의된 클래스나 함수를 확인할 수 있습니다. 앞에서 설명했듯이 내장 모듈에 정의된 클래스, 객체, 함수 들은 파이썬 실행 후 바로 사용할 수 있습니다. 아마도 파이썬에서 `from builtins import *`를 하는 듯 합니다. 
+
+# %% [markdown]
+# 파이썬 사이트에는 숫자형(`int`, `float`, `complex`), 문자열(`str`), 시퀀스형(`list`, `tuple`), 매핑형(`dict`), 집합형(`dict`, `frozenset`) 등이 소개 되어 있는데, 이 중에 데이터 타입은 논리형(`bool`), 숫자형과 문자열(파이썬 사이트에는 텍스트 시퀀스형이라고 표기됨)입니다.
+
+# %% [markdown]
 # # 3.2.2 변수의 데이터 타입 확인하기
 
 # %%
@@ -358,8 +368,6 @@ print(inspect.getsource(np.sum)) # 다른 모듈에서 정의된 함수
 # 날짜(Date)              inherits( , "Date")      as.Date()
 # 날짜시간벡터(POSIXct)   inherits( , "POSIXct")   as.POSIXct()
 # 날짜시간리스트(POSIXlt) is.integer( , "POSIXlt)  as.POSIXlt()
-
-# %%
 
 # %%
 # 파이썬
@@ -378,7 +386,7 @@ print(inspect.getsource(np.sum)) # 다른 모듈에서 정의된 함수
 # isinstance는 데이터타입 뿐 아니라 클래스 판별에서도 쓰인다.
 
 # %% [markdown]
-# **범주**, **순위범주**는 파이썬의 내장 모듈 또는 표준 라이브러리로 구현할 수 없다. 보통 `pandas`라는 제3자 패키지를 사용한다. 
+# R과 비교했을 때, R에서 기본적으로 제공하는 범주, 순위범주, 날짜, 날짜시간 데이터에 대해 파이썬은 파이썬 표준 모듈 또는 제3자 패키지를 활용해야 합니다. **날짜**, **날짜시간**, **시간**은 파이썬 표준 모듈 `datetime`을 사용해야 하며, **범주**, **순위범주**는 파이썬의 내장 모듈 또는 표준 라이브러리로 구현할 수 없습니다. 보통 `pandas`라는 제3자 패키지를 사용해야 합니다. 
 
 # %%
 import pandas as pd
@@ -395,7 +403,6 @@ isinstance(x,pd.Categorical)
 ## "POSIXct" %in% class(x6)
 # inherits(x6, "POSIXct")
 
-
 import datetime
 import pandas as pd
 x1 = 23; print(type(x1))
@@ -405,10 +412,14 @@ x4 = pd.Categorical(['Hi', 'Lo', 'Lo']); print(type(x4))
 x5 = datetime.date(2020, 1, 1); print(type(x5))
 x6 = datetime.datetime(2020, 1, 1, 12, 11, 11); print(type(x6))
 
+# %% [markdown]
+# 파이썬에서 문자열을 **텍스트 시퀀스**라고 부르는 이유는 문자열을 배열처럼 취급하기 때문입니다.
+
 # %%
+len(x3), x3[0], x3[1]
 
 # %% [markdown]
-# ## 타입 어노테이션
+# ### 타입 어노테이션
 #
 # 타입 어노테이션(Type Annotation)은 처리하는 데이터와 메서드에서 사용하는 데이터에 대한 타입 힌트를 주는 것이다(강제하는 것이 아니므로 주의를 요한다. 타입이 타입 어노테이션과 다르더라도 오류가 발생하진 않는다).
 #
