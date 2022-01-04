@@ -54,7 +54,7 @@ get_pcinfo.main()
 
 윈도우 명령 프롬프트(`cmd`)에서 명령를 입력하여 환경변수를 설정할 수도 있다.
 
-```{cmd}
+```{cmd language="cmd"}
 rem 현재 환경 변수 출력하기 위해서는 path를 쓴다.
 path 
 

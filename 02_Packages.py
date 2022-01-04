@@ -88,14 +88,15 @@ matplotlib.pyplot
 #
 # `import`는 필요한 패키지, 모듈을 불러올 때 쓴다. 예를 들어 `math` 모듈을 불러오려면 `import math`라고 쓴다. `import`의 대상은 다음과 같이 나눠볼 수 있다.
 #
-# * 내장 모듈 : C로 작성된 모듈. Python 인터프리터에 결합되어 있다.
-# * 파이썬 표준 라이브러리의 패키지와 모듈 
+# * **내장 모듈** : C로 작성된 모듈. Python 인터프리터에 결합되어 있다.
+# * **파이썬 표준 라이브러리**의 패키지와 모듈
+#   - 파이썬이 설치될 때 자동적으로 설치되는 모듈
 #   - 파이썬 표준 라이브러리에 포함된 패키지와 모듈 리스트는  https://docs.python.org/3.8/library/index.html 에서 확인할 수 있다.
 #   - 일부 내장 모듈을 포함한다.
 #   - 외장 모듈은 보통 파이썬 폴더 안의 `Lib` 폴더에서 찾을 수 있다.
 #   - 내장 모듈 빌트인즈(`builtins`)에는 내장 함수(built-in function)들이 정의되어 있다. `__builtin__`, `__builtins__`은 모두 내장 모듈 `builtins`를 가리킨다. 내장 모듈의 함수는 `builtins.print`로 쓸 필요없이 그냥 `print`로 쓸 수 있다.
 #   - 파이썬을 실행한 후 바로 `dir()`를 쳐보면 사용할 수 있는 모듈은 `builtins` 뿐이다.
-# * 직접 만든 모듈 : 자신이 만든 모듈도 `import` 문으로 불러들일 수 있다. 이때 모듈 파일의 위치가 중요하다. 
+# * **직접 만든 모듈** : 자신이 만든 모듈도 `import` 문으로 불러들일 수 있다. 이때 모듈 파일의 위치가 중요하다. (예를 들면, `python C:/test.py`하면 `C:/`의 모듈)
 # * 제3자 패키지
 #   - 파이썬 설치 후 `pip install` 등을 통해 설치된 제3자 패키지는 보통 파이썬 폴더의 안의 `Lib/site-packages/`에서 찾을 수 있다.
 #   
@@ -108,6 +109,7 @@ matplotlib.pyplot
 # 2. 패키지에서 서브패키지 불러들이기 `import matplotlib.pyplot`, `from matplotlib import pyplot`
 # 3. 패키지/모듈에서 함수 불러들이기 `from numpy import abs`
 # 4. 서브패키지에서 함수 불러들이기 `from matplotlib.pyplot import scatter`
+# 5. 모듈 또는 패키지의 (거의) 모든 함수 불러오기 `from numpy import *`(사실 모든 함수는 아니고 패키지에서 지정한 함수)
 #
 # ##### `as`로 별칭 만들기
 #
@@ -171,6 +173,15 @@ np.__version__
 # %%
 plt.__version__
 
+# %%
+import sys
+for x in sys.builtin_module_names:
+    mod = __import__(x)
+    try:
+        print(mod, mod.__file__)
+    except Exception as e:
+        print(mod)
+
 
 # %% [markdown]
 # ### import된 모듈/패키지 리스트
@@ -190,19 +201,25 @@ def imported():
         # types 역시 마찬가지...
             if val.__name__ not in aliasnames:
                 aliasnames[val.__name__] = [name]                
-                filenames[val.__name__] = getattr(val, '__file__', None)
-                b_builtins[val.__name__] = val.__name__ in sys.builtin_module_names
+                filenames[val.__name__] = getattr(val, '__file__', None)                
                 if hasattr(val, '__file__'):
+                    b_builtins[val.__name__] = False
+                    #filenames[val.__name__] = val.__file__                    
+                else:
+                    b_builtins[val.__name__] = val.__name__ in sys.builtin_module_names
                     #filenames[val.__name__] = val.__file__
-                    pass
-                #else:
-                #    filenames[val.__name__] = val.__file__
             else:
-                aliasnames[val.__name__].append(name)                
+                aliasnames[val.__name__].append(name)                 
         
     # module object name(alias), 파일, 빌트인 모듈 여부
     return aliasnames, filenames, b_builtins 
 
+
+# %%
+import matplotlib
+
+# %%
+import time as tt
 
 # %%
 imported()
@@ -218,6 +235,9 @@ imported()
 
 # %% [markdown]
 # ### import된 모듈/패키지 제거
+
+# %%
+imported()
 
 # %%
 import sys
@@ -242,7 +262,22 @@ imported()
 
 # %%
 import importlib
-importlib.reload(os) 
+importlib.reload(time) 
+# 모듈 다시 불러오기
+# 하지만 내장 모듈은 이런 식으로 다시 불러들일 수 없다.
+
+# %% [markdown]
+# ### 숫자로 시작하는 모듈 불러오기
+
+# %%
+import importlib
+get_pcinfo = importlib.import_module('01_get_pcinfo')
+
+# %%
+get_pcinfo = __import__('01_get_pcinfo')
+
+# %% [markdown]
+# ??? 뭐가 다름? `importlib.import_module`? `__import__`?
 
 # %% [markdown]
 # ### 오류를 사전에 방지하는 법
@@ -289,7 +324,7 @@ pysl = df_func[df_func['function'].str.len() > 1].function.str.\
 # 두 가지 종류의 배포가 있다.
 #  
 # * 소스 배포 : 소스
-# * 휠(wheel) 배포 : 소스가 처리되어 작고 빠르게 설치 가능한 배포
+# * 휠(wheel) 배포(`.whl`) : 소스가 처리되어 작고 빠르게 설치 가능한 배포
 #
 # 전체 리스트는 https:/pypi.org/simple/ 또는 https://www.kaggle.com/rtatman/list-of-pypi-packages 에서 확인할 수 있다. 
 
@@ -395,6 +430,12 @@ stdlib_list.stdlib_list(version="3.8")
 # #### pip 또는 conda로 설치한 패키지 확인
 
 # %%
+# !conda list
+
+# %%
+# %conda list
+
+# %%
 # #!pip list
 # #%pip list
 
@@ -457,6 +498,9 @@ show_acceptable_modules()
 # %%
 import sys
 sys.path[0]
+
+# %%
+sys.path
 
 # %%
 import os
@@ -562,10 +606,6 @@ source("R/check_happy2.py")
 # %%
 
 # %% [markdown]
-#
-
-
-# %% [markdown]
 # ### Python과 R 비교
 #
 # * 패키지/모듈/스크립트 불러오기(Python : packname, filename.py, R: packname, filename.R)
@@ -656,61 +696,6 @@ source("R/check_happy2.py")
 
 # %%
 
-# %% [markdown]
-# ## 사용 가능한 가상 환경
-#
-# reference 
-#   - ref/A Guide to Python’s Virtual Environments | by Matthew Sarmiento | Towards Data Science.pdf
-#
-# * `venv` : 
-#
-# * `pipenv` : https://www.daleseo.com/python-pipenv/
-#
-#    - Install on mac M1
-#      - `brew install pipenv`(-> `02_Packages_pipenv_m1.md`)
-#      - `arch -arm64 brew install pipenv`(-> `02_Packages_pipenv_m1.md`)
-#          - but this is discouraged!(https://pipenv.pypa.io/en/latest/install/#installing-pipenv)
-# * `conda`
-#
-# * `venv`와 `conda`의 가장 큰 차이
-#   - conda는 language-agnostic! (python이 아니라 다른 언어로 씌여진 package도 관리할 수 있고, 
-#
-# * pip : pip is a python package manager
-# * venv : environment manager for Python
-# * conda : language-agnostic package & environment manager
-#   - ensure dependecies are satisfied
-#   위의 세 개 비교 : https://conda.io/projects/conda/en/latest/commands.html#conda-vs-pip-vs-virtualenv-commands
-#
-#
-
-# %%
-#https://www.it4nextgen.com/purpose-of-channels-in-anaconda/
-#**Conda Channels** are basically the locations where **packages are stored**. 
-#If there is a need of a **package that is other than the defaults**, 
-#the developers can also create their own channels as there is a method available in the Anaconda. 
-#The channels Anaconda Channel and the R channel are two of the 10 official repositories present in Anaconda. 
-#10 official repositories???
-#You can understand its purpose with the fact that conda channels serve as the base for hosting and managing packages. 
-#Anaconda Navigator is a phenomenal platform for developers to launch multiple applications and manage them with ease.
-
-# conda cheat sheet
-# https://docs.conda.io/projects/conda/en/4.6.0/_downloads/52a95608c49671267e40c689e0bc00ca/conda-cheatsheet.pdf
-
-# %% [raw]
-# D:\pipenv\test>pipenv --python 3.8
-# Creating a virtualenv for this project...
-# Pipfile: D:\pipenv\test\Pipfile
-# Using C:/Users/Home/AppData/Local/Programs/Python/Python38/python.exe (3.8.10) to create virtualenv...
-# [====] Creating virtual environment...created virtual environment CPython3.8.10.final.0-64 in 5627ms
-#   creator CPython3Windows(dest=C:\Users\Home\.virtualenvs\test-SXprqnij, clear=False, no_vcs_ignore=False, global=False)
-#   seeder FromAppData(download=False, pip=bundle, setuptools=bundle, wheel=bundle, via=copy, app_data_dir=C:\Users\Home\AppData\Local\pypa\virtualenv)
-#     added seed packages: pip==21.1.2, setuptools==57.0.0, wheel==0.36.2
-#   activators BashActivator,BatchActivator,FishActivator,PowerShellActivator,PythonActivator,XonshActivator
-#
-# Successfully created virtual environment!
-# Virtualenv location: C:\Users\Home\.virtualenvs\test-SXprqnij
-# Creating a Pipfile for this project...
-
 # %%
 
 # %% [markdown]
@@ -729,182 +714,6 @@ sys.executable
 # %%
 
 # %%
-
-# %% [markdown]
-# ## 2.2 패키지 관련 정보
-
-# %%
-# #%pip show numpy
-
-# %%
-#쥬피터 노트북 안에서 !pip를 쓰지 않도록 주의한다. 왜냐하면 서로 다른 정보가 나타날 수도 있기 때문이다.
-# #!pip show numpy
-
-# %%
-
-# %%
-import numpy
-print(numpy.__version__)
-
-import numpy as np
-print(np.__name__) # 임포트된 모듈의 이름
-# .py 화일을 스크립트로 실행할 때,
-#if __name__=="__main__":
-#    main()
-# import 할 때는 실행되지 않는 이유? 
-# import 할 때는 __name__이 "numpy"이기 때문에...
-
-# import 모듈명이 될 수 없는 것은?
-# import 모듈명은 어떤 것이 되어도 상관 없다고 생각하지만,
-#   꼭 그런 것은 아니다.
-
-# import 할 모듈을 어디서 찾는가?
-# 첫 번째는 프로그램이 실행된 디렉토리내에서 모듈을 찾는다.
-# 두 번째는 PYTHONPATH 라는 환경변수에 지정된 디렉토리에서 찾습니다.
-# 세 번째는 파이썬 라이브러리 디렉토리에서 찾습니다. 이곳은 파이썬을 설치한곳 아래 Lib 디렉토리 입니다.
-
-# https://offbyone.tistory.com/106
-# 패키지는 모듈을 디렉토리형식으로 구조화한 것이다.
-#
-
-# 패키지내 각 디렉토리에는 __init__.py 가 반드시 존재해야 합니다. __init__.py 파일은 비어있을수도 있고, 패키지내에 포함된 모듈들의 정보를 제공하기도 합니다.
-
-    
-#     1. builtins(import builtins) : 
-#        The compiled-in module names are in sys.builtin_module_names. 
-#        For all importable modules, see pkgutil.iter_modules
-
-# Variables :
-#   Where does it come from?
-#   1. builtins
-#   2. third-party package?
-#   3. user-defined
-
-
-# The search path can be manipulated from within a Python program 
-# as the variable sys.path.
-
-# Environment Variables
-# - PYTHONHOME, PYTHONPATH, ...
-# - 만약 conda라면 달라지는 듯. CONDA_EXE, CONDA_PYTHON, CONDA_SHLVL
-# 
-# The directory containing the script being run is 
-# placed at the beginning of the search path, 
-# ahead of the standard library path.
-
-# Standard Library(표준 모듈?)
-# 
-
-
-
-__builtins__
-dir(__builtins__)
-
-import sys
-sys.builtin_module_names
-# 'atexit', 'builtins', 'errno', 'faulthandler', 'gc', 'itertools', 'marshal', 'posix', 'pwd', 'sys', 'time', 'xxsubtype')
-# %%
-import itertools # itertools can not be imported
-#from itertools import test
-# itertools has
-#   def test(a):
-# %%
-itertools.test()
-
-# %%
-from itertools import test
-
-# %%
-
-# %%
-# list all importable modules
-import pkgutil
-for x in pkgutil.iter_modules():
-    #print(dir(x))
-    #break
-    print(x.name, end=', ')
-
-# !!!Python Module Index ???
-# https://docs.python.org/3.8/py-modindex.html
-
-# os and collections are part of the standard library, not builtins
-
-#   - `from mod import abst as a, bbst as b`
-#   - scope and namespaces : `dir()`
-#   - dundar attribute of name
-#      - Double underscores are referred to as dunders because they appear quite often in the Python code and it's easier to use the shorten “dunder” instead of “double underscore”.
-#      이중밑줄(?)
-#      - https://wiki.python.org/moin/DunderAlias
-#   - importlib.reload ( library for import )
-#   - how to organize packages
-# %%
-itertools.count
-
-# %%
-for x in itertools.count(3,2):
-    if x > 30: 
-        break
-    print(x, end = ' ')
-
-# %%
-itertools.count = 10;
-print(itertools.count)
-
-# %%
-import itertools
-itertools.count
-
-# %%
-# ?importlib.reload
-
-# %%
-from itertools import count
-
-# %%
-del sys.modules['itertools']; del itertools
-
-# %%
-itertools
-
-# %%
-count
-
-# %%
-import importlib
-importlib.reload(itertools)
-itertools.count
-
-# %%
-import numpy as np
-
-# %%
-np.any([True, False])
-
-# %%
-np.any = None
-
-# %%
-a = np.any
-
-# %%
-a
-
-# %%
-
-# %%
-np.any([True, False])
-
-# %%
-importlib.reload(np)
-
-# %%
-np.any([True, False])
-
-# %%
-dir(np)
-
-# %%
-dir(itertools)
 
 # %% [markdown]
 # ## 2.3 패키지 불러오기/확인하기/제거하기
@@ -953,136 +762,18 @@ search()
 search(original=False)
 
 # %%
-[x for x in globals().keys() if x.startswith('p')]
-
-# %%
-x = globals()
-x.keys()
-
-
-# %%
-def f():
-    return globals()
-
-
-# %%
-f().keys()
-
-# %%
-type(allmodules[0])
-
-# %%
-funcs = dir(allmodules[0])
-
-# %% [markdown]
-# * 0-번째 모듈의 모든 함수를 첫 글자를 기준으로 나눠 보았다.
-
-# %%
-dict_funcs = {}
-for x in funcs:
-    if x[0] in dict_funcs.keys():
-        dict_funcs[x[0]].append(x)
-    else:
-        dict_funcs[x[0]] = [x]
-
-# %%
-import pprint # dictionary를 좀 더 보기 쉽게 보여준다.
-pprint.pprint(dict_funcs)
-
-#funcs.sort()
-pprint.pprint(sorted(funcs))
-
-# %%
-import re
-
-# %%
-re.findall('a', 'abc')
-
-# %%
-re.findall('a\w', 'All mighty! I saw a bus, an apple and a house. An')
-# !!! \w meaning... 
-
-# %%
-del re
-
-# %%
-re.findall('a', 'abc')
-# NameError: name 're' is not defined
-
-# %%
-sys.modules['re']
-
-# %%
-sys.modules['re'].findall('a', 'abc')
-
-# %%
-re = sys.modules['re']
-
-# %%
-# re를 다시 import하려면?(re가 upgrade 되었을 수도???)
-# re-import
-import importlib
-importlib.reload(re)
-
-# import meaning
-# !!!load if not loaded yet and then import into namespace
-
-
-# %%
-re.findall('a', 'abc')
-
-# %%
-import re
-
-# %%
-del sys.modules['re']
-
-# %%
-# del sys.modules를 해도 import된 module이 사라지지 않는다?
-# binding이 모두 없어졌다면? del sys.modules['re']; del re
-#
-# sys.modules.pop('re'); 하면 cache가 사라진다?
-# 하지만 다른 모듈에서 이미 import한 경우에는 영향을 미치지 않는다.
-# 하지만 reload는 모두 바꾼다????
-# !!! 생각보다 까다로운 문제!!!
-
 # https://stackoverflow.com/questions/32234156/how-to-unimport-a-python-module-which-is-already-imported
 # https://stackoverflow.com/questions/437589/how-do-i-unload-reload-a-python-module/61617169#61617169
 #   - Memo tip: "import" doesn't mean "load", it means "load if not loaded yet and then import into namespace"
 #   - import_file module?
 
-# %%
-re.findall('a', 'abc')
-
-# %%
-#https://mail.python.org/pipermail/tutor/2006-August/048596.html
-
-# %%
-sorted(sys.modules.keys())
-
-# %%
-m = sys.modules.pop('re')
-
-# %%
-sys.modules['re']
-
-# %%
-
-# %%
-# #?alias 
-#alias?  #
-__builtins__
-sys.modules['builtins']
-
-
-# %%
-
 # %% [markdown]
 # ## 2.4 패키지 관리하기
 
 # %%
-### 설치된 패키지 목록을 확인하고 싶다면 다음과 같다.
-### 하지만 어디에? (conda installed? pip installed? ...)
+## 설치된 패키지 목록을 확인하고 싶다면 다음과 같다.
+## conda list
+## pip list
 
 # %%
 # %conda list --revisions
@@ -1179,6 +870,7 @@ print(sys.version)
 # conda install $PACKAGE_NAME>=1.11         # $PACKAGE_NAME 버전 중 1.11과 같거나 높은 버전을 설치한다. 
 # conda install $PACKAGE_NAME=1.11.1|1.11.3 # $PACKAGE_NAME 버전 중 1.11.1 또는 1.11.3 버전을 설치한다. 
 # conda install $PACKAGE_NAME>=1.8,<2       # $PACKAGE_NAME 버전 중 1.8과 같거나 높고, 2보다 낮은 버전을 설치한다. 
+# conda update $PACKAGE_NAME                # $PACKEAE_NAME을 최신 버전으로 update
 # conda activate $ENV_NAME                  # 현재 가상환경을 가상환경 $ENV_NAME로 바꾼다.
 # conda deactivate                          # 가상환경에서 벗어난다.
 
@@ -1197,7 +889,7 @@ print(sys.version)
 # %% [markdown]
 # #### 가상 환경 복사
 
-# %% [markdown]
+# %% [raw]
 # conda create --clone $ENV_NAME --name $ENV_NAME2  # 가상환경 $ENV_NAME을 복사하여 이름을 $ENV_NAME2로 한다.
 # conda list --export > conda_requirements.txt      # 현재 가상환경 정보(파이썬, 패키지 버전)을 conda_requirements.txt에 저장한다.
 # conda create --name $ENV_NAME3 --file conda_requirements.txt
@@ -1210,8 +902,7 @@ print(sys.version)
 #
 # 그런데 이게 한두 패키지 사이의 의존성이라면 외우거나 노트에 적어서 가상환경을 구성할 수 있겠지만, 패키지의 수가 수십 개에서 수백 개가 넘어간다면 많은 시간과 수고가 필요한 작업이다. 따라서 이런 작업은 모두 힘을 합쳐서 할 수 있다면 좋을 것이다. 그래서 탄생한 것이 콘다 채널(conda channel)이다.  
 
-# %% [markdown]
-#
+# %%
 
 # %% [markdown]
 # `pip install`으로 패키지를 설치할 경우 기본적으로 가장 최신의 패키지가 설치된다. `conda install`로 설치할 경우에는 콘다 채널에서 유지하는 패키지 간의 의존성 정보에 맞춰 패키지가 설치된다. 위의 예를 보자. 콘다 채널이 `numpy`의 최신판은 `spa` 4.0이 아니라 `spa` 4.1과 궁합이 최고라고 판단한다면 `conda install numpy`로 패키지 `numpy`는 최신판으로 설치함과 동시에 `spa`는 4.1이 설치되는 것이다. 
@@ -1234,7 +925,9 @@ print(sys.version)
 # 보통 `conda-forge`를 항상 사용한다. `defaults` 채널보다 의존성을 관리하는 패키지가 더 광범위하기 때문인 듯 하다. `-c conda-forge`를 항상 입력하려면 다음과 같이 할 수 있다. 
 
 # %%
-# conda-forge을 우선적으로 사용한다. 
+# conda-forge을 **우선적**으로 사용한다. 
+# --add는 리스트의 가장 높은 우선순위로
+# --append는 리스트의 가장 낮은 우선순위로 추가한다.
 # %conda config --add channels conda-forge  
 
 # %% [raw]
@@ -1284,7 +977,7 @@ print(sys.version)
 # * pip installable
 #   - dfply, pydatasets
 #   
-# PyPI에서 등록된 패키지가 워낙 많기(30여만 개!) 때문에 콘다에서도 모든 패키지의 버전 의존성을 관리할 수 없다. 그런 경우에는 `conda install`로 패키지를 설치할 수 없으므로 `pip install`을 써야 한다. 콘다에서는 `conda install`할 수 있는 모든 패키지를 설치한 후에 `pip install`을 사용할 것을 주문한다. 이렇게 해야 패키지의 의존성 관리가 더 정확하다고 한다.
+# PyPI에서 등록된 패키지가 워낙 많기(30여만 개!) 때문에 콘다에서도 모든 패키지의 버전 의존성을 관리할 수 없다. 그런 경우에는 `conda install`로 패키지를 설치할 수 없으므로 `pip install`을 써야 한다. 콘다에서는 `conda install`할 수 있는 모든 패키지를 설치한 후에 `pip install`을 사용할 것을 주문한다. 이렇게 해야 패키지의 의존성 관리가 더 정확하다고 한다. (관련 자료 : https://www.anaconda.com/blog/using-pip-in-a-conda-environment)
 
 # %% [raw]
 #
@@ -1308,6 +1001,7 @@ import get_pcinfo
 get_pcinfo.main()
 
 # %% [markdown]
+# # END
 # # ===========
 
 # %% [markdown]
@@ -1658,3 +1352,394 @@ builtins.__IPYTHON__
 __IPYTHON__
 
 # %%
+
+# %% [markdown]
+# ## 사용 가능한 가상 환경
+#
+# reference 
+#   - ref/A Guide to Python’s Virtual Environments | by Matthew Sarmiento | Towards Data Science.pdf
+#
+# * `venv` : 
+#
+# * `pipenv` : https://www.daleseo.com/python-pipenv/
+#
+#    - Install on mac M1
+#      - `brew install pipenv`(-> `02_Packages_pipenv_m1.md`)
+#      - `arch -arm64 brew install pipenv`(-> `02_Packages_pipenv_m1.md`)
+#          - but this is discouraged!(https://pipenv.pypa.io/en/latest/install/#installing-pipenv)
+# * `conda`
+#
+# * `venv`와 `conda`의 가장 큰 차이
+#   - conda는 language-agnostic! (python이 아니라 다른 언어로 씌여진 package도 관리할 수 있고, 
+#
+# * pip : pip is a python package manager
+# * venv : environment manager for Python
+# * conda : language-agnostic package & environment manager
+#   - ensure dependecies are satisfied
+#   위의 세 개 비교 : https://conda.io/projects/conda/en/latest/commands.html#conda-vs-pip-vs-virtualenv-commands
+#
+#
+
+# %%
+#https://www.it4nextgen.com/purpose-of-channels-in-anaconda/
+#**Conda Channels** are basically the locations where **packages are stored**. 
+#If there is a need of a **package that is other than the defaults**, 
+#the developers can also create their own channels as there is a method available in the Anaconda. 
+#The channels Anaconda Channel and the R channel are two of the 10 official repositories present in Anaconda. 
+#10 official repositories???
+#You can understand its purpose with the fact that conda channels serve as the base for hosting and managing packages. 
+#Anaconda Navigator is a phenomenal platform for developers to launch multiple applications and manage them with ease.
+
+# conda cheat sheet
+# https://docs.conda.io/projects/conda/en/4.6.0/_downloads/52a95608c49671267e40c689e0bc00ca/conda-cheatsheet.pdf
+
+# %% [raw]
+# D:\pipenv\test>pipenv --python 3.8
+# Creating a virtualenv for this project...
+# Pipfile: D:\pipenv\test\Pipfile
+# Using C:/Users/Home/AppData/Local/Programs/Python/Python38/python.exe (3.8.10) to create virtualenv...
+# [====] Creating virtual environment...created virtual environment CPython3.8.10.final.0-64 in 5627ms
+#   creator CPython3Windows(dest=C:\Users\Home\.virtualenvs\test-SXprqnij, clear=False, no_vcs_ignore=False, global=False)
+#   seeder FromAppData(download=False, pip=bundle, setuptools=bundle, wheel=bundle, via=copy, app_data_dir=C:\Users\Home\AppData\Local\pypa\virtualenv)
+#     added seed packages: pip==21.1.2, setuptools==57.0.0, wheel==0.36.2
+#   activators BashActivator,BatchActivator,FishActivator,PowerShellActivator,PythonActivator,XonshActivator
+#
+# Successfully created virtual environment!
+# Virtualenv location: C:\Users\Home\.virtualenvs\test-SXprqnij
+# Creating a Pipfile for this project...
+
+# %% [markdown]
+# ## 2.2 패키지 관련 정보
+
+# %%
+# #%pip show numpy
+
+# %%
+#쥬피터 노트북 안에서 !pip를 쓰지 않도록 주의한다. 왜냐하면 서로 다른 정보가 나타날 수도 있기 때문이다.
+# #!pip show numpy
+
+# %%
+
+# %%
+import numpy
+print(numpy.__version__)
+
+import numpy as np
+print(np.__name__) # 임포트된 모듈의 이름
+# .py 화일을 스크립트로 실행할 때,
+#if __name__=="__main__":
+#    main()
+# import 할 때는 실행되지 않는 이유? 
+# import 할 때는 __name__이 "numpy"이기 때문에...
+
+# import 모듈명이 될 수 없는 것은?
+# import 모듈명은 어떤 것이 되어도 상관 없다고 생각하지만,
+#   꼭 그런 것은 아니다.
+
+# import 할 모듈을 어디서 찾는가?
+# 첫 번째는 프로그램이 실행된 디렉토리내에서 모듈을 찾는다.
+# 두 번째는 PYTHONPATH 라는 환경변수에 지정된 디렉토리에서 찾습니다.
+# 세 번째는 파이썬 라이브러리 디렉토리에서 찾습니다. 이곳은 파이썬을 설치한곳 아래 Lib 디렉토리 입니다.
+
+# https://offbyone.tistory.com/106
+# 패키지는 모듈을 디렉토리형식으로 구조화한 것이다.
+#
+
+# 패키지내 각 디렉토리에는 __init__.py 가 반드시 존재해야 합니다. __init__.py 파일은 비어있을수도 있고, 패키지내에 포함된 모듈들의 정보를 제공하기도 합니다.
+
+    
+#     1. builtins(import builtins) : 
+#        The compiled-in module names are in sys.builtin_module_names. 
+#        For all importable modules, see pkgutil.iter_modules
+
+# Variables :
+#   Where does it come from?
+#   1. builtins
+#   2. third-party package?
+#   3. user-defined
+
+
+# The search path can be manipulated from within a Python program 
+# as the variable sys.path.
+
+# Environment Variables
+# - PYTHONHOME, PYTHONPATH, ...
+# - 만약 conda라면 달라지는 듯. CONDA_EXE, CONDA_PYTHON, CONDA_SHLVL
+# 
+# The directory containing the script being run is 
+# placed at the beginning of the search path, 
+# ahead of the standard library path.
+
+# Standard Library(표준 모듈?)
+# 
+
+
+
+__builtins__
+dir(__builtins__)
+
+import sys
+sys.builtin_module_names
+# 'atexit', 'builtins', 'errno', 'faulthandler', 'gc', 'itertools', 'marshal', 'posix', 'pwd', 'sys', 'time', 'xxsubtype')
+# %%
+import itertools # itertools can not be imported
+#from itertools import test
+# itertools has
+#   def test(a):
+# %%
+itertools.test()
+
+# %%
+from itertools import test
+
+# %%
+
+# %%
+# list all importable modules
+import pkgutil
+for x in pkgutil.iter_modules():
+    #print(dir(x))
+    #break
+    print(x.name, end=', ')
+
+#   - dundar attribute of name
+#      - Double underscores are referred to as dunders because they appear quite often in the Python code and it's easier to use the shorten “dunder” instead of “double underscore”.
+#      이중밑줄(?)
+#      - https://wiki.python.org/moin/DunderAlias
+# %%
+itertools.count
+
+# %%
+for x in itertools.count(3,2):
+    if x > 30: 
+        break
+    print(x, end = ' ')
+
+# %%
+itertools.count = 10;
+print(itertools.count)
+
+# %%
+import itertools
+itertools.count
+
+# %%
+# ?importlib.reload
+
+# %%
+from itertools import count
+
+# %%
+del sys.modules['itertools']; del itertools
+
+# %%
+itertools
+
+# %%
+count
+
+# %%
+import importlib
+importlib.reload(itertools)
+itertools.count
+
+# %%
+import numpy as np
+
+# %%
+np.any([True, False])
+
+# %%
+np.any = None
+
+# %%
+a = np.any
+
+# %%
+a
+
+# %%
+
+# %%
+np.any([True, False])
+
+# %%
+importlib.reload(np)
+
+# %%
+np.any([True, False])
+
+# %%
+dir(np)
+
+# %%
+dir(itertools)
+
+# %%
+
+# %% [markdown]
+# ## 2.2 패키지 관련 정보
+
+# %%
+# #%pip show numpy
+
+# %%
+#쥬피터 노트북 안에서 !pip를 쓰지 않도록 주의한다. 왜냐하면 서로 다른 정보가 나타날 수도 있기 때문이다.
+# #!pip show numpy
+
+# %%
+
+# %%
+import numpy
+print(numpy.__version__)
+
+import numpy as np
+print(np.__name__) # 임포트된 모듈의 이름
+# .py 화일을 스크립트로 실행할 때,
+#if __name__=="__main__":
+#    main()
+# import 할 때는 실행되지 않는 이유? 
+# import 할 때는 __name__이 "numpy"이기 때문에...
+
+# import 모듈명이 될 수 없는 것은?
+# import 모듈명은 어떤 것이 되어도 상관 없다고 생각하지만,
+#   꼭 그런 것은 아니다.
+
+# import 할 모듈을 어디서 찾는가?
+# 첫 번째는 프로그램이 실행된 디렉토리내에서 모듈을 찾는다.
+# 두 번째는 PYTHONPATH 라는 환경변수에 지정된 디렉토리에서 찾습니다.
+# 세 번째는 파이썬 라이브러리 디렉토리에서 찾습니다. 이곳은 파이썬을 설치한곳 아래 Lib 디렉토리 입니다.
+
+# https://offbyone.tistory.com/106
+# 패키지는 모듈을 디렉토리형식으로 구조화한 것이다.
+#
+
+# 패키지내 각 디렉토리에는 __init__.py 가 반드시 존재해야 합니다. __init__.py 파일은 비어있을수도 있고, 패키지내에 포함된 모듈들의 정보를 제공하기도 합니다.
+
+    
+#     1. builtins(import builtins) : 
+#        The compiled-in module names are in sys.builtin_module_names. 
+#        For all importable modules, see pkgutil.iter_modules
+
+# Variables :
+#   Where does it come from?
+#   1. builtins
+#   2. third-party package?
+#   3. user-defined
+
+
+# The search path can be manipulated from within a Python program 
+# as the variable sys.path.
+
+# Environment Variables
+# - PYTHONHOME, PYTHONPATH, ...
+# - 만약 conda라면 달라지는 듯. CONDA_EXE, CONDA_PYTHON, CONDA_SHLVL
+# 
+# The directory containing the script being run is 
+# placed at the beginning of the search path, 
+# ahead of the standard library path.
+
+# Standard Library(표준 모듈?)
+# 
+
+
+
+__builtins__
+dir(__builtins__)
+
+import sys
+sys.builtin_module_names
+# 'atexit', 'builtins', 'errno', 'faulthandler', 'gc', 'itertools', 'marshal', 'posix', 'pwd', 'sys', 'time', 'xxsubtype')
+# %%
+import itertools # itertools can not be imported
+#from itertools import test
+# itertools has
+#   def test(a):
+# %%
+itertools.test()
+
+# %%
+from itertools import test
+
+# %%
+
+# %%
+# list all importable modules
+import pkgutil
+for x in pkgutil.iter_modules():
+    #print(dir(x))
+    #break
+    print(x.name, end=', ')
+
+#   - dundar attribute of name
+#      - Double underscores are referred to as dunders because they appear quite often in the Python code and it's easier to use the shorten “dunder” instead of “double underscore”.
+#      이중밑줄(?)
+#      - https://wiki.python.org/moin/DunderAlias
+# %%
+itertools.count
+
+# %%
+for x in itertools.count(3,2):
+    if x > 30: 
+        break
+    print(x, end = ' ')
+
+# %%
+itertools.count = 10;
+print(itertools.count)
+
+# %%
+import itertools
+itertools.count
+
+# %%
+# ?importlib.reload
+
+# %%
+from itertools import count
+
+# %%
+del sys.modules['itertools']; del itertools
+
+# %%
+itertools
+
+# %%
+count
+
+# %%
+import importlib
+importlib.reload(itertools)
+itertools.count
+
+# %%
+import numpy as np
+
+# %%
+np.any([True, False])
+
+# %%
+np.any = None
+
+# %%
+a = np.any
+
+# %%
+a
+
+# %%
+
+# %%
+np.any([True, False])
+
+# %%
+importlib.reload(np)
+
+# %%
+np.any([True, False])
+
+# %%
+dir(np)
+
+# %%
+dir(itertools)
