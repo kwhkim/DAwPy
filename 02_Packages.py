@@ -1153,85 +1153,109 @@ print(sys.version)
 # %% [markdown]
 # ## 가상환경 구성
 
-# %%
-
-# %%
-## 파이썬에서 가상 환경(Virtual Environment) 
-## R의 환경(Environment)
-
-## 파이썬에서 가상 환경이 필요한 이유 : 
-##  패키지들의 상호 의존성 : 어떤 패키지는 다른 패키지의 특정한 버전을 필요로 한다.
-##                     버전 하위 호환성이 깨지는 경우
-##  
-##  R의 경우 CRAN에 등록된 패키지들은 이런 패키지 사이의 호환성을 계속 테스트하기 때문에
-##   패키지의 버전이 문제가 되는 경우가 거의 없다. 대부분 최신의 버전을 사용하면 된다.
-
-## python -m mod : run library module as a script (terminates option list)
-## conda base에서 venv test를 실행하면? source test/bin/activate
-## (test) (base) kwhkim@...
+# %% [markdown]
+# 앞에서 봤듯이 파이썬의 PyPI(Python Package Index)는 관리가 거의 없다는 특징이 있다. 누구나 어떤 패키지도 올릴 수 있다. 따라서 패키지가 서로 다른 파이썬 버전을 상정하기도 하고, 서로 다른 패키지 버전을 상정하기도 한다. 다시 말해, 파이썬과 패키지, 패키지와 패키지의 버전 의존성이 심하다. 그리고 파이썬은 하나의 컴퓨터에 다른 버전을 설치할 수도 없다(linux에서는 파이썬 버전 2와 버전 3을 `python2`, `python3`으로 나누기도 하지만 세부 버전을 여럿 설치할 순 없다). 
 
 # %% [markdown]
-# ### conda channels(with `-c` or `--channel`)
+# 이런 상황을 타개하기 위해 가상환경을 구성한다. 가상으로 예를 들면, `numpy` 패키지를 사용하려면 `spa`라는 패키지 4.0이 필요하다. 그런데 `matplotlib`이라는 패키지를 사용하려면 `spa` 패키지 3.8이 필요하다면 어떻게 해야 하는가? `numpy`를 사용할 때는 `spa` 패키지 4.0를 설치하고, `matplotlib`을 사용할 때에는 `spa` 패키지 4.0을 제거하고 다시 `spa` 3.8을 설치할 것인가? 
 #
-# ```
-# conda install -c conda-forge matplotlib
-# ```
+# 이런 방법은 번거롭다. 이렇게 영원히 제거, 설치를 반복할 것인가? 이렇게 버전 의존성이 심한 경우에 가상환경을 구성하여 가상환경 A에는 `numpy`과 `spa` 4.0을 설치하고, 가상환경 B에는 `matplotlib`과 `spa` 3.8을 설치하여 `numpy`이 필요한 경우에는 가상환경 A에서 실행하고 `matplotlib`이 필요한 경우에는 가상환경 B에서 실행하는 것이다. 
+
+# %% [markdown]
+# 파이썬에서 가상 환경을 구성하는 방법은 여러 가지이다. `conda`, `virtualenv`, `venv`, `pipenv` 등은 모두 가상환경을 구성하는 패키지 이름이다. 이들은 각자 특성이 있다. 파이썬 버전 관리가 주 용도인 경우도 있고, 파이썬 패키지 버전 관리가 주 용도이 경우도 있다. 여기서는 `conda`를 사용한다. `conda`는 파이썬 뿐 아니라, 다른 컴퓨터 언어(예. java 등)에서도 가상 환경을 구성할 수 있는 막강한 툴이다. 
+
+# %% [markdown]
+# 가상 환경을 관리하는 `conda`를 활성화하기 위해서는 `conda activate`을 한다. 가장 기본적인 가상환경은 `base`이다. 새로운 가상환경 구성 및 기타 작동은 다음과 같이 한다. 
+
+# %% [markdown]
+# #### 가상환경 생성, 패키지 설치, 가상환경 활성화
+
+# %% [raw]
+# conda activate
+# conda create -n $ENV_NAME python=3.8      # 파이썬 버전 3.8의 가상환경을 새롭게 만든다. 이때 가상환경 이름은 $ENV_NAME으로 한다. 
+# conda install $PACKAGE_NAME               # 현재 가상환경에 패키지 $PACKAGE_NAME를 설치한다. 
+# conda install $PACKAGE_NAME=1.11          # $PACKAGE_NAME 버전 중 1.11.x에 해당하는 버전을 설치한다. 
+# conda install $PACKAGE_NAME==1.11.1       # $PACKAGE_NAME 버전 중 정확히 1.11.1에 해당하는 버전을 설치한다. 
+# conda install $PACKAGE_NAME>=1.11         # $PACKAGE_NAME 버전 중 1.11과 같거나 높은 버전을 설치한다. 
+# conda install $PACKAGE_NAME=1.11.1|1.11.3 # $PACKAGE_NAME 버전 중 1.11.1 또는 1.11.3 버전을 설치한다. 
+# conda install $PACKAGE_NAME>=1.8,<2       # $PACKAGE_NAME 버전 중 1.8과 같거나 높고, 2보다 낮은 버전을 설치한다. 
+# conda activate $ENV_NAME                  # 현재 가상환경을 가상환경 $ENV_NAME로 바꾼다.
+# conda deactivate                          # 가상환경에서 벗어난다.
+
+# %% [markdown]
+# 가상환경의 목적은 버전이 다른 파이썬과 패키지를 다른 가상환경과 독립적으로 설치한다는 것이므로 위의 방법만으로 가상 환경을 설치 유지하는 데 충분할 것이다. 몇 가지 덧붙인다면 다음과 같다.
+
+# %% [markdown]
+# #### 가상환경 나열, 가상환경 제거, 패키지 나열, 패키지 제거
+
+# %% [raw]
+# conda env list                    # 사용 가능한 가상환경 나열
+# conda list                        # 현재 가상환경에 설치된 패키지 정보 나열
+# conda env remove -n $ENV_NAME     # 가상환경 $ENV_NAME을 제거한다. 
+# conda remove $PACKAGE_NAME        # 현재 가상환경에서 패키지 $PACKAGE_NAME을 제거한다. 
+
+# %% [markdown]
+# #### 가상 환경 복사
+
+# %% [markdown]
+# conda create --clone $ENV_NAME --name $ENV_NAME2  # 가상환경 $ENV_NAME을 복사하여 이름을 $ENV_NAME2로 한다.
+# conda list --export > conda_requirements.txt      # 현재 가상환경 정보(파이썬, 패키지 버전)을 conda_requirements.txt에 저장한다.
+# conda create --name $ENV_NAME3 --file conda_requirements.txt
+# # conda_requirements.txt에 저장된 가상환경 정보를 사용하여 새로운 가상환경(이름: $ENV_NAME3)을 생성한다.
+
+# %% [markdown]
+# 위의 명령어만 잘 사용하면 가상환경을 생성하고 파이썬과 패키지 사이의 버전이 주어진 목적을 위해 통제할 수 있다. 문제는 버전을 사람의 손으로 기록하고 유지하는 것이 쉽지만은 않다는 것이다. 
+#
+# 예를 들어 위에서 얘기한 `numpy`라는 패키지가 업그레이드가 되었다. 그렇다면 `numpy`를 업그레이드해도 될까? 여기서 문제는 `numpy`를 업그레이드해도 `spa` 4.0과의 의존성은 변함이 없느냐는 것이다. `numpy` 개발자는 `spa`의 새로운 버전을 사용했을 수도 있지 않은가? 그렇다면 우리는 `numpy`를 업그레이드하면서 `spa`도 업그레이드된 `numpy`에 맞춰 업그레이드 또는 다운그레이드를 해야할 수도 있다. 다운그레이드라 놀라운가? 뒤늦게 `spa` 4.0에 버그를 발견하고 좀더 안정적인 `spa` 3.8에 맞춰 새로운 버전의 `numpy`를 작성할 수도 있다.
+#
+# 그런데 이게 한두 패키지 사이의 의존성이라면 외우거나 노트에 적어서 가상환경을 구성할 수 있겠지만, 패키지의 수가 수십 개에서 수백 개가 넘어간다면 많은 시간과 수고가 필요한 작업이다. 따라서 이런 작업은 모두 힘을 합쳐서 할 수 있다면 좋을 것이다. 그래서 탄생한 것이 콘다 채널(conda channel)이다.  
+
+# %% [markdown]
+#
+
+# %% [markdown]
+# `pip install`으로 패키지를 설치할 경우 기본적으로 가장 최신의 패키지가 설치된다. `conda install`로 설치할 경우에는 콘다 채널에서 유지하는 패키지 간의 의존성 정보에 맞춰 패키지가 설치된다. 위의 예를 보자. 콘다 채널이 `numpy`의 최신판은 `spa` 4.0이 아니라 `spa` 4.1과 궁합이 최고라고 판단한다면 `conda install numpy`로 패키지 `numpy`는 최신판으로 설치함과 동시에 `spa`는 4.1이 설치되는 것이다. 
+#
+# 이렇게 패키지 간의 의존성 정보가 필요하기 때문에 `pip install`로 최신으로 설치되는 패키지도 `conda install`설치되는 경우에는 최신판 이전의 버전이 설치되기도 한다. 그리고 목적, 그리고 참여하는 사람에 따라 여러 가지 콘다 채널이 존재한다.
+#
+# 콘다를 사용할 때 `-c` 또는 `--channel`을 사용하여 콘다 채널을 설정해 줄 수 있다. 예를 들면 다음과 같이 쓴다.
+
+# %% [raw]
+# conda create -n env1 python=3.8 -c conda-forge
+
+# %% [markdown]
+# 다음은 유명한 콘다 채널이다. defaults는 기본적으로 설정된 콘다 채널이다.
 #
 # * defaults
 # * conda-forge
 # * r
-# * 
 
-# %% [raw]
-# source ~/.bashrc  # conda에 필요한 설정이 포함되어 있기 때문??? 구체적으로 어떤 것들???
-# conda activate
-# source activate
-# conda env list
-# conda install [PACKAGE-NAME]
-# pip install [PACKAGE-NAME]
-#
-# conda config --append channels conda-forge
-# -> condarc
-#    order of channels matter
-#
-# conda env export --file environment.yml
-# conda env create -n conda-env -f /path/to/environment.yml # duplicate
-# conda env update -n conda-env -f /path/to/environment.yml # update
-#
-# R environment
-# conda create -n r-env r-base
-# Conda’s R packages are available from the R channel of Anaconda Cloud, which is included by default in Conda’s default_channels
-#
-# Revisions track changes to your environment over time, allowing you to easily remove packages and all of their dependencies
-# conda list --revisions
-#
-# As you build more projects, each with their own environment, you’ll begin to quickly accumulate tarballs from packages you’ve installed.
-# To get rid of them and free up some disc space, run:
-# % conda clean --all                     # no active env needed 
-#
-# defusedxml-0.7.1-pyhd8ed1ab_0.tar.bz2         23 KB
-# backports.functools_lru_cache-1.6.4-pyhd8ed1ab_0.tar.bz2       9 KB
-# libtiff-4.3.0-h1167814_1.tar.bz2             621 KB
-# testpath-0.5.0-pyhd8ed1ab_0.tar.bz2           86 KB
-#
-# ---------------------------------------------------
-# Total:                                     433.8 MB
-#
-# Proceed ([y]/n)? 
-
+# %% [markdown]
+# 보통 `conda-forge`를 항상 사용한다. `defaults` 채널보다 의존성을 관리하는 패키지가 더 광범위하기 때문인 듯 하다. `-c conda-forge`를 항상 입력하려면 다음과 같이 할 수 있다. 
 
 # %%
-# PiP : PiP installs Packages의 약자!
+# conda-forge을 우선적으로 사용한다. 
+# %conda config --add channels conda-forge  
 
-# What is conda channels?
-# https://docs.conda.io/projects/conda/en/latest/user-guide/concepts/channels.html
+# %% [raw]
+# 다음의 명령으로 등록된 채널을 확인할 수 있다. 
 
-# cf. PyPI : Python Package Index
-# https://pypi.org
+# %%
+# %conda config --show channels
 
-# Installing Packages in Python : https://packaging.python.org/en/latest/tutorials/installing-packages/
+# %% [markdown]
+# 다음의 명령도 유용하다.
 
-# !!!
+# %% [raw]
+# conda config --remove channels conda-forge # 채널 conda-forge 삭제
+# conda config --append channels r # 채널 r을 가장 마지막 우선순위로 추가
+
+# %% [markdown]
+# 팁 하나)
+# 환경을 여럿 생성하고, 패키지를 여럿 설치하면 패키지 설치에 필요한 (하지만 설치 후에는 필요없는) 데이터가 하드 디스크에 쌓이게 된다. 이때에는 `conda clean --all`를 하자. 필요없는 데이터를 삭제한다.
+
+# %%
+참고로 conda는 운영체제에 바로 설치된 파이썬과 달리 다음 환경 변수를 활용한다. 
 
 # %% [markdown]
 # ## CONDA 환경 변수
@@ -1248,16 +1272,22 @@ print(sys.version)
 
 # %% [markdown]
 # ### CONDA에서 패키지 파일 확인
+#
+# `conda install`로 설치된 패키지가 어떤 파일에 의해 작동하는지 확인하고자 한다면 `${CONDA_PREFIX}/conda-meta/<package-name-and-version>-<hash>.json`에서 `files` 항목을 확인한다. (가상환경에서 `import pack`한 후 `pack.__file__`을 할 수도 있지만, 모든 파일을 알 수는 없다.)
 
 # %% [markdown]
-# `${CONDA_PREFIX}/conda-meta/<package-name-and-version>-<hash>.json`에서 `files`
+# #### CONDA에서 관리되지 않는 패키지
+#
+# * conda installable 
+#   - matplotlib, plotnine, pandas, statsmodel, seaborn
+#   
+# * pip installable
+#   - dfply, pydatasets
+#   
+# PyPI에서 등록된 패키지가 워낙 많기(30여만 개!) 때문에 콘다에서도 모든 패키지의 버전 의존성을 관리할 수 없다. 그런 경우에는 `conda install`로 패키지를 설치할 수 없으므로 `pip install`을 써야 한다. 콘다에서는 `conda install`할 수 있는 모든 패키지를 설치한 후에 `pip install`을 사용할 것을 주문한다. 이렇게 해야 패키지의 의존성 관리가 더 정확하다고 한다.
 
 # %% [raw]
-# # https://keepdev.tistory.com/27
-# pip freeze > requirements.txt
-# pip install -r requirements.txt
-# conda list --export > conda_requirements.txt
-# conda install --file conda_requirements.txt
+#
 
 # %% [markdown]
 # ### CONDA Cheatsheet
@@ -1278,13 +1308,173 @@ import get_pcinfo
 get_pcinfo.main()
 
 # %% [markdown]
+# # ===========
+
+# %% [markdown]
+# ## 참고 자료
 #
-# # conda installable 
-#   - matplotlib, plotnine, pandas, statsmodel, seaborn
-#   - 
+# ### Reading list
 #
-# # pip installable
-#   - dfply, pydatasets
+# * https://realpython.com/python-modules-packages/
+# * https://wikidocs.net/1418
+# * https://docs.python.org/3.8/tutorial/modules.html#id2
+#
+#
+#
+
+# %% [markdown]
+# ## locals() 활용하기
+#
+# ### locals(), globals(), vars()의 차이?
+# * https://stackoverflow.com/questions/7969949/whats-the-difference-between-globals-locals-and-vars
+# * https://stackoverflow.com/questions/32003472/difference-between-locals-and-globals-and-dir-in-python
+#
+
+# %%
+for x in dir(sys.modules['builtins']):
+    if not getattr(sys.modules['builtins'], x) == eval(x):
+        print(x, getattr(sys.modules['builtins'], x) == eval(x))
+
+# %%
+
+# %%
+### stdlib_list와 python module list 비교
+
+m = ['_abc',
+'_ast',
+'_asyncio',
+'_bisect',
+'_blake2',
+'_bootlocale',
+'_bz2',
+'_codecs',
+'_codecs_cn',
+'_codecs_hk',
+'_codecs_iso2022',
+'_codecs_jp',
+'_codecs_kr',
+'_codecs_tw',
+'_collections',
+'_collections_abc',
+'_compat_pickle',
+'_compression',
+'_contextvars',
+'_crypt',
+'_csv',
+'_ctypes',
+'_ctypes_test',
+'_curses',
+'_curses_panel',
+'_datetime',
+'_dbm',
+'_decimal',
+'_elementtree',
+'_frozen_importlib',
+'_frozen_importlib_external',
+'_functools',
+'_gdbm',
+'_hashlib',
+'_heapq',
+'_imp',
+'_io',
+'_json',
+'_locale',
+'_lsprof',
+'_lzma',
+'_markupbase',
+'_md5',
+'_multibytecodec',
+'_multiprocessing',
+'_opcode',
+'_operator',
+'_osx_support',
+'_pickle',
+'_posixshmem',
+'_posixsubprocess',
+'_py_abc',
+'_pydecimal',
+'_pyio',
+'_queue',
+'_random',
+'_sha1',
+'_sha256',
+'_sha3',
+'_sha512',
+'_signal',
+'_sitebuiltins',
+'_socket',
+'_sqlite3',
+'_sre',
+'_ssl',
+'_stat',
+'_statistics',
+'_string',
+'_strptime',
+'_struct',
+'_symtable',
+'_testbuffer',
+'_testcapi',
+'_testimportmultiple',
+'_testinternalcapi',
+'_testmultiphase',
+'_threading_local',
+'_tkinter',
+'_tracemalloc',
+'_uuid',
+'_warnings',
+'_weakref',
+'_weakrefset',
+'_xxsubinterpreters',
+'_xxtestfuzz',
+'antigravity',
+'genericpath',
+'idlelib',
+'ntpath',
+'nturl2path',
+'opcode',
+'posixpath',
+'pydoc_data',
+'pyexpat',
+'sre_compile',
+'sre_constants',
+'sre_parse',
+'this',
+'xxlimited',
+'xxsubtype']
+for i in range(0, len(m)):
+    module = m[i]
+    #print(i, module)
+    try:
+        __import__(module)
+        print(module, module in sys.builtin_module_names)
+    except Exception  as e:
+        pass
+        #print(e, i, module)
+        #print(module in sys.builtin_module_names)
+    
+# 19  _crypt
+# 23 _curses
+#
+
+# %% [markdown]
+# * [두 가지 의미의 패키지](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
+#     - 배포 패키지
+#     - 임포트 패키지
+#
+# * 모듈 : basic unit of **code reusability** in Python, existing in one of two types
+#     - 순수 모듈(pure module) : 파이썬으로 쓰여졌으면 하나의 .py 파일에 담겨 있다.
+#     - 확장 모듈(extension module) : 파이썬의 저수준 언어(예. C/C++)로 쓰여졌으며 하나의 dynamically loadable pre-compiled file에 담겨 있다. (예. e.g. a shared object (.so) file for Python extensions on Unix, a DLL (given the .pyd extension) for Python extensions on Windows, or a Java class file for Jython extensions.)
+#
+# * 패키지 설치 방법
+#     - 전역적으로 vs 지역적으로?
+#     - 패키지 격리
+#
+# * [venv](https://docs.python.org/3/library/venv.html)
+
+# %%
+
+# %% [markdown]
+#
 
 # %%
 
@@ -1466,171 +1656,5 @@ builtins.__IPYTHON__
 
 # %%
 __IPYTHON__
-
-# %%
-
-# %% [markdown]
-# # ===========
-
-# %% [markdown]
-# ## 참고 자료
-#
-# ### Reading list
-#
-# * https://realpython.com/python-modules-packages/
-# * https://wikidocs.net/1418
-# * https://docs.python.org/3.8/tutorial/modules.html#id2
-#
-#
-#
-
-# %% [markdown]
-# ## locals() 활용하기
-#
-# ### locals(), globals(), vars()의 차이?
-# * https://stackoverflow.com/questions/7969949/whats-the-difference-between-globals-locals-and-vars
-# * https://stackoverflow.com/questions/32003472/difference-between-locals-and-globals-and-dir-in-python
-#
-
-# %%
-for x in dir(sys.modules['builtins']):
-    if not getattr(sys.modules['builtins'], x) == eval(x):
-        print(x, getattr(sys.modules['builtins'], x) == eval(x))
-
-# %%
-
-# %%
-### stdlib_list와 python module list 비교
-
-m = ['_abc',
-'_ast',
-'_asyncio',
-'_bisect',
-'_blake2',
-'_bootlocale',
-'_bz2',
-'_codecs',
-'_codecs_cn',
-'_codecs_hk',
-'_codecs_iso2022',
-'_codecs_jp',
-'_codecs_kr',
-'_codecs_tw',
-'_collections',
-'_collections_abc',
-'_compat_pickle',
-'_compression',
-'_contextvars',
-'_crypt',
-'_csv',
-'_ctypes',
-'_ctypes_test',
-'_curses',
-'_curses_panel',
-'_datetime',
-'_dbm',
-'_decimal',
-'_elementtree',
-'_frozen_importlib',
-'_frozen_importlib_external',
-'_functools',
-'_gdbm',
-'_hashlib',
-'_heapq',
-'_imp',
-'_io',
-'_json',
-'_locale',
-'_lsprof',
-'_lzma',
-'_markupbase',
-'_md5',
-'_multibytecodec',
-'_multiprocessing',
-'_opcode',
-'_operator',
-'_osx_support',
-'_pickle',
-'_posixshmem',
-'_posixsubprocess',
-'_py_abc',
-'_pydecimal',
-'_pyio',
-'_queue',
-'_random',
-'_sha1',
-'_sha256',
-'_sha3',
-'_sha512',
-'_signal',
-'_sitebuiltins',
-'_socket',
-'_sqlite3',
-'_sre',
-'_ssl',
-'_stat',
-'_statistics',
-'_string',
-'_strptime',
-'_struct',
-'_symtable',
-'_testbuffer',
-'_testcapi',
-'_testimportmultiple',
-'_testinternalcapi',
-'_testmultiphase',
-'_threading_local',
-'_tkinter',
-'_tracemalloc',
-'_uuid',
-'_warnings',
-'_weakref',
-'_weakrefset',
-'_xxsubinterpreters',
-'_xxtestfuzz',
-'antigravity',
-'genericpath',
-'idlelib',
-'ntpath',
-'nturl2path',
-'opcode',
-'posixpath',
-'pydoc_data',
-'pyexpat',
-'sre_compile',
-'sre_constants',
-'sre_parse',
-'this',
-'xxlimited',
-'xxsubtype']
-for i in range(0, len(m)):
-    module = m[i]
-    #print(i, module)
-    try:
-        __import__(module)
-        print(module, module in sys.builtin_module_names)
-    except Exception  as e:
-        pass
-        #print(e, i, module)
-        #print(module in sys.builtin_module_names)
-    
-# 19  _crypt
-# 23 _curses
-#
-
-# %% [markdown]
-# * [두 가지 의미의 패키지](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
-#     - 배포 패키지
-#     - 임포트 패키지
-#
-# * 모듈 : basic unit of **code reusability** in Python, existing in one of two types
-#     - 순수 모듈(pure module) : 파이썬으로 쓰여졌으면 하나의 .py 파일에 담겨 있다.
-#     - 확장 모듈(extension module) : 파이썬의 저수준 언어(예. C/C++)로 쓰여졌으며 하나의 dynamically loadable pre-compiled file에 담겨 있다. (예. e.g. a shared object (.so) file for Python extensions on Unix, a DLL (given the .pyd extension) for Python extensions on Windows, or a Java class file for Jython extensions.)
-#
-# * 패키지 설치 방법
-#     - 전역적으로 vs 지역적으로?
-#     - 패키지 격리
-#
-# * [venv](https://docs.python.org/3/library/venv.html)
 
 # %%
