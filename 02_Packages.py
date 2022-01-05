@@ -19,11 +19,9 @@
 # # 파이썬의 패키지
 
 # %% [markdown]
-# > R 사용자를 위한 안내: 파이썬의 **패키지**는 R의 **패키지**와 거의 동일한 역할을 한다. 다른 점은 파이썬이 통계 분석 외에도 여러 가지 다방면의 목적을 위해 사용되는 범용 언어라서 패키지 역시 엄청나게 다양한 목적을 위해 만들어진다. 그리고 한 패키지가 다른 패키지를 사용하기도 하는데 이때 파이썬에서는 패키지 사이의 버전이 중요하다. 왜냐하면 한 패키지 버전이 달라지면 이를 사용하는 다른 패키지가 작동하지 않기도 하기 때문이다. 그리고 파이썬 버전 자체도 버전과 파이썬의 호환성에 문제가 되기도 한다. 그렇기 때문에 파이썬에서는 파이썬의 버전과 여러 패키지의 버전이 모두 중요하다. 그런데 R과 달리 파이썬은 보통 하나의 컴퓨터에 하나의 버전만 설치할 수 있다. 그래서 사람들은 **가상환경**을 구성하여 서로 다른 버전의 파이썬을 하나의 컴퓨터에서 사용할 수 있도록 하였다. 가상환경(virtual environment)란 운영체제의 환경을 가상으로 구성한 것으므로, 기존의 환경과 구별되는 가상 환경을 여럿 만들 수 있다. 가상 환경을 사용하면 각 가상 환경마다 별도의 파이썬, 패키지 등을 설치할 수 있다. 
+# > R 사용자를 위한 안내: 파이썬의 **패키지**는 R의 **패키지**와 거의 동일한 역할을 한다. 다른 점은 파이썬이 통계 분석 외에도 여러 가지 다방면의 목적을 위해 사용되는 범용 언어라서 패키지 역시 엄청나게 다양한 목적을 위해 만들어진다. 그리고 한 패키지가 다른 패키지를 사용하기도 하는데 이때 파이썬에서는 패키지 사이의 버전이 중요하다. 왜냐하면 한 패키지 버전이 달라지면 이를 사용하는 다른 패키지가 작동하지 않기도 하기 때문이다. 그리고 파이썬 버전 자체도 문제가 되기도 한다. 그렇기 때문에 파이썬에서는 파이썬의 버전과 여러 패키지의 버전이 모두 중요하다. 그런데 R과 달리 파이썬은 보통 하나의 컴퓨터에 하나의 버전만 설치할 수 있다. 그래서 사람들은 **가상환경**을 구성하여 서로 다른 버전의 파이썬을 하나의 컴퓨터에서 사용할 수 있도록 하였다. 가상환경(virtual environment)란 운영체제의 환경을 가상으로 구성한 것으므로, 기존의 환경과 구별되는 가상 환경을 여럿 만들 수 있다. 가상 환경을 사용하면 각 가상 환경마다 별도의 파이썬, 패키지 등을 설치할 수 있다. 
 #
-# > R 사용자는 대부분 최신의 R, 그리고 최신의 패키지를 사용하지만, 파이썬 사용자는 필요에 따라 구 버전의 파이썬을 사용하기도 하고, 구 버전의 패키지를 사용하기도 한다. 이런 차이의 가장 큰 원인은 무엇일까? 저자의 생각은 이렇다. R의 공식 패키지는 적극적으로 관리되어 R의 버전 업그레이드될 때마다 패키지도 오류없이 작동하도록 관리자가 유지 보수해야 하지만, 파이썬의 패키지 저장소인 PyPI는 누구나 패키지를 올릴 수 있고, 어떤 패키지도 상관없다. 그에 따라 10년 동안 아무런 수정이 없는 패키지, 파이썬 버전 2에서만 작동하는 패키지도 수두룩하다. 이때 어떤 목적을 위해 어떤 패키지를 꼭 써야 한다면? 패키지가 작동하는 파이썬 버전을 사용할 수 밖에 없는 것이다.
-#
-# 그리고 다양한 버전의 파이썬, 패키지를 한 컴퓨터에서 사용 가능하게 하기 위해 **가상환경**을 사용한다. 
+# > R 사용자는 대부분 최신의 R, 그리고 최신의 패키지를 사용하지만, 파이썬 사용자는 필요에 따라 구 버전의 파이썬을 사용하기도 하고, 구 버전의 패키지를 사용하기도 한다. 그리고 이렇게 다양한 버전의 파이썬, 패키지를 한 컴퓨터에서 사용 가능하게 하기 위해 **가상환경**을 사용한다. 
 #
 # > R의 스크립트에 해당하는 파일(*.R)을 파이썬에서는 모듈(module)(*.py)이라고 부른다.
 
@@ -51,7 +49,7 @@
 #   - 순수 모듈(pure module) : 파이썬으로 쓰여진 .py 파일
 #   - 확장 모듈(extension module) : C, C++, Java 등의 다른 컴파일 언어로 쓰여졌다.  
 #
-# * 배포 패키지와 임포트 패키지 : 둘다 보통 패키지로도 불린다. 파이썬 공식 사이트의 용어 구분에 따르면, 배포 패키지란 배포를 목적으로 여러 파일을 압축한 **파일**이다. 임포트 패키지란 파이썬에 `import`로 불러들일 수 있는 모듈이다. 보통 패키지는 여러 모듈로 구성된다. 
+# * 배포 패키지와 임포트 패키지 : 둘다 보통 패키지로도 불린다. 파이썬 공식 사이트의 용어 구분에 따르면, 배포 패키지란 배포를 목적으로 여러 파일을 압출한 **파일**이다. 임포트 패키지란 파이썬에 `import`로 불러들일 수 있는 모듈이다. 보통 패키지는 여러 모듈로 구성된다. 
 #
 # #### **모듈**, **패키지**, **라이브러리(Library)**
 #
@@ -72,16 +70,12 @@ import psutil
 psutil
 
 # %%
-import matplotlib
-matplotlib
-
-# %%
 from matplotlib import pyplot
-pyplot
 
 # %%
 import matplotlib.pyplot
-matplotlib.pyplot
+
+# %%
 
 # %% [markdown]
 # ### 파이썬의 `import` 문
@@ -91,10 +85,9 @@ matplotlib.pyplot
 # * 내장 모듈 : C로 작성된 모듈. Python 인터프리터에 결합되어 있다.
 # * 파이썬 표준 라이브러리의 패키지와 모듈 
 #   - 파이썬 표준 라이브러리에 포함된 패키지와 모듈 리스트는  https://docs.python.org/3.8/library/index.html 에서 확인할 수 있다.
-#   - 일부 내장 모듈을 포함한다.
+#   - 내장 모듈을 포함한다
 #   - 외장 모듈은 보통 파이썬 폴더 안의 `Lib` 폴더에서 찾을 수 있다.
 #   - 내장 모듈 빌트인즈(`builtins`)에는 내장 함수(built-in function)들이 정의되어 있다. `__builtin__`, `__builtins__`은 모두 내장 모듈 `builtins`를 가리킨다. 내장 모듈의 함수는 `builtins.print`로 쓸 필요없이 그냥 `print`로 쓸 수 있다.
-#   - 파이썬을 실행한 후 바로 `dir()`를 쳐보면 사용할 수 있는 모듈은 `builtins` 뿐이다.
 # * 직접 만든 모듈 : 자신이 만든 모듈도 `import` 문으로 불러들일 수 있다. 이때 모듈 파일의 위치가 중요하다. 
 # * 제3자 패키지
 #   - 파이썬 설치 후 `pip install` 등을 통해 설치된 제3자 패키지는 보통 파이썬 폴더의 안의 `Lib/site-packages/`에서 찾을 수 있다.
@@ -137,13 +130,14 @@ from matplotlib.pyplot import scatter as sct
 # ### import된 모듈 정보 확인
 
 # %%
-np.__file__  # 모듈를 저장하고 있는 파일, 패키지일 경우 패키지의 최상위 __init__.py 파일
+np.__file__  # 패키지를 저장하고 있는 파일
 
 # %%
 print(np.__doc__)  # 패키지 안내 documentation
 
-# %% [markdown]
-# #### 그 밖에 거의 모든 패키지가 가지고 있는 속성(정보)
+# %%
+# 그 밖에 거의 모든 패키지가 가지고 있는 속성(정보)
+np.__loader__
 
 # %%
 np.__name__  # 별칭 말고 원래 이름
@@ -152,12 +146,7 @@ np.__name__  # 별칭 말고 원래 이름
 plt.__package__  # 서브패키지의 경우 패키지 이름
 
 # %%
-np.__loader__
-
-# %%
-
-# %%
-np.__spec__  # package, subpackage, module의 차이를 .__spec__에서도 확인할 수 있다.
+np.__spec__
 
 # %%
 plt.__spec__
@@ -178,16 +167,13 @@ plt.__version__
 # %%
 def imported():
     import sys
-    #import types
+    import types
     modules = list(sys.modules.keys())
     aliasnames = {}
     filenames = {}
     b_builtins = {}
     for name, val in globals().items():
-        #if isinstance(val, types.ModuleType):
-        if isinstance(val, type(__builtins__)): 
-        # __builtins__은 언제라도 수정될 수 있으므로 불확실하지만,
-        # types 역시 마찬가지...
+        if isinstance(val, types.ModuleType):
             if val.__name__ not in aliasnames:
                 aliasnames[val.__name__] = [name]                
                 filenames[val.__name__] = getattr(val, '__file__', None)
@@ -211,10 +197,7 @@ imported()
 import pandas as pd
 
 # %%
-imported()  
-# 1. 패키지/모듈 이름 : 별칭들
-# 2. 패키지/모듈 이름 : 파일
-# 3. 패키지/모듈 이름 : 빌트인 모듈인가?
+imported()
 
 # %% [markdown]
 # ### import된 모듈/패키지 제거
@@ -332,11 +315,10 @@ res = []
 
 #npack = 200; mpack = 100
 
-spack = 118491
 npack = len(package_names)
-mpack = 100
+mpack = 1000
 
-for ipack, package in enumerate(package_names[spack:npack], start=spack):
+for ipack, package in enumerate(package_names[:npack]):
     if ipack % mpack == 0 and ipack != 0:
         dat = pd.DataFrame(res)
         dat.to_csv('dat_pypi/dat_pypi_'+"{:06d}".format(ipack)+'.csv')
@@ -353,20 +335,14 @@ for ipack, package in enumerate(package_names[spack:npack], start=spack):
     desc = dat_pack['info']['description']
     f1 = patt1.findall(desc)
     f2 = patt2.findall(desc)    
-    names_import1 = ""
-    names_import2 = ""
+    name_import = ''
     if len(f1) > 0:
-        #name_import = f1[0][0].split('.')[0]
-        # 문제는 https://pypi.org/project/glasses/에서 보듯이
-        # glasses 패키지를 설명하는데
-        # import torch가 먼저 등장!        
-        names_import1 = ",".join([f1[i][0].split('.')[0] for i in range(len(f1))])
-        print(package, names_import1)
+        name_import = f1[0][0].split('.')[0]
     elif len(f2) > 0:
-        names_import2 = ",".join([f2[i].split('.')[0] for i in range(len(f2))])
-        print(package, names_import2)
-    if len(f1) or len(f2):        
-        res.append((package, names_import1 + names_import2))
+        name_import = f2[0].split('.')[0]    
+    if len(f1) or len(f2):
+        print(package, name_import)
+        res.append((package, name_import))
 
 dat = pd.DataFrame(res)
 dat.to_csv('dat_pypi/dat_pypi_'+"{:06d}".format(ipack)+'.csv')
@@ -395,15 +371,8 @@ stdlib_list.stdlib_list(version="3.8")
 # #### pip 또는 conda로 설치한 패키지 확인
 
 # %%
-# #!pip list
-# #%pip list
-
-# 가상 환경을 구성하지 않은 경우 OS 커맨드 라인에서 pip list
-# 뒤에서 설명할 conda 환경에서는 conda list를 쓴다.
-# jupyter notebook에서는 ! 또는 %를 앞에 붙인다.
-# %는 가상 환경이 구성된 경우에 쓴다.
-# %conda list 
-# %conda list --revisions
+# %conda list
+# %pip list
 
 # %% [markdown]
 # #### import 가능한 모든 모듈/패키지 확인 
@@ -418,19 +387,18 @@ help('modules')  # import 가능한 모든 모듈
 # %%
 import pkgutil
 
-
-# listing available packages
-# from https://stackoverflow.com/questions/5632980/list-of-all-imports-in-python-3
-import shutil
-import pkgutil
-
 def show_acceptable_modules():
     line = '-' * 100
     print('{}\n{:^30}|{:^20}\n{}'.format(line, 'Module', 'Location', line))
     for entry in pkgutil.iter_modules():
         print('{:30}| {}'.format(entry[1], entry[0].path))
-
+        
 show_acceptable_modules()
+
+# %%
+set(remains) - set(remains2)
+
+# %%
 
 # %% [markdown]
 # #### `import` 순서
@@ -487,14 +455,21 @@ import sillyenough
 import numpy
 
 # %% [markdown]
-# 저자가 만든 폴더가 임포트되었다. 문제는 여기에 그치지 않는다. 내부적으로 `numpy`를 임포트하는 `pandas`를 임포트 해보자. 임포트가 되지 않는다! 왜냐하면 pandas는 numpy라는 패키지를 사용하는데, 저자가 `numpy`를 다른 모듈의 이름으로 사용하고 있기 때문이다!
+# 저자가 만든 폴더가 임포트되었다. 문제는 여기에 그치지 않는다. 내부적으로 `numpy`를 임포트하는 `pandas`를 임포트 해보자.
 
 # %%
 import pandas
 
 
-# %% [markdown]
-# 저자는 결론에 의하면 패키지/모듈 이름을 혼동하는 문제를 방지하기 위해 빌트인 모듈이나 제3자 패키지의 임포트 이름과 동일한 이름의 모듈 또는 패키지는 최대한 지양하는 것이 최선이다. 또는 R의 `source()`와 같이 경로와 파일 이름을 명확하게 지정하여 임포트할 수 있도록 하는 것이다. 
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
 
 # %%
 def source(path):
@@ -558,12 +533,137 @@ source("R/check_happy.py")
 source("R/check_happy2.py")
 
 # %%
+import pandas
+
+# %%
+# 만약 패키지와 모듈이 같은 폴더 내에 있다면, 모듈 먼저
+
+# %%
+#https://www.it4nextgen.com/purpose-of-channels-in-anaconda/
+#**Conda Channels** are basically the locations where **packages are stored**. 
+#If there is a need of a **package that is other than the defaults**, 
+#the developers can also create their own channels as there is a method available in the Anaconda. 
+#The channels Anaconda Channel and the R channel are two of the 10 official repositories present in Anaconda. 
+#10 official repositories???
+#You can understand its purpose with the fact that conda channels serve as the base for hosting and managing packages. 
+#Anaconda Navigator is a phenomenal platform for developers to launch multiple applications and manage them with ease.
+
+# %%
+# conda cheat sheet
+# https://docs.conda.io/projects/conda/en/4.6.0/_downloads/52a95608c49671267e40c689e0bc00ca/conda-cheatsheet.pdf
+
+# %% [markdown]
+# ## 2.1 패키지 설치
+
+# %% [markdown]
+# 파이썬에서 패키지 설치는 보통 운영체제의 커맨드 라인(유닉스의 쉘 또는 윈도우의 명령 프롬프트)에서 진행된다. 파이썬에서 패키지를 설치하는 방법은 여러 가지이지만, 가장 기본적인 방법은 `pip`이라는 패키지를 사용하는 것이다. PiP은 **P**iP **i**nstalls **P**ackages의 약자로 패키지를 설치하는 무엇이라는 의미이다. 그런데 `pip` 역시 패키지이다. 그렇다면 `pip`은 어떻게 설치하는가? 그렇기 때문에 보통 패키지 `pip`은 파이썬과 함께 배포된다. 만약 `pip`이 없다면 https://bootstrap.pypa.io/get-pip.py에서 `pip`을 다운로드하는 모듈을 다운로드할 수 있다.
+#
+#
 
 # %%
 
 # %% [markdown]
+# * 복잡한 파이썬
 #
+# 프로그래밍을 하다 보면 자주 적용되는 패턴이 있고, 보통은 새로운 언어를 배울 때에도 당연히 적용될 것이라 가정하기 싶다. 하지만 새로운 언어를 배울 때 조심해야 하는 부분도 바로 그 지점이다. 새로운 언어에 대한 좀더 포괄적인 이해가 없다면 제대로 작동하는 소스 코드를 되도록 수정하지 말고 실행하는 것이 좋다.
+#
+# 예를 들어, 대부분의 컴퓨터 없는 `a=3` 또는 `a = 3` 또는 `a= 3`이 모두 같은 의미를 나타낸다. 하지만 linux bash shell에서 `b=3`은 작동하지만 `b = 3`, `b= 3`은 모두 `command not found` 오류를 발생할 것이다. 대부분의 언어에서 `a="str"`과 `a='str'`는 동일한 결과를 산출한다. 하지만 SQL에서는 문자열을 나타내기 위해서 반드시 `'`를 써야 하며, `"`를 쓸 수 없다. 
 
+# %%
+
+# %% [markdown]
+# * [두 가지 의미의 패키지](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
+#     - 배포 패키지
+#     - 임포트 패키지
+#
+# * 모듈 : basic unit of **code reusability** in Python, existing in one of two types
+#     - 순수 모듈(pure module) : 파이썬으로 쓰여졌으면 하나의 .py 파일에 담겨 있다.
+#     - 확장 모듈(extension module) : 파이썬의 저수준 언어(예. C/C++)로 쓰여졌으며 하나의 dynamically loadable pre-compiled file에 담겨 있다. (예. e.g. a shared object (.so) file for Python extensions on Unix, a DLL (given the .pyd extension) for Python extensions on Windows, or a Java class file for Jython extensions.)
+#
+# * 패키지 설치 방법
+#     - 전역적으로 vs 지역적으로?
+#     - 패키지 격리
+#
+# * [venv](https://docs.python.org/3/library/venv.html)
+
+
+# %%
+## 파이썬에서 가상 환경(Virtual Environment) 
+## R의 환경(Environment)
+
+## 파이썬에서 가상 환경이 필요한 이유 : 
+##  패키지들의 상호 의존성 : 어떤 패키지는 다른 패키지의 특정한 버전을 필요로 한다.
+##                     버전 하위 호환성이 깨지는 경우
+##  
+##  R의 경우 CRAN에 등록된 패키지들은 이런 패키지 사이의 호환성을 계속 테스트하기 때문에
+##   패키지의 버전이 문제가 되는 경우가 거의 없다. 대부분 최신의 버전을 사용하면 된다.
+
+## python -m mod : run library module as a script (terminates option list)
+## conda base에서 venv test를 실행하면? source test/bin/activate
+## (test) (base) kwhkim@...
+
+# %% [markdown]
+# ### conda channels(with `-c` or `--channel`)
+#
+# ```
+# conda install -c conda-forge matplotlib
+# ```
+#
+# * defaults
+# * conda-forge
+# * r
+# * 
+
+# %% [raw]
+# source ~/.bashrc  # conda에 필요한 설정이 포함되어 있기 때문??? 구체적으로 어떤 것들???
+# conda activate
+# source activate
+# conda env list
+# conda install [PACKAGE-NAME]
+# pip install [PACKAGE-NAME]
+#
+# conda config --append channels conda-forge
+# -> condarc
+#    order of channels matter
+#
+# conda env export --file environment.yml
+# conda env create -n conda-env -f /path/to/environment.yml # duplicate
+# conda env update -n conda-env -f /path/to/environment.yml # update
+#
+# R environment
+# conda create -n r-env r-base
+# Conda’s R packages are available from the R channel of Anaconda Cloud, which is included by default in Conda’s default_channels
+#
+# Revisions track changes to your environment over time, allowing you to easily remove packages and all of their dependencies
+# conda list --revisions
+#
+# As you build more projects, each with their own environment, you’ll begin to quickly accumulate tarballs from packages you’ve installed.
+# To get rid of them and free up some disc space, run:
+# % conda clean --all                     # no active env needed 
+#
+# defusedxml-0.7.1-pyhd8ed1ab_0.tar.bz2         23 KB
+# backports.functools_lru_cache-1.6.4-pyhd8ed1ab_0.tar.bz2       9 KB
+# libtiff-4.3.0-h1167814_1.tar.bz2             621 KB
+# testpath-0.5.0-pyhd8ed1ab_0.tar.bz2           86 KB
+#
+# ---------------------------------------------------
+# Total:                                     433.8 MB
+#
+# Proceed ([y]/n)? 
+
+
+# %%
+# PiP : PiP installs Packages의 약자!
+
+# What is conda channels?
+# https://docs.conda.io/projects/conda/en/latest/user-guide/concepts/channels.html
+
+# cf. PyPI : Python Package Index
+# https://pypi.org
+
+# Installing Packages in Python : https://packaging.python.org/en/latest/tutorials/installing-packages/
+
+# !!!
 
 # %% [markdown]
 # ### Python과 R 비교
@@ -630,32 +730,6 @@ source("R/check_happy2.py")
 # # echo %PATH%
 # # echo $PATH
 
-# %%
-
-# %%
-
-# %% [markdown]
-# ### 패키지 설치
-
-# %% [markdown]
-# 파이썬에서 패키지 설치는 보통 운영체제의 커맨드 라인(유닉스의 쉘 또는 윈도우의 명령 프롬프트)에서 진행된다. 파이썬에서 패키지를 설치하는 방법은 여러 가지이지만, 가장 기본적인 방법은 `pip`이라는 패키지를 사용하는 것이다. PiP은 **P**iP **i**nstalls **P**ackages의 약자로 패키지를 설치하는 무엇이라는 의미이다. 그런데 `pip` 역시 패키지이다. 그렇다면 `pip`은 어떻게 설치하는가? 그렇기 때문에 보통 패키지 `pip`은 파이썬과 함께 배포된다. 만약 `pip`이 없다면 https://bootstrap.pypa.io/get-pip.py에서 `pip`을 다운로드하는 모듈을 다운로드할 수 있다.
-#
-
-# %%
-
-# %%
-
-# %%
-
-# %% [markdown]
-# * 복잡한 파이썬
-#
-# 프로그래밍을 하다 보면 자주 적용되는 패턴이 있고, 보통은 새로운 언어를 배울 때에도 당연히 적용될 것이라 가정하기 싶다. 하지만 새로운 언어를 배울 때 조심해야 하는 부분도 바로 그 지점이다. 새로운 언어에 대한 좀더 포괄적인 이해가 없다면 제대로 작동하는 소스 코드를 되도록 수정하지 말고 실행하는 것이 좋다.
-#
-# 예를 들어, 대부분의 컴퓨터 없는 `a=3` 또는 `a = 3` 또는 `a= 3`이 모두 같은 의미를 나타낸다. 하지만 linux bash shell에서 `b=3`은 작동하지만 `b = 3`, `b= 3`은 모두 `command not found` 오류를 발생할 것이다. 대부분의 언어에서 `a="str"`과 `a='str'`는 동일한 결과를 산출한다. 하지만 SQL에서는 문자열을 나타내기 위해서 반드시 `'`를 써야 하며, `"`를 쓸 수 없다. 
-
-# %%
-
 # %% [markdown]
 # ## 사용 가능한 가상 환경
 #
@@ -682,19 +756,6 @@ source("R/check_happy2.py")
 #   위의 세 개 비교 : https://conda.io/projects/conda/en/latest/commands.html#conda-vs-pip-vs-virtualenv-commands
 #
 #
-
-# %%
-#https://www.it4nextgen.com/purpose-of-channels-in-anaconda/
-#**Conda Channels** are basically the locations where **packages are stored**. 
-#If there is a need of a **package that is other than the defaults**, 
-#the developers can also create their own channels as there is a method available in the Anaconda. 
-#The channels Anaconda Channel and the R channel are two of the 10 official repositories present in Anaconda. 
-#10 official repositories???
-#You can understand its purpose with the fact that conda channels serve as the base for hosting and managing packages. 
-#Anaconda Navigator is a phenomenal platform for developers to launch multiple applications and manage them with ease.
-
-# conda cheat sheet
-# https://docs.conda.io/projects/conda/en/4.6.0/_downloads/52a95608c49671267e40c689e0bc00ca/conda-cheatsheet.pdf
 
 # %% [raw]
 # D:\pipenv\test>pipenv --python 3.8
@@ -1088,6 +1149,21 @@ sys.modules['builtins']
 # %conda list --revisions
 
 # %%
+# listing available packages
+# from https://stackoverflow.com/questions/5632980/list-of-all-imports-in-python-3
+import shutil
+import pkgutil
+
+def show_acceptable_modules():
+    line = '-' * 100
+    print('{}\n{:^30}|{:^20}\n{}'.format(line, 'Module', 'Location', line))
+    for entry in pkgutil.iter_modules():
+        print('{:30}| {}'.format(entry[1], entry[0].path))
+
+show_acceptable_modules()
+
+## conda를 쓴다면, conda list
+##               conda list --revisions
 
 
 
@@ -1137,6 +1213,11 @@ print([x for x in dir() if (not x.startswith('_') and not x in ['In', 'Out', 'ex
 # %%
 
 # %%
+l = locals(); 
+[key for key in l.keys() 
+  if isinstance(l[key], type(__builtins__)) and not key.startswith('_')]
+  #if isinstance(l[key], type(re)) and not key.startswith('_')]
+# %%
 
 # %% [markdown]
 # ## 2.6 재현성을 위해 python 정보 남기기
@@ -1145,129 +1226,6 @@ print([x for x in dir() if (not x.startswith('_') and not x in ['In', 'Out', 'ex
 # 파이썬 버전
 print(sys.version)
 
-
-# %%
-
-# %%
-
-# %% [markdown]
-# ## 가상환경 구성
-
-# %%
-
-# %%
-## 파이썬에서 가상 환경(Virtual Environment) 
-## R의 환경(Environment)
-
-## 파이썬에서 가상 환경이 필요한 이유 : 
-##  패키지들의 상호 의존성 : 어떤 패키지는 다른 패키지의 특정한 버전을 필요로 한다.
-##                     버전 하위 호환성이 깨지는 경우
-##  
-##  R의 경우 CRAN에 등록된 패키지들은 이런 패키지 사이의 호환성을 계속 테스트하기 때문에
-##   패키지의 버전이 문제가 되는 경우가 거의 없다. 대부분 최신의 버전을 사용하면 된다.
-
-## python -m mod : run library module as a script (terminates option list)
-## conda base에서 venv test를 실행하면? source test/bin/activate
-## (test) (base) kwhkim@...
-
-# %% [markdown]
-# ### conda channels(with `-c` or `--channel`)
-#
-# ```
-# conda install -c conda-forge matplotlib
-# ```
-#
-# * defaults
-# * conda-forge
-# * r
-# * 
-
-# %% [raw]
-# source ~/.bashrc  # conda에 필요한 설정이 포함되어 있기 때문??? 구체적으로 어떤 것들???
-# conda activate
-# source activate
-# conda env list
-# conda install [PACKAGE-NAME]
-# pip install [PACKAGE-NAME]
-#
-# conda config --append channels conda-forge
-# -> condarc
-#    order of channels matter
-#
-# conda env export --file environment.yml
-# conda env create -n conda-env -f /path/to/environment.yml # duplicate
-# conda env update -n conda-env -f /path/to/environment.yml # update
-#
-# R environment
-# conda create -n r-env r-base
-# Conda’s R packages are available from the R channel of Anaconda Cloud, which is included by default in Conda’s default_channels
-#
-# Revisions track changes to your environment over time, allowing you to easily remove packages and all of their dependencies
-# conda list --revisions
-#
-# As you build more projects, each with their own environment, you’ll begin to quickly accumulate tarballs from packages you’ve installed.
-# To get rid of them and free up some disc space, run:
-# % conda clean --all                     # no active env needed 
-#
-# defusedxml-0.7.1-pyhd8ed1ab_0.tar.bz2         23 KB
-# backports.functools_lru_cache-1.6.4-pyhd8ed1ab_0.tar.bz2       9 KB
-# libtiff-4.3.0-h1167814_1.tar.bz2             621 KB
-# testpath-0.5.0-pyhd8ed1ab_0.tar.bz2           86 KB
-#
-# ---------------------------------------------------
-# Total:                                     433.8 MB
-#
-# Proceed ([y]/n)? 
-
-
-# %%
-# PiP : PiP installs Packages의 약자!
-
-# What is conda channels?
-# https://docs.conda.io/projects/conda/en/latest/user-guide/concepts/channels.html
-
-# cf. PyPI : Python Package Index
-# https://pypi.org
-
-# Installing Packages in Python : https://packaging.python.org/en/latest/tutorials/installing-packages/
-
-# !!!
-
-# %% [markdown]
-# ## CONDA 환경 변수
-#
-# 예)
-
-# %% [raw]
-# CONDA_DEFAULT_ENV=base
-# CONDA_EXE=C:\Users\Home\miniconda3\Scripts\conda.exe
-# CONDA_PREFIX=C:\Users\Home\miniconda3
-# CONDA_PROMPT_MODIFIER=(base)
-# CONDA_PYTHON_EXE=C:\Users\Home\miniconda3\python.exe
-# CONDA_SHLVL=1
-
-# %% [markdown]
-# ### CONDA에서 패키지 파일 확인
-
-# %% [markdown]
-# `${CONDA_PREFIX}/conda-meta/<package-name-and-version>-<hash>.json`에서 `files`
-
-# %% [raw]
-# # https://keepdev.tistory.com/27
-# pip freeze > requirements.txt
-# pip install -r requirements.txt
-# conda list --export > conda_requirements.txt
-# conda install --file conda_requirements.txt
-
-# %% [markdown]
-# ### CONDA Cheatsheet
-#
-# * https://conda.io/projects/conda/en/latest/user-guide/cheatsheet.html
-# * https://hcc.unl.edu/docs/attachments/11635089.pdf
-# * https://kapeli.com/cheat_sheets/Conda.docset/Contents/Resources/Documents/index
-# * https://directori.tistory.com/135
-
-# %%
 
 # %% [markdown]
 # ## 그밖에
@@ -1308,6 +1266,72 @@ sys.builtin_module_names[0:5]
 __name__
 
 # %%
+from __future__ import print_function
+from sys import getsizeof, stderr
+from itertools import chain
+from collections import deque
+try:
+    from reprlib import repr
+except ImportError:
+    pass
+
+def total_size(o, handlers={}, verbose=False):
+    """ Returns the approximate memory footprint an object and all of its contents.
+
+    Automatically finds the contents of the following builtin containers and
+    their subclasses:  tuple, list, deque, dict, set and frozenset.
+    To search other containers, add handlers to iterate over their contents:
+
+        handlers = {SomeContainerClass: iter,
+                    OtherContainerClass: OtherContainerClass.get_elements}
+
+    """
+    dict_handler = lambda d: chain.from_iterable(d.items())
+    all_handlers = {tuple: iter,
+                    list: iter,
+                    deque: iter,
+                    dict: dict_handler,
+                    set: iter,
+                    frozenset: iter,
+                   }
+    all_handlers.update(handlers)     # user handlers take precedence
+    seen = set()                      # track which object id's have already been seen
+    default_size = getsizeof(0)       # estimate sizeof object without __sizeof__
+
+    def sizeof(o):
+        if id(o) in seen:       # do not double count the same object
+            return 0
+        seen.add(id(o))
+        s = getsizeof(o, default_size)
+
+        if verbose:
+            print(s, type(o), repr(o), file=stderr)
+
+        for typ, handler in all_handlers.items():
+            if isinstance(o, typ):
+                s += sum(map(sizeof, handler(o)))
+                break
+        return s
+
+    return sizeof(o)
+
+
+##### Example call #####
+
+if __name__ == '__main__':
+    d = dict(a=1, b=2, c=3, d=[4,5,6,7], e='a string of chars')
+    print(total_size(d, verbose=True))
+
+# %%
+a = [1]*100
+b = [2]*100
+c = [a,b]
+
+# %%
+sys.getsizeof(c)
+
+# %%
+total_size(c)
 
 # %%
 
@@ -1404,6 +1428,43 @@ site.USER_SITE
 
 # %%
 
+
+# %%
+# # 지워버리기?
+
+# %%
+m = sys.modules.pop('re')
+
+# %%
+import sys
+import types
+def imported():
+    modules = list(sys.modules.keys())
+    aliasnames = {}
+    filenames = {}
+    b_builtins = {}
+    for name, val in globals().items():
+        if isinstance(val, types.ModuleType):
+            if val.__name__ not in aliasnames:
+                aliasnames[val.__name__] = [name]                
+                filenames[val.__name__] = getattr(val, '__file__', None)
+                b_builtins[val.__name__] = val.__name__ in sys.builtin_module_names
+                if hasattr(val, '__file__'):
+                    #filenames[val.__name__] = val.__file__
+                    pass
+                #else:
+                #    filenames[val.__name__] = val.__file__
+            else:
+                aliasnames[val.__name__].append(name)                
+        
+    return aliasnames, filenames, b_builtins
+
+
+# %%
+imports()
+
+# %%
+m
 
 # %%
 dir(m)
@@ -1617,20 +1678,3 @@ for i in range(0, len(m)):
 # 19  _crypt
 # 23 _curses
 #
-
-# %% [markdown]
-# * [두 가지 의미의 패키지](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
-#     - 배포 패키지
-#     - 임포트 패키지
-#
-# * 모듈 : basic unit of **code reusability** in Python, existing in one of two types
-#     - 순수 모듈(pure module) : 파이썬으로 쓰여졌으면 하나의 .py 파일에 담겨 있다.
-#     - 확장 모듈(extension module) : 파이썬의 저수준 언어(예. C/C++)로 쓰여졌으며 하나의 dynamically loadable pre-compiled file에 담겨 있다. (예. e.g. a shared object (.so) file for Python extensions on Unix, a DLL (given the .pyd extension) for Python extensions on Windows, or a Java class file for Jython extensions.)
-#
-# * 패키지 설치 방법
-#     - 전역적으로 vs 지역적으로?
-#     - 패키지 격리
-#
-# * [venv](https://docs.python.org/3/library/venv.html)
-
-# %%

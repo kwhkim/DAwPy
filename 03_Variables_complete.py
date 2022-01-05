@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.11.2
+#       jupytext_version: 1.5.1
 #   kernelspec:
 #     display_name: rtopython2-pip
 #     language: python
@@ -21,153 +21,86 @@
 # * 
 
 # %% [markdown]
-# # 3. 파이썬의 변수, 자료형, 연산/함수
-#
-
-# %% [markdown]
-# ## 3.1 파이썬의 변수
-#
-# 파이썬의 변수는 동적 타입이다: 변수의 타입이 코드가 실행되는 도중에 바뀔 수 있다.
-# 숫자, 문자, 분석 결과 등은 모두 파이썬의 객체(Object)에 담을 수 있다. 
-# 사실 우리가 파이썬에서 다루는 거의 모든 것은 객체이다. 숫자 `3` 역시 객체이다.
-# 다음을 보자. `type(3)`은 `int`이고, `int`에 대한 설명을 보면 `class int in module builtins`라고 나온다.
-# 숫자 `3`은 모듈 `builtins`에서 정의한 클래스의 인스턴스이다(이 설명을 잘 이해 못하겠다면 파이썬의 클래스/인스턴스을 참조하라).
-# 보통 클래스 이름은 첫 글자를 대문자로 하는데 이 경우는 매우 자주 쓰이기 때문에 소문자로 시작하는 듯 하다.
-
-# %%
-type(3)
-
-# %%
-help("int")
-# Help on class int in module builtins:
-# 
-# class int(object)
-# |  int([x]) -> integer
-# |  int(x, base=10) -> integer
-
-# %% [markdown]
-# 변수는 그 내용이 변할 수 있기 때문에 변수이다. 파이썬에서 변수란 어떤 객체를 가리키는 지시자이다. 예를 들어 변수 `x=3`으로 변수 `x`에 `3`을 담았다고 말할 수 있겠지만, 좀더 정확하게 설명하면 변수 `x`는 객체 `3`을 가리킨다. 하지만 `x=3`의 경우에는 변수 `x`에 `3`이 담겨 있다고 말해도 개념적으로 크게 다르지 않다. 이에 대한 자세한 내용은 이 장의 내용을 끝까지 읽어나가면 이해할 수 있을 것이다. 
-
-# %% [markdown]
+# # 3 R의 변수, 자료형, 연산/함수
+# ## 3.1 R의 변수
 # ## 3.1.1 변수의 이름
-#
+
+# %%
 # 파이썬에서는 변수 이름에 알파벳, 숫자, _을 활용할 수 있다. 
 # R과 달리 .(점)은 사용할 수 없다.
 # Python에서 .(점)은 Class의 attribute을 가리키거나 module의 변수, 함수를 지칭하기
 # 위해 사용된다.
 # 첫 글자는 숫자가 될 수 없다.
-#
-# 간명한 변수 이름을 짓는 것은 언제나 쉽지 않다.
-# 파이썬에는 PEP(Python Enhancement Proposal)이라는 것이 있다.
-# PEP에는 파이썬에 추가되면 좋을 기능, 파이썬를 사용하여 코드를 작성할 때 활용할 수 있는 표준 등이 제안된다.
-# PEP에는 모듈 이름, 패키지 이름, 클래스 이름, 메쏘드 이름, 예외 이름, 함수 이름, 전역 상수 이름
-# 전역 변수이름, 지역변수 이름, 인스턴스 이름, 인스턴스 변수 이름, 함수 매개변수 이름에 대한
-# 표준 방식이 제안되기도 한다. 
-#
-# * 참고 자료: [https://stackoverflow.com/questions/159720/what-is-the-naming-convention-in-python-for-variable-and-function-names]
-#
-# 몇 가지 규칙은 다음과 같다.
-#
-# * `_`로 시작하는 이름은 내부용 변수 이름으로 쓴다.
-# * 클래스 이름은 대문자로 시작한다.
-# * 상수 이름은 모두 대문자로 한다.
-# * 파이썬의 변수 이름은 snake 이름(단어를 밑줄로 연결한 형식)이 주로 사용된다.
+# !!! 변수 명명 PEP?
+#     PEP : Python Enhancement Proposal
+# module_name, package_name, ClassName, method_name, ExceptionName, function_name, GLOBAL_CONSTANT_NAME, global_var_name, instance_var_name, function_parameter_name, local_var_name
+# https://stackoverflow.com/questions/159720/what-is-the-naming-convention-in-python-for-variable-and-function-names
 
-# %%
 myAge = 22
 year = 2018
 day_of_Month = 3 #Alphabets, numbers, '.', '_'
 #stock.high = 13322
 whatIGotForMy23thBirthday = "flowers"
-print(myAge)
-print(year)
-print(day_of_Month)
-print(whatIGotForMy23thBirthday)
 
 # %% [markdown]
 # ## 3.1.2 변수 할당
 
-# %% [markdown]
+# %%
 # 변수 할당을 위해서는 =를 사용한다.
 # 여러 변수를 한꺼번에 할당할 수도 있다.
-# 이때 만약 **mutable**인 대상을 할당할 경우에는
+# 이때 만약 mutable인 대상을 할당할 경우에는
 # 모든 변수가 모두 같은 내용을 항상 공유하므로 유의할 필요가 있다.
-# (**mutable**(가변 객체)에 대해서는 후에 설명된다.)
-#
-# R과 다르게 `<-` 또는 `->`를 사용할 수 없다.
-# R과 다르게 별칭(alias)이 자주 쓰인다. (별칭이란 변수가 가리키는 대상이 동일한 경우에 또다른 이름이란 뜻이다)
-
-# %%
+# a <-3
 a = 3
 b = 2
 # d <- -1
 d = -1
 # e1 <- e2 <- 7
 e1 = e2 = 7
-print(a, b, d, e1, e2)
 
 # %%
 e1 = e2 = e3 = 10
 e2 = 3
-print(e1, e2, e3)
-
-# %% [markdown]
-# 다음의 코르를 보자. 
-# e3는 리스트 [1,2,3,4]를 가리키고, e1=e2=e3를 통해 e1, e2는 e3와 동일한 객체를 가리키는 별칭이다.
-# e1[0]=-1로 리스트의 첫 번째 원소를 바꾸지만, 동일한 객체를 가리키는 e2, e3의 첫 번째 원소도 바뀐다. 
+print(e1)
 
 # %%
 e1 = e2 = e3 = [1,2,3,4]
 e1[0] = -1
-print(e3) 
-
-# %% [markdown]
-# 이를 방지하기 위해서 **mutable**은 복사를 한다. 이때 얕은 복사(shallow copy)와 깊은 복사(deep dopy)의 구분을 유의하자. 얕은 복사는 가장 높은 수준에서만 복사를 한다. 깊은 복사는 가장 낮은 수준까지 복사한다.
-
-# %% [markdown]
-# #### 깊은 복사
-#
-# `copy.deepcopy()`를 사용하여 리스트를 깊게 복사할 경우, 그 결과로 새로운 리스트가 생성된다. 다음의 코드에서 `e1`를 깊게 복사하여 `e2`를 만들면(`e2=copy.deepcopy(e1)`) `e2`와 `e1`는 내용이 같지만 서로 다른 객체이며, 메모리의 다른 곳에 저장된다. `e1`이 가리키는 객체의 메모리 주소는 `id(e1)`으로 확인할 수 있다. 
+e3
 
 # %%
-import copy
-
-a = [1,2,3]
-b = ['a', 'b', 'c']
-e1 = [1,2,3, a,b]
-e2 = copy.deepcopy(e1)
-e1[0] = 100
-a[0] = 100
+# @@@@@@@@@@@@@
+# 얕은 복사(shallow copy) : 메모리 주소를 공유
+e1 = [1,2,3,4]
+e2 = e1
+e2[0] = -1
 print(e1)
-print(e2) 
-print(id(e1), id(e2))
+
+id(e1[0]), id(e2[0])
 
 # %%
-copy.__file__ # 모듈 copy는 파이썬 표준 모듈의 일원이다.
-
-# %% [markdown]
-# #### 얕은 복사
-#
-# `.copy()` 또는 `copy.copy()`로 복사한 경우는 얕은 복사이다. 가장 높은 수준에서는 복사가 이루어지지만, 그 다음 단계에서는 동일한 객체를 가리킨다.
-#
-# 다음 코드에서 `e2=e1.copy()`를 하면 `e1`의 원소인 `[1,2,3,a,b]`가 복사되어 `e2`가 된다. 이때 `1`,`2`,`3`은 복사가 되고, `a`, `b`는 내용이 아니라 주소만 복사가 된다. `e2=e1`를 하면 `e1`의 주소가 `e2`의 주소가 된다는 것과 비교해보자. (조금 더 정확한 설명은 `[1,2,3,a,b]`를 얕은 복사를 하면 각 원소의 주소가 복사된다. 이때 `1`,`2`,`3`는 immutable(불변객체)이기 때문에 주소를 복사하는 것과 대상을 복사하는 것이 차이가 없다. 좀더 자세한 내용은 후에 설명된다.)
-#
-# 그래서 `e1`과 `e2`가 가리키는 내용의 메모리 주소는 다르지만, `e1[3]`과 `e2[3]`는 동일한 주소에 저장되어 있고, 하나를 바꾸면 다른 것도 바뀐다. (`e1[3]`은 `e1`의 4번째 원소를 가리킨다. 파이썬에서는 `e1[0]`이 `e1`의 첫 번째 원소이다. 하지만 `e1[0]`에서 `0`이기 때문에 0-번째 원소라고도 부른다. 이런 명명법을 사용할 경우(0번째부터 시작할 경우) `e1[3]`은 `e1`의 3-번째 원소이다. 다시 말해, `e1[3]`은 "**파이썬 방식으로**" 또는 "**0-번째부터 시작하면**" 3-번째 원소이다.)
+# @@@@@@@@@@@@@
+# copy() : 함수로 복사할 경우 메모리 주소를 새롭게 할당
+e3 = [1,2,3,4]
+e1 = e3.copy()
+e1[0] = -1
+print(e3)
+id(e3[0]), id(e1[0])
 
 # %%
-a = [1,2,3]
-b = ['a', 'b', 'c']
-e1 = [1,2,3, a,b]
-e2 = e1.copy()
-e1[0] = 100
-a[0] = 100
-print(e1)
-print(e2) 
-print(id(e1), id(e2))
-print(id(e1[3]), id(e2[3]))
+# assign("var", 3)
+varname = "myVariable" # Camel case
+# assign(varname, 2)
+
+# %%
+myVariable = 1
+varname2 = "my_Another_Variable" # Python
+# varname3 = "myVariable.3rd" # R
+# assign(varname2, 2)
+# assign(varname3, 2)
 
 # %% [markdown]
-# 만약 변수 이름이 문자열 변수에 저장되어 있다면 어떻게 할당해야 하나? 예를 들어 `varname`에 `"myVar"`이라는 값이 저장되어 있다면 `myVar=10`을, `varname`에 `"amount"`가 저장되어 있다면 `amount=10`를 해야 한다면? R에서는 쉽게 `assign(varname, 10)`을 하면 되지만 파이썬에서는 쉽지 않다. 변수 이름이 변수로 저장되어 있을 때 변수를 할당하는 방법은 이 장의 마지막에서 소개하겠다. 
+# * R의 `assign`을 Python에서 구현하기 위한 방법은 이 장의 마지막에서 설명된다.
 
 # %% [markdown]
 # ## 3.1.3. 변수관리
@@ -187,30 +120,18 @@ cc = "Now"
 globals()  # 글로벌 변수 # jupyter notebook에서와 python script에서 결과가 다르다.
 
 # %%
-locals() 
+locals()
 
 # %%
 vars() # 인자 없이 사용하는 vars()는 locals()랑 같다
 
+# %%
 
 # %%
 # str(a); str(b); str(c)
 # ls.str()
-def types_list(var):
-    res = []
-    for i,x in enumerate(var):
-        #print(x)
-        if isinstance(x, list):        
-            res.append(types_list(x))
-        else:
-            res.append((type(x), x))
-            # or res.append(type(x))
-    return res
-x = ['a', 3, ['b', 4, ['c', 5], [3,2]]]
-types_list(x)
-
-# %%
 # exists("a"); exists("d")
+
 'a' in globals(), 'b' in globals()
 
 # %%
@@ -341,7 +262,7 @@ print(inspect.getsource(np.sum)) # 다른 모듈에서 정의된 함수
 # %%
 
 # %% [markdown]
-# # 3.2 파이썬의 데이터타입(자료형)
+# # 3.2 R의 데이터타입(자료형)
 # # 3.2.1 데이터타입(Data types
 # # 3.2.2 변수의 데이터 타입 확인하기
 
@@ -360,8 +281,6 @@ print(inspect.getsource(np.sum)) # 다른 모듈에서 정의된 함수
 # 날짜시간리스트(POSIXlt) is.integer( , "POSIXlt)  as.POSIXlt()
 
 # %%
-
-# %%
 # 파이썬
 
 # 데이터타입              확인하는 함수                  변환하는 함수
@@ -371,19 +290,11 @@ print(inspect.getsource(np.sum)) # 다른 모듈에서 정의된 함수
 # 범주(factor)           -            
 # 순위범주(ordered)      -
 # 논리(bool)             isinstance( , bool)         
-# 날짜(Date)             isinstance( ,datetime.date)     datetime.date(년,월,일)     
+# 날짜(Date)             isinstance( ,datetime.datetime)  datetime.datetime(년,월,일)     
 # 날짜시간벡터(POSIXct)  isinstance( ,datetime.datetime) datetime.datetime(년,월,일,시,분,초) 
 # 날짜시간리스트(POSIXlt) -
 
 # isinstance는 데이터타입 뿐 아니라 클래스 판별에서도 쓰인다.
-
-# %% [markdown]
-# **범주**, **순위범주**는 파이썬의 내장 모듈 또는 표준 라이브러리로 구현할 수 없다. 보통 `pandas`라는 제3자 패키지를 사용한다. 
-
-# %%
-import pandas as pd
-x = pd.Categorical(['a', 'b', 'b', 'a'])
-isinstance(x,pd.Categorical)
 
 # %%
 # x1 = 23L; class(x1)
@@ -397,20 +308,21 @@ isinstance(x,pd.Categorical)
 
 
 import datetime
-import pandas as pd
-x1 = 23; print(type(x1))
-x2 = 22.3; print(type(x2))
-x3 = "strings"; print(type(x3))
-x4 = pd.Categorical(['Hi', 'Lo', 'Lo']); print(type(x4))
-x5 = datetime.date(2020, 1, 1); print(type(x5))
-x6 = datetime.datetime(2020, 1, 1, 12, 11, 11); print(type(x6))
+x1 = 23; type(x1)
+x2 = 22.3; type(x2)
+x3 = "strings"; type(x3)
+#
+x5 = datetime.datetime(2020, 1, 1); type(x5)
+x6 = datetime.datetime(2020, 1, 1, 12, 11, 11); type(x6)
 
 # %%
+# ls.str()를 사용해 x와 y의 데이터타입이 변화했다는 것을 보여주면 좋을 것 같습니다.
+# ls.str()
 
 # %% [markdown]
+# # @@@@@@@@@@@@@@
 # ## 타입 어노테이션
-#
-# 타입 어노테이션(Type Annotation)은 처리하는 데이터와 메서드에서 사용하는 데이터에 대한 타입 힌트를 주는 것이다(강제하는 것이 아니므로 주의를 요한다. 타입이 타입 어노테이션과 다르더라도 오류가 발생하진 않는다).
+# 타입 어노테이션(Type Annotation)은 처리하는 데이터와 메서드에서 사용하는 데이터에 대한 타입 힌트를 주는 것이다.
 #
 # 파이썬에서는 3.5버전 이후에 타입 어노테이션을 제공하고 있다. 
 
@@ -685,14 +597,9 @@ T = [3,2]
 T 
 True = [3,2]
 # SyntaxError: cannot assign to True
-
-# %%
 # 모든 예약어 확인
 import keyword
-#keyword.kwlist
-", ".join(keyword.kwlist)
-
-# %%
+keyword.kwlist
 "True" in keyword.kwlist
 keyword.iskeyword("True")
 
@@ -869,8 +776,8 @@ exec(f'{a}={b}')
 # 두 번째 방법은 파이썬이 지원하지 않는 변수명에 대해서도
 # 에러가 발생하지 않는다. 그렇다고 변수가 생성되지도 않지만,
 # globals()에서 찾을 수는 있다.
-#
-# globals()['@@'] = 'symbol at'
+
+globals()['@@'] = 'symbol at'
 # @@
 # # SyntaxError: invalid syntax
 
@@ -879,70 +786,3 @@ globals()['@@']
 # 'symbol at'
 
 # %%
-
-# %% [markdown]
-# # =====
-
-# %%
-from __future__ import print_function
-from sys import getsizeof, stderr
-from itertools import chain
-from collections import deque
-try:
-    from reprlib import repr
-except ImportError:
-    pass
-
-def total_size(o, handlers={}, verbose=False):
-    """ Returns the approximate memory footprint an object and all of its contents.
-
-    Automatically finds the contents of the following builtin containers and
-    their subclasses:  tuple, list, deque, dict, set and frozenset.
-    To search other containers, add handlers to iterate over their contents:
-
-        handlers = {SomeContainerClass: iter,
-                    OtherContainerClass: OtherContainerClass.get_elements}
-
-    """
-    dict_handler = lambda d: chain.from_iterable(d.items())
-    all_handlers = {tuple: iter,
-                    list: iter,
-                    deque: iter,
-                    dict: dict_handler,
-                    set: iter,
-                    frozenset: iter,
-                   }
-    all_handlers.update(handlers)     # user handlers take precedence
-    seen = set()                      # track which object id's have already been seen
-    default_size = getsizeof(0)       # estimate sizeof object without __sizeof__
-
-    def sizeof(o):
-        if id(o) in seen:       # do not double count the same object
-            return 0
-        seen.add(id(o))
-        s = getsizeof(o, default_size)
-
-        if verbose:
-            print(s, type(o), repr(o), file=stderr)
-
-        for typ, handler in all_handlers.items():
-            if isinstance(o, typ):
-                s += sum(map(sizeof, handler(o)))
-                break
-        return s
-
-    return sizeof(o)
-
-
-##### Example call #####
-
-if __name__ == '__main__':
-    d = dict(a=1, b=2, c=3, d=[4,5,6,7], e='a string of chars')
-    print(total_size(d, verbose=True))
-
-# %%
-a = [1]*100
-b = [2]*100
-c = [a,b]
-print(sys.getsizeof(c))
-print(total_size(c))
