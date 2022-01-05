@@ -200,7 +200,7 @@ def types_list(var):
     res = []
     for i,x in enumerate(var):
         #print(x)
-        if isinstance(x, list):        
+        if isinstance(x, list) or isinstance(x, tuple):        
             res.append(types_list(x))
         else:
             res.append((type(x), x))
@@ -342,7 +342,118 @@ print(inspect.getsource(np.sum)) # 다른 모듈에서 정의된 함수
 
 # %% [markdown]
 # # 3.2 파이썬의 데이터타입(자료형)
-# # 3.2.1 데이터타입(Data types
+
+# %% [markdown]
+# # 3.2.1 데이터타입(Data types)
+
+# %% [markdown]
+# 파이썬의 기본적인(내장 모듈에서 정의된) 데이터 타입은 https://docs.python.org/ko/3.8/library/index.html 에서 확인할 수 있습니다. `dir(__builtins__)`을 통해서도 모듈 빌트인(`builtins`)에 정의된 클래스나 함수를 확인할 수 있습니다. 앞에서 설명했듯이 내장 모듈에 정의된 클래스, 객체, 함수 들은 파이썬 실행 후 바로 사용할 수 있습니다. 아마도 파이썬에서 `from builtins import *`를 하는 듯 합니다. 
+
+# %% [markdown]
+# 파이썬 사이트에는 숫자형(`int`, `float`, `complex`), 문자열(`str`), 시퀀스형(`list`, `tuple`), 매핑형(`dict`), 집합형(`dict`, `frozenset`) 등이 소개 되어 있는데, 이 중에 데이터 타입은 논리형(`bool`), 숫자형과 문자열(파이썬 사이트에는 텍스트 시퀀스형이라고 표기됨)입니다.
+
+# %% [markdown]
+#
+# | 데이터 타입  |    예  |
+# |:-------------:|:-------------|
+# | 정수형(`int`) | `0`, `-1`, `1`, `3`, `-100`, `10_000`, `0b0010`, `0o32`, `0xff` |
+# | 실수형(`float`) | `1.0`, `0.45`, `1e-7`, `1E-7`, `math.pi`, `math.exp(1)` |
+# | 복소수형(`complex`) | `0+0j`, `1+4j`, `1.4+3j` |
+# | 논리형(`bool`) | `True`, `False` |
+# | 문자열(`str`) | `"a"`, `"\r"`, `"\x41"`, `\N{INVERTED EXCLMATION MARK}"`, `"\u0041"`, `"\U00000041"`| 
+#
+# https://docs.python.org/3/reference/lexical_analysis.html
+
+# %% [markdown]
+# #### 정수형(`int`)
+#
+# 정수형은 정수를 나타낸다. 파이썬 3+에서 정수는 최소값이나 최대값이 존재하지 않는다. `0b`는 2진수, `0o`는 8진수, `0x`는 16진수를 나타내기 위해 앞에 쓴다. 자릿수가 많은 숫자를 읽기 쉽게 표기하기 위해 숫자 사이에 `_`를 넣을 수 있다. 
+
+# %%
+x = (0, -1, 1, 3, -100, 10_000, 0b0010, 0o32, 0xff)
+# 0, -1, 1, 3, -100, 이진수 0010, 팔진수 32, 16진수 ff
+types_list(x)
+
+# %%
+# _를 사용해서 수를 좀더 쉽게 읽을 수 있는 방식으로 표기할 수 있다.
+x = (0, 0o_32, 0x_ff, 10_000_000, 1_00_0000) 
+types_list(x)
+
+# %% [markdown]
+# #### 실수형(`float`)
+#
+# 소수점이 포함된 수는 소수점 이하가 `0`으로만 되어 있어도 소수로 인식한다. 1.4e-7은 $1.4 \times 10^{-7}$을 의미한다. `e`는 대문자 `E`로 써도 된다. 2.10e4 또는 2.10e+4 또는 2.10E4 또는 2.10E+4는 모두 $2.10 \times 10^4$를 의미한다. `e` 앞에는 실수, `e` 뒤에는 **정수**를 써야 한다. 원주율 $\pi$는 `math` 모듈의 변수 `pi`에 저장되어 있다.
+
+# %%
+import math
+x = (0., 1.0, 0.45, 1e-7, 1E-7, math.pi, math.exp(1))
+types_list(x)
+
+# %% [markdown]
+# #### 복소수형
+#
+# 복소수형은 `a+bj`로 쓴다. 이때 `a`와 `b`는 실수형 수이다.
+
+# %%
+x = (0+0j, 1+4j, 1.4 + 3j)
+types_list(x)
+
+# %% [markdown]
+# 여기서 문제! `a=3.2; b=-2.5`일 때 `3.2-2.5j`를 어떻게 표현해야 할까?
+
+# %%
+a =  3.2
+b = -2.5
+
+# %%
+a - b j
+
+# %%
+a - b*(1j)
+
+# %% [markdown]
+# `bj`로 쓰면 변수명 `bj`로 구분이 되지 않으며 `b*j`로 써도 변수 `b`와 변수 `j`를 곱하는 것과 구분이 되지 않는다. `j`를 허수로 쓸 수 있는 이유는 `j` 앞에 숫자가 오기 때문이다. 그래서 `j`는 변수명 `j`를 의미하고 `1j`는 허수 $i$를 의미하게 된다.
+
+# %% [markdown]
+# #### 논리형
+#
+# True, False는 참/거짓을 의미한다. True, False는 파이썬의 키워드이기 때문에 다른 의미로 바꿀 수 없다.
+
+# %%
+x = (True, False)
+types_list(x)
+
+# %%
+True = 3
+
+# %% [markdown]
+# #### 문자열형
+#
+#
+
+# %% [markdown]
+# 문자열은 `"`(큰 따옴표) 또는 `'`(작은 따옴표)를 사용한다. 이때 `\`는 탈출문자로 뒤에 오는 문자(들)과 합쳐 새로운 문자를 의미한다. `'\r
+# `은 `\`(백슬래쉬)와 `r`(알파벳 알)의 두 문자가 아니라 합쳐져서 하나의 문자(C**R**; Carriage **R**eturn)을 의미한다. 그밖의 제어문자로는 `"\a"`(Beep), `"\b"`(**b**ackspace), `"\n"`(**n**ewline), `"\r"`(carriage **r**eturn), `"\t"`(**t**ab) 등이 있다. 
+#
+# 시작과 끝을 `"` 따옴표로 할 경우 따옴표 사이에 문자 따옴표를 사용하면 문자열의 끝을 의미하는 따옴표와 구분이 되지 않기 때문에 탈출문자를 써서 `"\""`로 표기한다. 문자 백슬래쉬 역시 비슷한 이유로 `"\\"`로 쓴다. 
+#
+# `"\x41"`은 16진수 41에 해당하는 문자, `"\101"`은 8진수 101에 해당하는 문자를 나타낸다.
+#
+# 유니코드 문자는 문자마다 이름이 있다. INVERTED EXCLAMATION MARK라는 유니코드 이름을 가진 문자는 `"\N{INVERTED EXCLAMATION MARK}"`로 나타낸다. "\uxxxx"는 유니코드 코드 포인트가 16진수 0000xxxx인 문자, "\UXXXXXXXX"는 유니코드 코드포인트가 16진수 XXXXXXXX인 문자를 나타낸다. 
+
+# %%
+x = ("Letter", '1', '"Hello?", says he', r"Hi?\tHello?", 
+     '\'This is great.\'',
+     'a', '\r', '\x41', '\101',
+     "\N{INVERTED EXCLAMATION MARK}", "\u0041", "\U00000041")
+types_list(x)
+
+# %%
+types_list(x)
+
+# %%
+
+# %% [markdown]
 # # 3.2.2 변수의 데이터 타입 확인하기
 
 # %%
@@ -358,8 +469,6 @@ print(inspect.getsource(np.sum)) # 다른 모듈에서 정의된 함수
 # 날짜(Date)              inherits( , "Date")      as.Date()
 # 날짜시간벡터(POSIXct)   inherits( , "POSIXct")   as.POSIXct()
 # 날짜시간리스트(POSIXlt) is.integer( , "POSIXlt)  as.POSIXlt()
-
-# %%
 
 # %%
 # 파이썬
@@ -378,7 +487,7 @@ print(inspect.getsource(np.sum)) # 다른 모듈에서 정의된 함수
 # isinstance는 데이터타입 뿐 아니라 클래스 판별에서도 쓰인다.
 
 # %% [markdown]
-# **범주**, **순위범주**는 파이썬의 내장 모듈 또는 표준 라이브러리로 구현할 수 없다. 보통 `pandas`라는 제3자 패키지를 사용한다. 
+# R과 비교했을 때, R에서 기본적으로 제공하는 범주, 순위범주, 날짜, 날짜시간 데이터에 대해 파이썬은 파이썬 표준 모듈 또는 제3자 패키지를 활용해야 합니다. **날짜**, **날짜시간**, **시간**은 파이썬 표준 모듈 `datetime`을 사용해야 하며, **범주**, **순위범주**는 파이썬의 내장 모듈 또는 표준 라이브러리로 구현할 수 없습니다. 보통 `pandas`라는 제3자 패키지를 사용해야 합니다. 
 
 # %%
 import pandas as pd
@@ -395,7 +504,6 @@ isinstance(x,pd.Categorical)
 ## "POSIXct" %in% class(x6)
 # inherits(x6, "POSIXct")
 
-
 import datetime
 import pandas as pd
 x1 = 23; print(type(x1))
@@ -405,10 +513,14 @@ x4 = pd.Categorical(['Hi', 'Lo', 'Lo']); print(type(x4))
 x5 = datetime.date(2020, 1, 1); print(type(x5))
 x6 = datetime.datetime(2020, 1, 1, 12, 11, 11); print(type(x6))
 
+# %% [markdown]
+# 파이썬에서 문자열을 **텍스트 시퀀스**라고 부르는 이유는 문자열을 각 원소가 문자인 배열처럼 취급하기 때문입니다. 
+
 # %%
+len(x3), x3[0], x3[1]
 
 # %% [markdown]
-# ## 타입 어노테이션
+# ### 타입 어노테이션
 #
 # 타입 어노테이션(Type Annotation)은 처리하는 데이터와 메서드에서 사용하는 데이터에 대한 타입 힌트를 주는 것이다(강제하는 것이 아니므로 주의를 요한다. 타입이 타입 어노테이션과 다르더라도 오류가 발생하진 않는다).
 #
@@ -540,19 +652,24 @@ print(f'{num:.21f}')
 a = 0.1 + 0.2
 print(a, a == 0.3, math.isclose(a, 0.3))
 
-# 컴퓨터가 계산한 0.1+0.2와 직접 생성한 0.3은 $10^{-18}$보다 작은 오차가 있다.
+# %% [markdown]
+# 아래의 결과에서 보듯이 컴퓨터가 계산한 0.1+0.2와 직접 생성한 0.3은 $10^{-16}$보다 작은 오차가 있다.
+#     
+
+# %%
 (0.1+0.2)-0.3
 # 5.551115123125783e-17
 
-# `math.isclose()`는 이렇게 작은 차이는 무시한다. 허용 가능한 오차의 크기는
-# `math.isclose(a,b, *, rel_to=1e-09,, abs_tol=0.0)`의 `rel_tol=`, `abs_tol=` 매개변수로 조정가능하다.
-# `rel_tol`은 relative tolerance, `abs_tol`은 absolute tolerance로
-# 두 수의 상대적 차이, 절대적 차이를 얼마나 허용할 것인가를 결정한다
+# %% [markdown]
+# `math.isclose()`는 이렇게 작은 차이는 무시한다. 허용 가능한 오차의 크기는 `math.isclose(a,b, *, rel_to=1e-09,, abs_tol=0.0)`의 `rel_tol=`, `abs_tol=` 매개변수로 조정가능하다.
+# `rel_tol`은 relative tolerance, `abs_tol`은 absolute tolerance로 두 수의 상대적 차이, 절대적 차이를 얼마나 허용할 것인가를 결정한다
 
 # %%
 # all.equal(sqrt(2)^2, 2)
 # all.equal(1e-23, 1e-24)
 math.isclose(math.sqrt(2)**2, 2)
+
+# %%
 math.isclose(1e-23, 1e-24) # rel_tol = 1e-09
 # dplyr::near(1e-23, 1e-24)
 # near <- dplyr::near; near(1e-23, 1e-24)
@@ -633,19 +750,6 @@ print((a-b).seconds, "초")
 # as.Date('2020-01-01')-as.Date('2019-12-31')
 
 # %% [markdown]
-# # @@@@@@@@@@@@@@@@@@@@@@@
-
-# %%
-# 날짜 시간 format 변환
-# R format(today, '%Y-%m-%d %H:%M')
-today = datetime.datetime.today()
-str_today = today.strftime('%Y-%m-%d %H:%M')
-
-print(today, str_today)
-# R as.Date(str_today, format='%Y-%m-%d %H:%M')
-datetime.datetime.strptime(str_today, '%Y-%m-%d %H:%M')
-
-# %% [markdown]
 # ## 3.3.4 논리형
 
 # %%
@@ -661,39 +765,42 @@ import numpy as np
 (7 < 3) | (4 > 3)
 not(7<3)
 x = np.nan
-bool(x==3) # !!!is this robust to NAs?
-# !!! R과 다르게,
-#     np.nan == np.nan -> False
-#     3 == np.nan -> False
-#     math.isclose(np.nan, np.nan) -> False
+bool(x==3)
+
+# %% [markdown]
+# 특히 결측치를 나타내는 `np.nan`을 주목하자. 빌트인 모듈 또는 내장 모듈을 사용하여 결측치를 나타낼 방법이 없기 때문에 제3자 패키지인 `numpy`를 사용했다. 계산 결과도 R과 다름을 유의하자.
 #
-
-
-
-# R에서 NA은 잘못된 값, Null 은 정해지지 않은 값으로 다른 의미
-# 파이썬에서는 NaN(NA)와 Null 을 정해지지 않은 값으로 같이 사용. NaN으로 모두 표현.
-
-
+# R에서 `NA`를 포함한 거의 모든 계산 결과는 `NA`이다. 왜냐하면 어떤 값인지 모르므로 결과 또한 어떤 값인지 모르게 된다. 예를 들어 `NA==3`의 결과는 `NA`인데, `NA`가 어떤 수인지 모르기 때문이다(3일 수도, 아닐 수도 있다).
+#
+# 파이썬의 `np.nan`이 이와 다소 다르게 작동한다. 다음을 보자. R이라면 모두 `NA`가 나올 논리식이 `FALSE`임을 유의하자.
 
 # %%
-#TRUE <- c(3,2) 불가능
-#T <- c(3,2) 
-#T 
+print(np.nan == np.nan)
+print(3==np.nan)
+print(math.isclose(np.nan, np.nan))
 
+# %% [markdown]
+# 파이썬에서 `True`, `False`는 모두 첫 문자만 대문자임을 유의하자. 그리고 이들은 모두 파이썬의 예약어이므로 다른 의미를 할당할 수 없다. 
+
+# %%
 TRUE = [3,2] # 가능
 T = [3,2] 
 T 
 True = [3,2]
 # SyntaxError: cannot assign to True
 
+# %% [markdown]
+# 파이썬의 모든 예약어는 다음과 같이 확인할 수 있다.
+
 # %%
-# 모든 예약어 확인
 import keyword
 #keyword.kwlist
 ", ".join(keyword.kwlist)
 
 # %%
 "True" in keyword.kwlist
+
+# %%
 keyword.iskeyword("True")
 
 # %% [markdown]
@@ -744,9 +851,8 @@ sys.float_info.min
 # x <- c(2, 5, NA, 3)
 # vec <- c(3, 7, 0, NA, -3)
 
-
 import pandas as pd
-x = pd.Series([2,5,np.nan,3])
+x = pd.Series([2,5,np.nan,3]) # np.nan은 실수형이다.
 print(x)
 vec = pd.Series([3, 7, 0, np.nan, -3])
 print(vec)
@@ -756,13 +862,17 @@ import numpy as np
 
 def ifelse(cond, x, y):
     return np.where(cond, x, y)
-print(ifelse(x > 3, "3+", "below")) # !!!주의! np.nan이 제대로 반영되지 않았다)
+print(ifelse(x > 3, "3+", "below")) 
+# 주의! np.nan이 제대로 반영되지 않았다
+# 왜냐하면 np.nan > 3의 결과는 False이기 때문이다.
 
+
+# %%
+print(np.nan < 3, np.nan <= 3, np.nan == 3, np.nan <= 3, np.nan < 3) # np.nan을 포함한 모든 대소비교가 False!
 
 # %%
 # ifelse(is.na(x), NA, x %in% vec)
 ifelse(np.isnan(x), -99, x.isin(vec))  
-# !!! True가 int로 변환됨!
 # 왜냐하면 return 값이 array이고,
 # -99가 포함되므로, True/False는 int로 변환
 
@@ -770,6 +880,10 @@ ifelse(np.isnan(x), -99, x.isin(vec))
 ifelse(np.isnan(x), np.nan, x.isin(vec))
 # np.nan은 dtype = 'bool' or 'int*'에서는 지원하지 않는다  
 ifelse(np.isnan(x), 'NA', x.isin(vec))
+
+# %%
+xs = [2,5,np.nan,3]
+[np.nan if np.isnan(x) else x in vec for x in xs]
 
 # %%
 #x <- 1e-16

@@ -144,7 +144,7 @@
 # 시각화 패키지인 seaborn을 쓸 때에도 matplotlib.pyplot을 먼저 임포트하는게 좋다. 왜냐하면 
 # 시각화할 자료를 제공한 후 plt.show()를 해야 화면에 그래프가 그려지기 때문이다.
 
-# 
+#
 
 
 # ## function의 default argument로 list를 쓰는 경우
