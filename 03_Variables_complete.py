@@ -113,11 +113,13 @@
 # * 공통적인 성격(위의 예에서 수입)의 변수를 모아 이름을 짓기도 한다. 예를 들어 수입에 관한 변수라면 공통점을 앞에 적고 밑줄을 긋고 변수 이름을 적는 방식이다. `income_lastmonth`, `income_thismonth` 또는 `income_LastMonth`, `income_ThisMonth`와 같이 밑줄 뒤의 변수 이름은 다시 여러 방식을 사용할 수 있다. 하지만 파이썬에서는 이런 경우 클래스를 만들어서 `income.lastmonth`, `income.thismonth`와 같이 쓸 수 있기 때문에 자주 활용되지 않는 듯 하다.
 #
 # * 변수의 타입을 공통점으로 사용하기도 한다. 예를 들어 수입이 문자열로 저장되어 있는 변수와 수로 저장되어 있는 변수가 있다면 `num_income`, `str_income`으로 이름을 짓는 방식이다.
+#
+# * 던바(dunbar; double underbar)로 시작하고 끝나는 변수 이름에 대해서는 뒤에 설명된다.
 
 # %% [markdown]
 # 우리가 이번 장에서 사용하는 수, 문자열, 범주, 논리, 날짜시간과 같은 값(데이터)에 대해서는 **소문자를 사용하고 밑줄로 단어를 연결하는 방식**이 가장 많이 쓰인다. 다른 종류의 값(또는 객체)에 대해서는 다른 방식이 이름이 쓰인다. 이에 대해서는 후에 설명된다.
 #
-# 그리고 **예약어와 같은 단어**를 써야 할 경우에는 보통 뒤에 밑줄을 붙이는 방식을 사용한다. 예를 들어 from이라는 단어를 써서 변수 이름을 사용하고 싶다면 `from_`를 사용하면 된다.
+# 그리고 **예약어와 같은 단어**를 써야 할 경우에는 보통 뒤에 밑줄을 붙이는 방식을 사용한다. 예를 들어 from이라는 단어를 써서 변수 이름을 사용하고 싶다면 `from_`를 사용하거나 동의어를 사용한다. 예를 들어 R에서는 `seq(from=, to=)`과 비슷한 역할을 하는 파이썬 함수 `range()`는 매개변수로 `start=`, `stop=`을 사용한다. 
 #
 # 다음은 파이썬에서 여러 방식의 변수 이름을 사용하는 예를 보여준다. 주석 처리된 부분은 파이썬에서 사용할 수 없는 이름이 사용된 경우로 `SyntaxError` 또는 `NameError`가 발생한다.
 
@@ -143,7 +145,7 @@ print(whatIGotForMy23thBirthday)
 # `a=b=3`와 같이 여러 변수에 연쇄적으로 할당할 수도 있다.
 #
 # R과 다르게 `<-` 또는 `->`를 사용할 수 없다.
-# R과 다르게 별칭(alias)이란 말도 자주 쓰이는 데 이에 대해서는 다음 장에서 설명된다. (별칭이란 변수가 가리키는 대상이 동일한 경우에 또다른 이름이란 뜻이다. 이번 장에서는 별칭이 사용되지 않는다.)
+# !!!R과 다르게 별칭(alias)이란 말도 자주 쓰이는 데 이에 대해서는 다음 장에서 설명된다. (별칭이란 변수가 가리키는 대상이 동일한 경우에 또다른 이름이란 뜻이다. 이번 장에서는 별칭이 사용되지 않는다.)
 #
 
 # %%
@@ -177,10 +179,14 @@ print(a); print(b)
 
 # %%
 hzC5, hzD5, hzE5 = 523.25, 587.33, 659.25
+# hzC5=523.25; hzD5=587.33; hzE5=659.25
 print(hzC5); print(hzD5); print(hzE5)
 
 # %% [markdown]
 # 만약 변수 이름이 문자열 변수에 저장되어 있다면 어떻게 할당해야 하나? 예를 들어 `varname`에 `"myVar"`이라는 값이 저장되어 있다면 `myVar=10`을, `varname`에 `"amount"`가 저장되어 있다면 `amount=10`를 해야 한다면? R에서는 쉽게 `assign(varname, 10)`을 하면 되지만 파이썬에서는 쉽지 않다. 이 장의 마지막에 R의 `assign`과 같은 기능을 하는 함수를 몇 개 정의하여 소개하였다. (간단하게 설명하면 `globals()[varname] = 10`으로 쓴다.)
+
+# %%
+globals()
 
 # %% [markdown]
 # ## 3.1.3. 변수관리
@@ -373,7 +379,7 @@ builtins.int is int, builtins.float is float, builtins.str is str
 # 정수형은 정수를 나타낸다. 파이썬 3+에서 정수는 최소값이나 최대값이 존재하지 않는다(메모리가 허용하는 한 매우 큰 정수 또는 매우 작은 정수를 사용할 수 있다). 정수형 수를 나타내는 방법은 `16`과 같이 10진수로 표기하는 방법과 더불어 2진수, 8진수, 16진수로 표기할 수 있다. `0b`는 2진수, `0o`는 8진수, `0x`는 16진수를 나타내기 위해 앞에 쓴다. 자릿수가 많은 숫자를 읽기 쉽게 표기하기 위해 숫자 사이에 `_`를 넣을 수 있다. 
 
 # %%
-a = 0; b=-1; c=1; d=3; e=-100; f=10_000; g=0b0010; h=0o32; i=0xff;
+a = 0; b=-1; c=1; d=3; e=-100; f=10_000_0_0_0; g=0b0010; h=0o32; i=0xff;
 # 0, -1, 1, 3, -100, 이진수 0010, 팔진수 32, 16진수 ff
 print(a,b,c,d,e,f,g,h,i) # print() 결과는 모두 10진수로 출력된다.
 type(a), type(b), type(c), type(d), type(e), type(f), type(g), type(h), type(i)
@@ -383,6 +389,30 @@ type(a), type(b), type(c), type(d), type(e), type(f), type(g), type(h), type(i)
 a = 0; b=0o_32; c=0x_f_f; d=10_000_000; e=1_00_0000
 print(a, b, c, d, e)
 type(a), type(b), type(c), type(d), type(e)
+
+# %%
+100_0000 == 1000000, 1_0_0 == 100
+
+# %%
+## 저장 
+## 정확한 값, 근사값
+
+# %%
+x = 0.2
+print(f'{x:.18f}')
+
+# %%
+import math
+math.isclose(1e-18, 1e-19)
+
+# %%
+
+# %%
+# R> print(x,digits=3)
+# 123000, 1.23, ...
+
+# %%
+print(12.3e7, 12.30e7)
 
 # %% [markdown]
 # #### 실수형(`float`)
@@ -422,6 +452,12 @@ a - b*(1j)
 
 # %% [markdown]
 # `bj`로 쓰면 변수명 `bj`로 구분이 되지 않으며 `b*j`로 써도 변수 `b`와 변수 `j`를 곱하는 것과 구분이 되지 않는다. `j`를 허수로 쓸 수 있는 이유는 `j` 앞에 숫자가 오기 때문이다. 그래서 `j`는 변수명 `j`를 의미하고 `1j`는 허수 $i$를 의미하게 된다.
+
+# %%
+j = 3
+
+# %% [markdown]
+# 위와 같이 `j=3`을 했을 때 `j`은 3을 저장하고 있으며, `1j`는 허수 $i$를 의미한다. 
 
 # %% [markdown]
 # #### 논리형
@@ -562,7 +598,7 @@ isinstance(x5, datetime.date), isinstance(x6, datetime.time), isinstance(x7, dat
 
 # %%
 import numpy as np
-x= np.array(['2022-12-01 13:00'], dtype='datetime64')
+x= np.array(['2022-12-01 13:00'], dtype='datetime64') # 64비트로 저장하겠다
 isinstance(x, datetime.datetime)
 
 # %% [markdown]
@@ -572,18 +608,39 @@ isinstance(x, datetime.datetime)
 isinstance(x, np.ndarray) and str(x.dtype).startswith('datetime64')
 
 # %% [markdown]
+# 타입을 변환하는 것은 원래 타입에 따라 다른 방법을 사용해야 한다. 빌트인 타입 내에서는 동일한 함수를 사용할 수 있다. 예를 들어 `int()`는 실수형을 정수형을 변환할 때에도, 문자열형을 정수형으로 변환할 때에도 사용한다. 하지만 소수점 이하가 포함된 문자열을 바로 정수형으로 변환할 수는 없다. `int(float())`을 사용하자.
+
+# %%
+int(32.4)
+
+# %%
+int("32") # int("32.4") <- Error
+
+# %%
+int(float("32.4"))
+
+# %% [markdown]
 # # 3.3 연산과 함수
 
 # %% [markdown]
-# # 3.3.1 수치형
+# 어떤 값의 데이터 타입은 값을 저장하는 방식을 결정한다. 우리가 추상적으로 생각하는 값과 컴퓨터에 저장되는 값을 분리해서 생각할 필요가 있었다. 데이터 타입은 컴퓨터에 저장된 이진수가 어떤 의미를 갖는지를 알려준다.
+#
+# 데이터 타입은 가능한 연산과 적용 가능한 함수도 결정한다. 보통 연산은 같은 타입 안에서만 가능하다. 예를 들어 정수형 `123`과 정수형 `456`을 더해보자. 그 결과는 `579`가 된다. 하지만 문자열 `"123"`과 문자열 `"abc"`를 더해보자. 데이터 타입에 의해 덧셈(`+`)의 의미가 결정되고, 결과는 `123abc`가 된다. 
+#
+# 다시 말해 데이터 타입에 의해 가능한 함수 또는 연산이 결정되고, 그 의미도 결정된다. 여기서는 각 데이터 타입별로 가능한 연산/함수, 자주 사용하는 연산/함수를 간단하게 소개한다. 자세한 활용법은 뒤의 각 장에서 상세하게 소개할 것이다.
 
 # %% [markdown]
-# ## 3.3.1.1. 산술연산
+# ## 3.3.1 수치형
+
+# %% [markdown]
+# ### 3.3.1.1. 산술연산
 
 # %% [markdown]
 # 산술연산으로 별다른 라이브러리 활용없이 기본적인 사칙연산을 제공한다. 
 #
-# 거듭제곱, 제곱근 등의 계산에는 `math` 내장 라이브러리에서 제공한다.
+# 절댓값, 거듭제곱, 제곱근 등의 계산을 하는 함수는 `math` 내장 라이브러리에서 제공한다.
+#
+# `math.abs()`, `math.pow()`, `math.sqrt()`처럼 항상 `math` 모듈을 써야 하므로 불편하게 느낄 수도 있지만, 자신만의 `abs()`, `pow()`, `sqrt()`를 만들어 쓸 수 있다는 장점도 있다(Zen of Python을 다시 한 번 읽어보자).
 
 # %%
 import math
@@ -594,59 +651,49 @@ import math
 72 / 2
 3 ** 4 # 3 ^ 4 제곱에는 **가 쓰인다.
 math.pow(3,4)
-# 3 ^ (1/2); sqrt(3)
 math.sqrt(3)
-# 3 - 2 + 2 * 4 / 2 ^ ( 1 + 1)
+# R> 3 ^ (1/2); sqrt(3)
+
 3 - 2 + 2 * 4 / 2 ** ( 1 + 1)
+# R> 3 - 2 + 2 * 4 / 2 ^ ( 1 + 1)
 
 7 / 3 # 나눗셈(Float division)
-# 7 %/% 3 # 정수나누기, 몫(Integer division)
+
 7//3 
-# 7 %% 3 # 나머지(Remainder)
+# R> 7 %/% 3 # 정수나누기, 몫(Integer division)
 7%3
+# R> 7 %% 3 # 나머지(Remainder)
 
 
 # %% [markdown]
-# ## 3.3.1.2 함수
+# ### 3.3.1.2 함수
 
 # %% [markdown]
 # 로그나, 지수, 삼각함수 등도 제공한다.
 
 # %%
-# exp(1)
 math.exp(1)
+# R> exp(1)
 
-# log(180, base=2); log2(180)
 math.log(180, 2)
+# R> log(180, base=2); log2(180)
 
-#log10(180)
 math.log(180, 10)
 math.log10(180)
+# R> log10(180)
 
-# sin(2)
 math.sin(2)
+# R> sin(2)
 
 # %% [markdown]
-# ## 3.3.1.3 연산
-
-# %%
-3 + 2
-3 * 2
-# "%p%" =  function(x,y) {2^x + y^2}
-def p(x,y):
-    return 2**x + 2**y
-
-# 3 %p% 2   ## 책에는 두번 프린트 되어 있습니다.\
-p(3,2)
-
-# %%
-# "+" = function(x, y) x*y
-# 3+2; 3+3
-# "+"
-# 원상회복하려면 rm("+")
+# ### 3.3.1.3 연산 정의
+#
 
 # %% [markdown]
-# ## 3.3.1.4 비교연산
+# R에서와 다르게 기본 연산을 정의하는 방법은 다소 까다롭다. 클래스, 상속 등의 개념을 알아야 하는데, 후에 여유 시간이 있다면 설명하겠다.
+
+# %% [markdown]
+# ### 3.3.1.4 비교연산
 
 # %%
 7 < 3
@@ -655,17 +702,14 @@ p(3,2)
 7 != 3
 
 # %%
-#sqrt(2)^2 == 2
 math.sqrt(2)**2 == 2
-#print(sqrt(2)^2)
-print(math.sqrt(2)**2)
-#print(sqrt(2)^2, digits = 21)
-num = math.sqrt(2)**2
-print('%.21f' % num)
-print('{:.21f}'.format(num))
-print(f'{num:.21f}')
+#R> sqrt(2)^2 == 2
 
-# digits = 21의 의미??
+print(math.sqrt(2)**2)
+#R> print(sqrt(2)^2)
+
+num = math.sqrt(2)**2
+#R> print(sqrt(2)^2, digits = 21)
 
 # %% [markdown]
 # 0.1, 0.2와 같은 소수는 2진법의 부동소수점으로 저장되기 때문에
@@ -690,14 +734,77 @@ print(a, a == 0.3, math.isclose(a, 0.3))
 # `rel_tol`은 relative tolerance, `abs_tol`은 absolute tolerance로 두 수의 상대적 차이, 절대적 차이를 얼마나 허용할 것인가를 결정한다
 
 # %%
-# all.equal(sqrt(2)^2, 2)
-# all.equal(1e-23, 1e-24)
 math.isclose(math.sqrt(2)**2, 2)
+# R> all.equal(sqrt(2)^2, 2)
 
 # %%
 math.isclose(1e-23, 1e-24) # rel_tol = 1e-09
+# R> all.equal(1e-23, 1e-24)
 # dplyr::near(1e-23, 1e-24)
 # near <- dplyr::near; near(1e-23, 1e-24)
+
+# %% [markdown]
+# ## 실수 출력 형식 지정
+#
+# 정수형은 항상 정확한 값이 저장되지만 실수형은 근사값이 저장되는 경우가 많다. 예를 들어 `x=0.2`조차도 소수점을 늘려가면서 출력해보면 0.2와 미세하게 차이가 남을 확인할 수 있다.
+#
+# 예를 들어 `x`를 소수점 20자리까지 출력해보면 다음과 같다.
+
+# %%
+x = 0.2
+print(f'{x:.20f}') # .14f는 소수점 14자리까 출력하는 의미
+
+# %%
+0.20000000000000001110 == 0.2
+
+# %% [markdown]
+# 실수의 경우 출력값의 형식을 원하는대로 바꾸고 싶을 때가 많다. 대표적으로 소수점 이하의 자릿수를 정하거나 유효숫자의 갯수를 정하고 싶을 때 어떤 방법을 사용하는가? 먼저 위에서 봤듯이 소수점 이하의 숫자 갯수는 다음과 같이 정한다.  
+
+# %%
+x = 1.325; y = 13.25; z = 0.1325; u = 1.325e18; v = 0.000001325; w = 0
+print(f"{x:.6f}")
+print(f"{y:.6f}")
+print(f"{z:.6f}")
+print(f"{u:.6f}")
+print(f"{v:.6f}")
+print(f"{w:.6f}")
+
+# %% [markdown]
+# 만약 단순히 소수점 이하의 숫자가 아니라 유효숫자의 갯수를 정하고 싶다면 다음을 활용한다. 
+
+# %%
+print(f"{x:#.6g}")
+print(f"{y:#.6g}")
+print(f"{z:#.6g}")
+print(f"{u:#.6g}")
+print(f"{v:#.6g}")
+print(f"{w:#.6g}")
+
+# %% [markdown]
+# #### 정수형 : bitwise operation
+#
+# 정수를 비트를 표기했을 때, 각 비트에 AND, OR 등의 연산을 적용할 수 있다. 파이썬의 비트 연산은 다음의 기호를 활용한다.
+
+# %% [markdown]
+# 비트 연산  |   파이썬 기호
+# :----------|:-------------
+# NOT        | `~`
+# AND        | `&`
+# OR         | `|`
+# XOR        | `^`
+# SHIFT      | `<<`, `>>`
+
+# %%
+x = 0b1100
+y = 0b0111
+print(type(x))
+print(f'{x:04b}')      # 형식을 4자리 2진수로 
+print(f'{~x :04b}')    # NOT
+print(f'{x & y:04b}')  # AND
+print(f'{x | y:04b}')  # OR
+print(f'{x ^ y:04b}')  # XOR
+print(f'{x >> 1:04b}') # SHIFT
+print(f'{x >> 2:04b}') # SHIFT
 
 # %% [markdown]
 # ## 3.3.2 문자
@@ -712,7 +819,7 @@ print("\"Hello\", says he")
 print('Cheer up!\r\nRight Now!')
 # cat('Cheer up!\r\nRight Now!')
 # nchar('hello?') # 문자 갯수
-len('hello?')
+len('hello?') # 문자갯수
 # paste('Here is', 'an apple.') # 문자열 연결
 list = ['Here is', 'an apple.']
 text = ' '.join(list)
@@ -782,9 +889,14 @@ print((a-b).seconds, "초")
 #(7 < 3) | (4 > 3)
 #!(7 < 3)
 #xor(T, T) # XOR
-#x = NA
+#x = NA4
 #isTRUE(x == 3) # robust to NAs
 
+# %%
+True & False, True and False
+True | False, True or False
+
+# %%
 import numpy as np
 (7 < 3) & (4 > 3)
 (7 < 3) | (4 > 3)
@@ -805,30 +917,6 @@ print(3==np.nan)
 print(math.isclose(np.nan, np.nan))
 
 # %% [markdown]
-# 파이썬에서 `True`, `False`는 모두 첫 문자만 대문자임을 유의하자. 그리고 이들은 모두 파이썬의 예약어이므로 다른 의미를 할당할 수 없다. 
-
-# %%
-TRUE = [3,2] # 가능
-T = [3,2] 
-T 
-True = [3,2]
-# SyntaxError: cannot assign to True
-
-# %% [markdown]
-# 파이썬의 모든 예약어는 다음과 같이 확인할 수 있다.
-
-# %%
-import keyword
-#keyword.kwlist
-", ".join(keyword.kwlist)
-
-# %%
-"True" in keyword.kwlist
-
-# %%
-keyword.iskeyword("True")
-
-# %% [markdown]
 # ## 3.3.5 데이터 타입에 따른 연산과 함수
 
 # %%
@@ -846,6 +934,13 @@ keyword.iskeyword("True")
 # 날짜(datetime.date)          -  !!!
 # 날짜시간(datetime.datetime)  -  !!!
 # 논리(bool)                  &, |, !, &&, ||
+
+# %%
+0b1100 | 0b0011
+
+# %%
+import sys
+sys.float_info.max 
 
 # %% [markdown]
 # ## 3.4 특별한 값
@@ -1113,7 +1208,7 @@ globals() is locals() # context 안이 아니라서
 #    NOTE: Whether or not updates to this dictionary will affect name lookups in
 #    the local scope and vice-versa is *implementation dependent* and not
 #    covered by any backwards compatibility guarantees.
-    
+
 
 # %%
 ## Local namespace, Global namespace
