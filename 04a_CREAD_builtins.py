@@ -1056,4 +1056,63 @@ id(a) == id(b) # 변수 a와 변수 b는 정확하게 같은 지점을 가리킨
 
 # %%
 
+# %% [markdown]
+# ### 모든 원소를 한꺼번에 수정하는 방법
+#
+# 예를 들어 리스트 `lst=[1,2,3]`의 모든 원소를 제곱하고 싶다고 해보자.
+
+# %%
+lst = [1,2,3]
+
+# %% [markdown]
+# #### 1. `for` 문 : 순번
+
+# %%
+res = [] # 결과를 담을 빈 리스트
+for i in range(len(lst)):
+    res.append(lst[i]**2)
+res
+
+# %%
+
+# %% [markdown]
+# #### 2. `for` 문 : 원소
+
+# %%
+res = []
+for x in lst:
+    res.append(x**2)
+res
+
+# %%
+
+# %% [markdown]
+# #### 3. list comprehension : more pythonic!
+#
+# * Beautiful, Simple, Sparse, Readability
+# * One obvious way to do it
+# * If the implementation is easy to explain, it may be a good idea.
+# * Namespaces are one honking great idea -- let's do more of those!
+
+# %%
+res = [x**2 for x in lst]
+res
+
+# %%
+# Namespace!!!
+res = []
+res = [res**2 for res in lst]
+res
+
+# %%
+list(map(lambda x: x**2, lst))
+
+# %%
+import this # PEP20
+
+# %% [markdown]
+# #### What is Pythonic?
+#
+# PEP(Python Enhancement Proposals)
+
 # %%
