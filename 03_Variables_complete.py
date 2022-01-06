@@ -555,11 +555,11 @@ type(a), type(b), type(c)
 # 실수                   isinstance( , float)             float()
 # 문자                   isinstance( , str)               str()
 # 범주                   isinstance( , pd.Categorical)    pd.Categorical()    
-# 순위범주               isinstance(x, pd.Categorical) and x.ordered
-#                                                         pd.Cateogrical( , orderd=True, categories=[])
+# 순위범주                isinstance(x, pd.Categorical) and x.ordered
+#                                                        pd.Cateogrical( , orderd=True, categories=[])
 # 날짜                   isinstance( , datetime.date)     datetime.date(년,월,일)     
 # 시간                   isinstance( , datetime.time)     datetime.time(년,월,일)
-# 날짜시간               isinstance( , datetime.datetime) datetime.datetime(년,월,일,시,분,초) 
+# 날짜시간                isinstance( , datetime.datetime) datetime.datetime(년,월,일,시,분,초) 
 
 # %% [markdown]
 # 변수에 저장된 값의 타입을 확인하기 위해서는 `isinstance()`함수를 사용한다. 만약 변수 `x`의 값이 논리형(`bool`)인지 확인하기 위해서는 `isinstance(x, bool)`로 쓴다. 만약 `x`가 논리형이라면 `isinstance(x, bool)`은 참(`True`)가 될 것이다(영문으로 Is instance `x` `bool`?와 같은 의미이다). 여기서 instance는 객체와 같은 의미라고 생각하면 된다.
@@ -630,46 +630,109 @@ int(float("32.4"))
 # 다시 말해 데이터 타입에 의해 가능한 함수 또는 연산이 결정되고, 그 의미도 결정된다. 여기서는 각 데이터 타입별로 가능한 연산/함수, 자주 사용하는 연산/함수를 간단하게 소개한다. 자세한 활용법은 뒤의 각 장에서 상세하게 소개할 것이다.
 
 # %% [markdown]
-# ## 3.3.1 수치형
+# ## 3.3.1 정수형
 
 # %% [markdown]
 # ### 3.3.1.1. 산술연산
 
 # %% [markdown]
 # 산술연산으로 별다른 라이브러리 활용없이 기본적인 사칙연산을 제공한다. 
+# 가감승제, 거듭제곱, 몫, 나머지는 `+`, `-`, `*`, `/`, `**`, `//`, `%`로 쓴다.
+# 우선 순위는 수학에서와 조금 다르다. 곱셈, 나누기가 덧셈, 뺄셈보다 빠른 것은 동일하다.
+# 모든 산술연산의 우선 순위는 다음과 같다.
 #
-# 절댓값, 거듭제곱, 제곱근 등의 계산을 하는 함수는 `math` 내장 라이브러리에서 제공한다.
-#
-# `math.abs()`, `math.pow()`, `math.sqrt()`처럼 항상 `math` 모듈을 써야 하므로 불편하게 느낄 수도 있지만, 자신만의 `abs()`, `pow()`, `sqrt()`를 만들어 쓸 수 있다는 장점도 있다(Zen of Python을 다시 한 번 읽어보자).
+# |  우선 순위   | 연산자    |  내용    |
+# |:---:|:-----:|:------:|
+# | 1 | `**` | 거듭제곱 |
+# | 2 | `*`,`/`,`//`, `%` | 곱셈, 나눗셈, 몫, 나머지 |
+# | 3 | `+`, `-` | 덧셈, 뺄셈 |
+
+# %% [markdown]
+# 우선 순위를 PEMDAS라고 설명하기도 한다. 괄호(Parentheses)가 가장 우선이며, 그 다음은 거듭제곱(Exponentiation)이다. 그리고 곱셈(Multiplication)과 나눗셈(Division)이 같은 순위이고, 마지막 순위가 덧셈(Addition)과 뺄셈(Subtraction)이다.
+
+# %% [markdown]
+# 몫과 나머지는 다음의 식으로 확인할 수 있다.
 
 # %%
-import math
-
-3 + 2
-5 - 4
-3 * 2
-72 / 2
-3 ** 4 # 3 ^ 4 제곱에는 **가 쓰인다.
-math.pow(3,4)
-math.sqrt(3)
-# R> 3 ^ (1/2); sqrt(3)
-
-3 - 2 + 2 * 4 / 2 ** ( 1 + 1)
-# R> 3 - 2 + 2 * 4 / 2 ^ ( 1 + 1)
-
-7 / 3 # 나눗셈(Float division)
-
-7//3 
-# R> 7 %/% 3 # 정수나누기, 몫(Integer division)
-7%3
-# R> 7 %% 3 # 나머지(Remainder)
-
+15 == (15 // 4)*4 + 15 % 4
 
 # %% [markdown]
-# ### 3.3.1.2 함수
+# ### 3.3.1.2. 비교연산
+#
+# 비교 연산은 크기가 같음 또는 크기의 대소를 비교한다. 그 결과는 `True`(참) 또는 `False`(거짓)이 된다.
+
+# %%
+x = 5
+x < 6, x <= 6, x == 6, x != 6, x >= 6, x > 6
 
 # %% [markdown]
-# 로그나, 지수, 삼각함수 등도 제공한다.
+# `==`은 같음, `!=`는 같지 않음을 나타낸다.
+
+# %% [markdown]
+# ### 3.3.1.3 할당 연산
+
+# %% [markdown]
+# `**`, `*`, `/`, `//`, `%`, `+`, `-`와 같은 기본적인 산술연산의 경우 `x=x+1`과 같이 어떤 변수의 값에 연산을 한 후 다시 변수에 넣는 작업이 자주 필요하다. 그런 경우에 다음과 같이 축약형으로 쓸 수 있다.
+#
+# | 기본형 | 축약형 |
+# |:------:|:------:|
+# | `x = x ** 2` | `x **= 2` |
+# | `x = x * 2` | `x *= 2` |
+# | `x = x / 2` | `x /= 2` |
+# | `x = x // 2` | `x //= 2` |
+# | ... | ... |
+# | `x = x - 2` | `x -= 2` |
+#
+
+# %% [markdown]
+# ### 3.3.1.4 비트 연산
+#
+# 비트 연산은 메모리에 저장된 이진수를 각 비트별로 연산을 적용한다. 예를 들어 `0b10`과 `0b11`에 대해 비트 연산 AND를 행하면, 첫 번째 수의 첫 번째 자리 `1`과 두 번째 수의 첫 번째 자리 `1`에 AND 연산을 한 결과 `1`이 결괏값의 첫 번째 자리 수가 된다. 그리고 첫 번째 수의 두 번째 자리 `0`과 두 번째 수의 두 번째 자리 `1`의 AND 결과 `0`이 결괏값의 `0`이다. 그 결과는 `0b10`이고 이를 10진수로 나타내면 `2`가 된다. 
+
+# %%
+x = 0b10
+y = 0b11
+x & y
+
+# %% [markdown]
+# 파이썬의 비트 연산은 다음의 기호를 활용한다.
+
+# %% [markdown]
+# 비트 연산  |   파이썬 기호
+# :----------|:-------------
+# NOT        | `~`
+# AND        | `&`
+# OR         | `|`
+# XOR        | `^`
+# SHIFT      | `<<`, `>>`
+
+# %% [markdown]
+# 다음은 비트 연산을 실시한 결과를 보여준다.
+
+# %%
+x = 0b1100
+y = 0b0111
+print(type(x))
+print(f'{x:04b}')      # 형식을 4자리 2진수로 
+print(f'{~x :04b}')    # NOT
+print(f'{x & y:04b}')  # AND
+print(f'{x | y:04b}')  # OR
+print(f'{x ^ y:04b}')  # XOR
+print(f'{x >> 1:04b}') # SHIFT
+print(f'{x >> 2:04b}') # SHIFT
+
+# %% [markdown]
+# ### 3.3.1.4 수학 함수
+
+# %% [markdown]
+# 그 밖의 다양한 수학 함수는 내장 모듈인 `math`에서 찾을 수 있다. `math.pow()`, `math.sqrt()`는 거듭제곱을 하는 함수, 거듭제곱근을 구하는 함수이다. 
+# `math.pow()`, `math.sqrt()`처럼 항상 `math` 모듈을 써야 하므로 불편하게 느낄 수도 있지만, 자신만의 `pow()`, `sqrt()`를 만들어 쓸 수 있다는 장점도 있다(Zen of Python을 다시 한 번 읽어보자). 
+
+# %%
+math.pow(2,3), math.sqrt(2)
+
+# %% [markdown]
+# 지수(`math.exp()`), 로그(`math.log()`, `math.log10()`), 삼각함수(`math.sin()`, `math.cos()` 등) 등도 제공한다.
 
 # %%
 math.exp(1)
@@ -686,30 +749,48 @@ math.sin(2)
 # R> sin(2)
 
 # %% [markdown]
-# ### 3.3.1.3 연산 정의
-#
-
-# %% [markdown]
-# R에서와 다르게 기본 연산을 정의하는 방법은 다소 까다롭다. 클래스, 상속 등의 개념을 알아야 하는데, 후에 여유 시간이 있다면 설명하겠다.
-
-# %% [markdown]
-# ### 3.3.1.4 비교연산
+# 모듈 `math`에는 여러 함수가 존재하므로 한번 찬찬히 살펴보자. `math`에 포함된 함수는 다음에 정의하는 `lsf`(list function)을 사용하여 출력할 수 있다. 
 
 # %%
-7 < 3
-7 > 3
-7 == 3
-7 != 3
+def lsf(module):
+    import types
+    if not isinstance(module, (types.ModuleType, type)):
+        raise ValueError("argument should be module type")
+    return [k for k, v in vars(module).items() if callable(v) and not k.startswith('_')]
+
 
 # %%
-math.sqrt(2)**2 == 2
+lsf(math)
+
+# %% [markdown]
+# ## 3.3.2 실수형
+
+# %% [markdown]
+# ### 3.3.2.1 산술연산, 비교연산, 할당연산, 수학함수
+
+# %% [markdown]
+# **산술연산**, **비교연산**, **할당연산**, **수학함수**는 정수형과 마찬가지로 실수형에도 동일하게 적용된다. **비트연산**은 실수형에 적용되지 않는다.
+
+# %%
+x = 14.1; y = 2.714e+2
+x + y, x > y, math.sin(x)
+
+# %%
+x -= y; x
+
+# %%
+x >> 1
+
+# %% [markdown]
+# 실수형에서 유의할 점은 실수형은 정확성에 한계가 존재한다는 점이다. 
+
+# %%
+print(math.sqrt(2)**2 == 2)
 #R> sqrt(2)^2 == 2
 
-print(math.sqrt(2)**2)
-#R> print(sqrt(2)^2)
-
 num = math.sqrt(2)**2
-#R> print(sqrt(2)^2, digits = 21)
+print(num)
+#R> print(sqrt(2)^2)
 
 # %% [markdown]
 # 0.1, 0.2와 같은 소수는 2진법의 부동소수점으로 저장되기 때문에
@@ -740,11 +821,11 @@ math.isclose(math.sqrt(2)**2, 2)
 # %%
 math.isclose(1e-23, 1e-24) # rel_tol = 1e-09
 # R> all.equal(1e-23, 1e-24)
-# dplyr::near(1e-23, 1e-24)
-# near <- dplyr::near; near(1e-23, 1e-24)
+# R> dplyr::near(1e-23, 1e-24)
+# R> near <- dplyr::near; near(1e-23, 1e-24)
 
 # %% [markdown]
-# ## 실수 출력 형식 지정
+# ### 실수 출력 형식 지정
 #
 # 정수형은 항상 정확한 값이 저장되지만 실수형은 근사값이 저장되는 경우가 많다. 예를 들어 `x=0.2`조차도 소수점을 늘려가면서 출력해보면 0.2와 미세하게 차이가 남을 확인할 수 있다.
 #
@@ -752,7 +833,7 @@ math.isclose(1e-23, 1e-24) # rel_tol = 1e-09
 
 # %%
 x = 0.2
-print(f'{x:.20f}') # .14f는 소수점 14자리까 출력하는 의미
+print(f'{x:.20f}') # .20f는 소수점 14자리까 출력하는 의미
 
 # %%
 0.20000000000000001110 == 0.2
@@ -781,57 +862,50 @@ print(f"{v:#.6g}")
 print(f"{w:#.6g}")
 
 # %% [markdown]
-# #### 정수형 : bitwise operation
+# ## 3.3.2 문자열
 #
-# 정수를 비트를 표기했을 때, 각 비트에 AND, OR 등의 연산을 적용할 수 있다. 파이썬의 비트 연산은 다음의 기호를 활용한다.
-
-# %% [markdown]
-# 비트 연산  |   파이썬 기호
-# :----------|:-------------
-# NOT        | `~`
-# AND        | `&`
-# OR         | `|`
-# XOR        | `^`
-# SHIFT      | `<<`, `>>`
+# 문자열 타입을 출력하기 위해 `print()`와 `repr()`을 사용할 수 있다. `print()`는 문자열의 탈출문자가 적용된 결과를 출력하고 `repr()`은 문자열이 따옴표 사이에 탈출문자가 포함하여 표기된 형태로 출력된다. 
+#
+# R에서의 `print()`와 `cat()`을 파이썬에서는 `repr()`과 `print()`를 쓴다. 파이썬에서 `repr()`은 출력 내용을 복사해서 어떤 변수에 할당할 수 있는 경우가 많다. `repr()` 없이 변수만 써도 콘솔에서 `repr()` 결과가 나온다.
+#
+#
 
 # %%
-x = 0b1100
-y = 0b0111
-print(type(x))
-print(f'{x:04b}')      # 형식을 4자리 2진수로 
-print(f'{~x :04b}')    # NOT
-print(f'{x & y:04b}')  # AND
-print(f'{x | y:04b}')  # OR
-print(f'{x ^ y:04b}')  # XOR
-print(f'{x >> 1:04b}') # SHIFT
-print(f'{x >> 2:04b}') # SHIFT
-
-# %% [markdown]
-# ## 3.3.2 문자
+x = "I \nDo\tLove You\N{INVERTED EXCLAMATION MARK}"
+x
 
 # %%
-print("Letter")
-# cat('Letter')
-print("\"Hello\", says he")
-# cat("\"Hello\", says he")
+repr(x)
 
 # %%
-print('Cheer up!\r\nRight Now!')
-# cat('Cheer up!\r\nRight Now!')
-# nchar('hello?') # 문자 갯수
-len('hello?') # 문자갯수
-# paste('Here is', 'an apple.') # 문자열 연결
-list = ['Here is', 'an apple.']
-text = ' '.join(list)
-print(text)
-print('Here is'+ ' '+'an apple.')
+print(x)
 
-# substring('hello?', 2, 3) # 문자열의 일부분
-a = "hello?"
-a[1:3]
+# %%
+repr("\"Hello\", says he.\tI can do!")
+
+# %%
+print("\"Hello\", says he.\tI can do!")
 
 # %% [markdown]
-# ## 3.3.3 날짜/시간
+# ### 문자열 함수
+#
+# 다음은 몇 가지 대표적인 문자열 연산과 함수를 보여준다.
+
+# %%
+x = "ABC" + "abc" + "123"; print(x)
+
+# %%
+len('hello?') # 문자 갯수 R> nchar()
+
+# %%
+x[:5] # 처음부터 5번째 글자 R> substring(x, 1, 5)
+
+# %% [markdown]
+# ## 3.3.3 날짜/시간 연산/함수
+#
+# 날짜시간/날짜/시간은 과거, 현재, 미래로 이어지는 시간의 흐름 속에 한 점을 나타낸다. 그래서 날짜 사이에는 차이를 구하는 것은 자연스러운 연산이다.
+#
+# 뒤에서 살펴보겠지만 날짜, 시간은 시간 흐름의 직선 위의 한 점을 다소 복잡한 방식으로 표기한다. 1분은 1초의 60배이고, 1시간은 1분의 60배이다. 1일은 1시간의 24배이고, 1주는 1일의 7배이지만, 달, 년은 일에 일정한 배를 해서 구할 수 없다. 
 
 # %%
 import datetime
@@ -839,70 +913,109 @@ import datetime
 # %%
 # Sys.Date() # 현재 날짜
 print(datetime.date.today())
+
+# %%
 # Sys.time() # 현재 날짜와 시간(POSIXct 형식)
 print(datetime.datetime.now())
 
-# as.Date("2018/12/31") # 문자열 "2018/12/31"을 날짜 형식으로
-print(datetime.datetime(2018,12,31))
-# as.POSIXct("2018/12/31 23:59:59") # 문자열 "2018/12/31 23:59:59"을 날짜시간 형식으로
-print(datetime.datetime(2018,12,31,23,59,59))
+# %%
+# as.Date("2018/12/31") # 문자열 "2022/12/31"을 날짜 형식으로
+datetime.datetime.strptime("2022/12/31", "%Y/%m/%d").date()
 
-# Sys.Date() - as.Date("2019-01-01") # 2018년 1월 1일과 현재 날짜의 차이
-a = datetime.date.today()
-b = datetime.date(2019,1,1)
+# %%
+# as.POSIXct("2022/12/31 23:59:59") # 문자열 "2018/12/31 23:59:59"을 날짜시간 형식으로
+datetime.datetime.strptime("2022/12/31 23:59:59", "%Y/%m/%d %H:%M:%S")
+
+# %%
+# Sys.Date() - as.Date("2023-01-01") # 2023년 1월 1일과 현재 날짜의 차이
+a = datetime.date(2023,1,1)
+b = datetime.date.today()
 print(a-b)  # a-b는 datetime.timedelta 자료형을 가진다.
-# as.POSIXct("2019/12/31 23:59:59")-Sys.time() # 현재 날짜 시간과 2019년 12월 31일 23시 59분 59초의 차이
-a = datetime.datetime.today()
-b = datetime.datetime(2019,12,31,23,59,59)
+
+# %%
+# as.POSIXct("2023/01/02 09:00:00")-Sys.time() # 2023년 1월 1일 09시 00분 00초와 현재 시간의 차이
+a = datetime.datetime(2023,1,2,9,0,0)
+# datetime.datetime(2023,01,02,09,00,00)으로 쓸 수 없음을 유의하자.
+b = datetime.datetime.today()
+
 print(a-b) # a-b는 datetime.timedelta 자료형을 가진다.
 
-
-# 현재 날짜 시간과 2018년 12월 31일 23시 59분 59초와의 차이
-# difftime(as.POSIXct("2018/12/31 23:59:59"), Sys.time()) 
-a = datetime.datetime.today()
-b = datetime.datetime(2018,12,31,23,59,59)
+# %%
+# 현재 날짜 시간과 2022년 12월 31일 23시 59분 59초와의 차이(일)
+# difftime(as.POSIXct("2018/12/31 23:59:59"), Sys.time()
+a = datetime.datetime(2022,12,31,23,59,59)
+b = datetime.datetime.today()
 print((a-b).days, "일") 
 
-# 현재 날짜 시간과 2018년 12월 31일 23시 59분 59초와의 차이(분 단위로)
-# difftime(as.POSIXct("2018/12/31 23:59:59"), Sys.time(), units='mins')
+# %%
+# 현재 날짜 시간과 2022년 12월 31일 23시 59분 59초와의 차이(분 단위로)
+# difftime(as.POSIXct("2022/12/31 23:59:59"), Sys.time(), units='mins')
 print((a-b).seconds/60, "분")
-print(f"{(a-b).seconds/60:.2f}분")
+print(f"{(a-b).seconds/60:.2f}분") # 소수점 이하 숫자 두 개
 
-# 현재 날짜 시간과 2018년 12월 31일 23시 59분 59초와의 차이(초 단위로)
-# difftime(as.POSIXct("2018/12/31 23:59:59"), Sys.time(), units='secs')
+# %%
+# 현재 날짜 시간과 2022년 12월 31일 23시 59분 59초와의 차이(초 단위로)
+# difftime(as.POSIXct("2022/12/31 23:59:59"), Sys.time(), units='secs')
 # R : units은 다음 중 하나: 'auto', 'secs', 'mins', 'hours', 'days', 'weeks'
 # 파이썬 : timedelta 값은 날짜, 초, 밀리초를 days, seconds, miliseconds 속성 이용해 접근할 수 있다.
 a = datetime.datetime.today()
-b = datetime.datetime(2018,12,31,23,59,59)
+b = datetime.datetime(2022,12,31,23,59,59)
 print((a-b).seconds, "초")
 
-# as.numeric(as.POSIXct("2018/12/31 23:59:59"))-as.numeric(Sys.time())
-
-#'2020-01-01'-'2019-12-31'
-# as.Date('2020-01-01')-as.Date('2019-12-31')
 
 # %% [markdown]
-# ## 3.3.4 논리형
+# ## 3.3.4 논리형 연산/함수
+
+# %% [markdown]
+# 논리형 연산 AND, OR, NOT 등은 파이썬에서 `and`, `or`, `not`으로 표기한다. 논리형 연산 XOR은 `(x and not y) or (not x and y)`로 쓸 수 있다. 논리형 연산 XOR은 둘 중 하나만 참일 때 참이다.
 
 # %%
+def xor(x, y):
+    return (x and not y) or (not x and y)
+
+
+# %%
+xor(True, True), xor(True, False), xor(False, False)
+
+
+# %% [markdown]
+# `not`, `and`, `or`의 우선순위는 `not`, `and`, `or`이다. 따라서 위의 XOR 연산(`(x and not y) or (not x and y)`)은 우선순위만으로 괄호없이 `x and not y or not x and y`로 써도 된다.
+
+# %%
+def xor2(x, y):
+    return x and not y or not x and y
+xor2(True, True), xor2(True, False), xor2(False, False)
+
+# %% [markdown]
+# 정수형, 실수형 연산까지 모두 포함하면 논리형 연산 `not`, `and`, `or`은 앞에서 소개한 모든 연산 `**`, `*`, `/`, `//`, `%`, `+`, `-`보다 낮다.
+
+# %%
+
+# %%
+
+# %%
+(7 < 3) and (4 > 3), \
+(7 < 3) or (4 > 3),  \
+not (7 < 3)
+
+# %%
+# R>
 #(7 < 3) & (4 > 3)
 #(7 < 3) | (4 > 3)
 #!(7 < 3)
 #xor(T, T) # XOR
-#x = NA4
+#x = NA
 #isTRUE(x == 3) # robust to NAs
 
 # %%
-True & False, True and False
-True | False, True or False
 
 # %%
-import numpy as np
-(7 < 3) & (4 > 3)
-(7 < 3) | (4 > 3)
-not(7<3)
-x = np.nan
-bool(x==3)
+
+# %%
+
+# %%
+
+# %%
 
 # %% [markdown]
 # 특히 결측치를 나타내는 `np.nan`을 주목하자. 빌트인 모듈 또는 내장 모듈을 사용하여 결측치를 나타낼 방법이 없기 때문에 제3자 패키지인 `numpy`를 사용했다. 계산 결과도 R과 다름을 유의하자.
