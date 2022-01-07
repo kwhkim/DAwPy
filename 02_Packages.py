@@ -629,6 +629,8 @@ source("R/check_happy2.py")
 # ```
 #
 # 만약에 모듈이 운영체제 커맨드 라인에서 실행이 된다면, `main`이라는 함수를 실행한다.
+#
+# > **부가설명** : 위에서 `import sillyenough`를 한 후 `sillyenough.__name__`을 해봤다. 사실 `sillyenough.xxx`의 `xxx`는 `sillyenough`에서 생성한 변수, 정의한 함수를 쓸 수 있다. `__name__`이란 변수는 우리가 만들지 않았음에도 저절도 생성되는 변수이다. `__name__`이라는 변수는 Python 콘솔에서 해당 모듈을 `import` 할 때에도 `python xxxx.py` 또는 `python -m xxxx`를 통해 운영체제에서 실행될 때에도 **자동**으로 생성된다. 그리고 운영체제에서 `python` 또는 `python -m`을 통해 실행될 때에는 `__name__`은 `"__main__"`이 되고, `import xxxx`로 임포트될 때에는 모듈의 원래 이름이 된다.
 
 # %% [markdown]
 # <예제>
