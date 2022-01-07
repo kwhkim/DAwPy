@@ -7,11 +7,11 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.11.2
+#       jupytext_version: 1.13.5
 #   kernelspec:
-#     display_name: rtopython2-pip
+#     display_name: rtopython3-pip
 #     language: python
-#     name: rtopython2-pip
+#     name: rtopython3-pip
 # ---
 
 # %% [markdown]
@@ -484,9 +484,21 @@ True = 3
 #
 # 시작과 끝을 `"` 따옴표로 할 경우 따옴표 사이에 문자 따옴표를 사용하면 문자열의 끝을 의미하는 따옴표와 구분이 되지 않기 때문에 탈출문자를 써서 `"\""`로 표기한다. 문자 백슬래쉬 역시 비슷한 이유로 `"\\"`로 쓴다. 
 #
+# 탈출 문자로 표기할 수 있는 제어 문자는 대여섯개에 불과하다. 그에 비해 자주 사용되지 않는 제어문자, 키보드로 입력할 수 없는 문자들도 많다. 키보드로 입력해도 폰트가 없어서 화면에 출력되지 않을 수도 있다. 가장 확실한 방법은 문자에 해당하는 코드를 적어주는 것이다. 편의를 위해 코드는 16진수, 8진수 등의 다양한 방법으로 지정해 줄 수 있다.
+#
 # `"\x41"`은 16진수 41에 해당하는 문자, `"\101"`은 8진수 101에 해당하는 문자를 나타낸다. 대부분의 컴퓨터에서 16진수 41에 해당하는 문자는 `'a'`이다. 그냥 `a`를 사용하지 왜 `\x41` 또는 `\101`을 사용하느냐고? 이 방법은 어떤 문자에도 사용할 수 있다. 예를 들면 `"\n"`(newline)은 `"\x0a"` 또는 `"\012"`로 쓸 수 있다. 왜냐하면 newline에 해당하는 문자가 ASCII에서 10번에 해당하기 때문이다(10진수 10은 16진수로 0a, 8진수로는 12이다).
 #
 # 유니코드 문자는 문자마다 이름이 있다. INVERTED EXCLAMATION MARK라는 유니코드 이름을 가진 문자는 `"\N{INVERTED EXCLAMATION MARK}"`로 나타낸다. "\uxxxx"는 유니코드 코드 포인트가 16진수 0000xxxx인 문자, "\UXXXXXXXX"는 유니코드 코드포인트가 16진수 XXXXXXXX인 문자를 나타낸다. 
+#
+# `\x`과 `\u`, 그리고 `\U`의 차이는 뒤에 오는 문자 몇 개를 문자 코드(문자에 대응하는 코드)로 읽을 것인지로 구분할 수 있다. `print('\u0041')`을 해보자. `print('\x0041')`과 어떻게 다른가? 이에 대한 자세한 사항은 문자열 관련 장(???)에서 다룬다.
+#
+#
+
+# %%
+print('\u0041')
+
+# %%
+print("\x0041")
 
 # %% [markdown]
 # 마지막으로 큰 따옴표 또는 작은 따옴표 안에서 백슬래쉬를 탈출 문자로 쓰지 않고 문자 그대로 사용하려면 큰 따옴표 또는 작은 따옴표 앞에 `r`이라는 문자를 덧붙인다. 예를 들면 `r'\n'`라고 쓰면 newline 문자 하나가 아니라 백슬래쉬(`\`)와 문자 엔(`n`)으로 구성된 두 문자를 의미한다. 만약 백슬래쉬가 많이 포함된 문자열을 따옴표 안에 적으려면 이중 백슬래쉬(`\\`)를 써야 하고 따옴표 안에 백슬래쉬가 지나치게 많아져 문자열을 읽기가 쉽지 않을 때 도움이 된다. 예를 들어 C:\Windows\Temp를 의미하기 위해 따옴표를 써서 `"C:\\Windows\\Temp"`로 나타내야 할 문자열을 `r"C:\Windows\Temp"`로 쓸 수 있다.
@@ -698,13 +710,13 @@ x & y
 # 파이썬의 비트 연산은 다음의 기호를 활용한다.
 
 # %% [markdown]
-# 비트 연산  |   파이썬 기호
-# :----------|:-------------
-# NOT        | `~`
-# AND        | `&`
-# OR         | `|`
-# XOR        | `^`
-# SHIFT      | `<<`, `>>`
+# |비트 연산  |   파이썬 기호|
+# |:----------|:-------------|
+# | NOT        | `~`   |
+# | AND        | `&`  |
+# | OR         | ` \| `  |
+# | XOR        | `^`  |
+# | SHIFT      | `<<`, `>>` |
 
 # %% [markdown]
 # 다음은 비트 연산을 실시한 결과를 보여준다.
@@ -911,57 +923,66 @@ x[:5] # 처음부터 5번째 글자 R> substring(x, 1, 5)
 import datetime
 
 # %%
-# Sys.Date() # 현재 날짜
 print(datetime.date.today())
+datetime.date.today()
+# R> Sys.Date() # 현재 날짜
 
 # %%
-# Sys.time() # 현재 날짜와 시간(POSIXct 형식)
 print(datetime.datetime.now())
+datetime.datetime.now()
+# R> Sys.time() # 현재 날짜와 시간(POSIXct 형식)
 
 # %%
-# as.Date("2018/12/31") # 문자열 "2022/12/31"을 날짜 형식으로
-datetime.datetime.strptime("2022/12/31", "%Y/%m/%d").date()
+# 문자열 "2022/12/31"을 날짜 형식으로
+x = datetime.datetime.strptime("2022/12/31", "%Y/%m/%d").date()
+x
+# R> as.Date("2018/12/31") 
 
 # %%
-# as.POSIXct("2022/12/31 23:59:59") # 문자열 "2018/12/31 23:59:59"을 날짜시간 형식으로
-datetime.datetime.strptime("2022/12/31 23:59:59", "%Y/%m/%d %H:%M:%S")
+# 문자열 "2018/12/31 23:59:59"을 날짜시간 형식으로
+x = datetime.datetime.strptime("2022/12/31 23:59:59", "%Y/%m/%d %H:%M:%S")
+x
+# R> as.POSIXct("2022/12/31 23:59:59") 
 
 # %%
-# Sys.Date() - as.Date("2023-01-01") # 2023년 1월 1일과 현재 날짜의 차이
+# 2023년 1월 1일과 현재 날짜의 차이
 a = datetime.date(2023,1,1)
 b = datetime.date.today()
 print(a-b)  # a-b는 datetime.timedelta 자료형을 가진다.
+a-b
+# Sys.Date() - as.Date("2023-01-01") 
 
 # %%
-# as.POSIXct("2023/01/02 09:00:00")-Sys.time() # 2023년 1월 1일 09시 00분 00초와 현재 시간의 차이
+# 2023년 1월 1일 09시 00분 00초와 현재 시간의 차이
 a = datetime.datetime(2023,1,2,9,0,0)
 # datetime.datetime(2023,01,02,09,00,00)으로 쓸 수 없음을 유의하자.
+# 10진수 수는 첫 글자를 0으로 쓸 수 없다(0.1과 같이 1 미만의 소수 제외)
 b = datetime.datetime.today()
-
 print(a-b) # a-b는 datetime.timedelta 자료형을 가진다.
+a-b
+# R> as.POSIXct("2023/01/02 09:00:00")-Sys.time() 
 
 # %%
 # 현재 날짜 시간과 2022년 12월 31일 23시 59분 59초와의 차이(일)
-# difftime(as.POSIXct("2018/12/31 23:59:59"), Sys.time()
 a = datetime.datetime(2022,12,31,23,59,59)
 b = datetime.datetime.today()
 print((a-b).days, "일") 
+# R> difftime(as.POSIXct("2018/12/31 23:59:59"), Sys.time()
 
 # %%
 # 현재 날짜 시간과 2022년 12월 31일 23시 59분 59초와의 차이(분 단위로)
-# difftime(as.POSIXct("2022/12/31 23:59:59"), Sys.time(), units='mins')
 print((a-b).seconds/60, "분")
 print(f"{(a-b).seconds/60:.2f}분") # 소수점 이하 숫자 두 개
+# R> difftime(as.POSIXct("2022/12/31 23:59:59"), Sys.time(), units='mins')
 
 # %%
 # 현재 날짜 시간과 2022년 12월 31일 23시 59분 59초와의 차이(초 단위로)
-# difftime(as.POSIXct("2022/12/31 23:59:59"), Sys.time(), units='secs')
-# R : units은 다음 중 하나: 'auto', 'secs', 'mins', 'hours', 'days', 'weeks'
 # 파이썬 : timedelta 값은 날짜, 초, 밀리초를 days, seconds, miliseconds 속성 이용해 접근할 수 있다.
 a = datetime.datetime.today()
 b = datetime.datetime(2022,12,31,23,59,59)
 print((a-b).seconds, "초")
-
+# R> difftime(as.POSIXct("2022/12/31 23:59:59"), Sys.time(), units='secs')
+#    R에서 units은 다음 중 하나: 'auto', 'secs', 'mins', 'hours', 'days', 'weeks'
 
 # %% [markdown]
 # ## 3.3.4 논리형 연산/함수
@@ -990,10 +1011,6 @@ xor2(True, True), xor2(True, False), xor2(False, False)
 # 정수형, 실수형 연산까지 모두 포함하면 논리형 연산 `not`, `and`, `or`은 앞에서 소개한 모든 연산 `**`, `*`, `/`, `//`, `%`, `+`, `-`보다 낮다.
 
 # %%
-
-# %%
-
-# %%
 (7 < 3) and (4 > 3), \
 (7 < 3) or (4 > 3),  \
 not (7 < 3)
@@ -1007,16 +1024,6 @@ not (7 < 3)
 #x = NA
 #isTRUE(x == 3) # robust to NAs
 
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
 # %% [markdown]
 # 특히 결측치를 나타내는 `np.nan`을 주목하자. 빌트인 모듈 또는 내장 모듈을 사용하여 결측치를 나타낼 방법이 없기 때문에 제3자 패키지인 `numpy`를 사용했다. 계산 결과도 R과 다름을 유의하자.
 #
@@ -1028,6 +1035,80 @@ not (7 < 3)
 print(np.nan == np.nan)
 print(3==np.nan)
 print(math.isclose(np.nan, np.nan)) # np.isclose(np.nan, np.nan)
+
+
+# %% [markdown]
+# 그래서 파이썬의 `x==3`은 R의 `isTRUE(x==3)`과 비슷하다고 생각할 수 있다. 
+
+# %% [markdown]
+# 만약 `x`와 `y`를 비교할 때 `np.nan`을 고려하여 R과 비슷한 결론을 얻어 내고 싶다면,
+
+# %%
+def eq(x, y):
+    if np.isnan(x) or np.isnan(y):
+        return np.nan
+    elif x == y:
+        return True
+    else:
+        return False
+eq(3, np.nan), eq(3,4), eq(np.nan, 4)
+
+# %%
+eq(np.array([3,4]), np.array([np.nan, 4])) # 이렇게 np.ndarray에도 사용할 수 있도록 수정해야 할 듯 !!!
+
+# %%
+import numpy as np
+np.isnan
+
+
+# %%
+def eq(a,b):
+    vnan = np.isnan(a) | np.isnan(b) # numpy일 수 있으니 bool이 아닐 수 있다..
+    res = a == b
+    print(vnan, res)
+    print(type(vnan), type(res))
+    if isinstance(vnan, np.ndarray):
+        print('a')
+        res[vnan] = np.nan
+        return res
+    elif isinstance(vnan, np.bool_):
+        print('b')
+        if vnan:
+            print('c')
+            return np.nan
+        else:
+            return res
+
+
+# %%
+import numpy as np
+
+# %%
+import pandas as pd
+
+# %%
+lsf(pd)
+
+# %%
+dir(pd)
+
+# %%
+np.isna(3)
+
+# %%
+np.isnan(3)
+
+# %%
+np.isnan(np.nan)
+
+# %%
+eq("3", "3")
+
+# %%
+eq(3, np.nan)
+
+# %%
+
 
 
 # %% [markdown]

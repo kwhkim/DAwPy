@@ -915,6 +915,7 @@ print(sys.version)
 
 # %% [raw]
 # conda create -n env1 python=3.8 -c conda-forge
+# # ???이렇게 환경을 설정할 때 채널을 설정하면 그 효과가 계속 지속되는가?
 
 # %% [markdown]
 # 다음은 유명한 콘다 채널이다. defaults는 기본적으로 설정된 콘다 채널이다.
