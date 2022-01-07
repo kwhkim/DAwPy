@@ -1027,7 +1027,8 @@ not (7 < 3)
 # %%
 print(np.nan == np.nan)
 print(3==np.nan)
-print(math.isclose(np.nan, np.nan))
+print(math.isclose(np.nan, np.nan)) # np.isclose(np.nan, np.nan)
+
 
 # %% [markdown]
 # ## 3.3.5 데이터 타입에 따른 연산과 함수
