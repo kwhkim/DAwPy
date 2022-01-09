@@ -1,18 +1,208 @@
 # -*- coding: utf-8 -*-
 # %% [markdown]
-# R에서 배열은 1차원 벡터의 다차원 확장 쯤으로 생각했다. 
-# R에서 모든 배열은 벡터와 동일한 형태로 저장되어 있고, 차원마다 차원의 크기가 설정되어 있다는 점만 다르다.
+# ## READINGLIST
+#
+# ### type vs class
+# * https://blog.ionelmc.ro/2015/02/09/understanding-python-metaclasses/
 
 # %% [markdown]
-# 파이썬에 R의 1차원 벡터를 대신할 수 있는 데이터 구조는
-# **넘파이 배열(numpy array)**과 **판다스 시리즈(pandas series)**를 생각할 수 있다.
+# > R에서 배열은 1차원 벡터의 다차원 확장 쯤으로 생각했다. R에서 모든 배열은 벡터와 동일한 형태로 저장되어 있고, 각 차원의 크기가 설정되어 있다는 점만 다르다. 사용 용도 및 범위에서 R의 벡터에 해당하는 것은 파이썬의 리스트일 것이다. 가장 기본적으로 사용되고, 또 어디서나 사용되기 때문이다. 하지만 파이썬의 리스트는 속도가 느리다는 치명적인 단점이 있다. 이를 해결한 것이 제3자 패키지인 `numpy`이고, `numpy`를 데이터 분석용으로 확장, 발전시킨 것이 또다른 제3자 패키지인 `pandas`이다. `numpy`의 배열(`ndarray`), 그리고 `pandas`의 `Series`는 모두 R의 벡터와 같이 **동일한 타입**의 데이터를 저장한다는 특징을 지녔다. `numpy`는 수치계산에 특화되어 있고, `pandas`는 범용 데이터 분석이라고 생각할 수도 있다. 또 다른 차이는 `numpy`의 배열은 다차원으로 확장할 수 있고, `pandas`의 `Series`는 여러 타입의 데이터를 모아 데이터 프레임을 구성할 수 있다.
+
+# %% [markdown]
+# 파이썬에 R의 1차원 벡터를 대신할 수 있는 데이터 구조는 앞에서 소개한 리스트와 
+# **넘파이 배열(numpy array)**과 **판다스 시리즈(pandas series)**가 있다.
 #
-# 여기서는 numpy의 배열에 대해 알아본다. 
-# 특히 R의 1차원 벡터와 동일하게 생각할 수 있는 python의 1차원 넘파이 배열에 대해 알아본다.
-# 1차원 넘파이 배열은 동일한 type의 값이 순번에 따라 저장되었다고 생각할 수 있다.
+# 여기서는 numpy의 배열에 대해 알아본다. 특히 여기서는 배열의 차원을 1로 제한하여 알아본다.
+# 1차원 넘파이 배열은 동일한 type의 값이 메모리에 순차적으로 순번에 따라 저장되어 있는 **가변 객체**이다.
+
+# %%
+from mypack import utils
 
 # %%
 import numpy as np
+
+# %% [markdown]
+# 패키지 `numpy`의 버전과 기본적인 설정을 확인해보자.
+
+# %%
+print(np.__version__)
+np.show_config()
+# blas_info, blas_opt_info, lapack_info, lapack_opt_info, 
+# Supported SIMD extensions in this NumPy install
+
+# %%
+utils.lsf(np) # subpackage는 출력되지 않음!!!
+
+# %%
+import pkgutil
+import numpy
+package=numpy
+for importer, modname, ispkg in pkgutil.walk_packages(path=package.__path__,
+                                                      prefix=package.__name__+'.',
+                                                      onerror=lambda x: None):
+    print(modname)
+
+# %%
+import numpy
+
+# %%
+len(utils.lsf(numpy.random)), len(utils.lsf(numpy.core)), len(utils.lsf(numpy.distutils)), len(utils.lsf(numpy.f2py)), \
+len(utils.lsf(numpy.fft)), len(utils.lsf(numpy.lib)), len(utils.lsf(numpy.linalg)), len(utils.lsf(numpy.ma)), \
+len(utils.lsf(numpy.matrixlib)), len(utils.lsf(numpy.polynomial)), len(utils.lsf(numpy.random)), len(utils.lsf(numpy.testing)), \
+len(utils.lsf(numpy.tests)), len(utils.lsf(numpy.typing)) # tests는 유닛 테스팅?
+
+# %% [markdown]
+# 넘파이 배열을 생성하기 위해서는 원소을 나열하고, 모든 원소의 공통적인 타입을 설정한다. 예를 들어 정수 `1`,`2`,`3`을 가지는 넘파이 배열을 만들고자 한다면 다음과 같이 한다.
+
+# %%
+np.array([1,2,3])
+
+# %% [markdown]
+# 다시 동일한 내용을 하나 더 만들어서 변수 `arr`에 할당한다. 이 과정은 앞에서 소개한 것과 같이 `np.array([1,2,3])`이 메모리에 생성되고, 변수 `arr`은 이 객체을 가리키게 된다.
+
+# %%
+arr = np.array([1,2,3])
+
+# %% [markdown]
+# 이제 원소의 타입을 살펴보자. 변수에 `.dtype`을 한다.
+
+# %%
+arr.dtype
+
+# %% [markdown]
+# `dtype('int32')`이다. 여기서 중요한 것은 이 데이터 타입(**d**ata **type**; `dtype`)의 표현력이다. 정수형이라면 파이썬의 정수형(`int`)와 비슷하게 정확한 값을 저장하지만 저장한 가능한 수에 범위(최솟값, 최댓값)가 있다. 이 정보는 다음과 같이 확인할 수 있다.
+
+# %%
+np.iinfo(np.int32) # integer info
+
+# %% [markdown]
+# 최솟값은 `-2147483648`이고 최댓값은 `2147483647`이다. 이 범위를 넘어간 값을 저장하려면 어떤 일이 일어날까?
+
+# %%
+np.iinfo(np.int32).max
+
+# %%
+np.iinfo(np.int32).max + 1
+
+# %%
+arr[0] = np.iinfo(np.int32).max + 1
+
+# %% [markdown]
+# 이게 조금 애매한 데 다음을 보자.
+
+# %%
+arr[0] = np.int32(np.iinfo(np.int32).max) + 1
+
+# %%
+arr[0]
+
+# %% [markdown]
+# OverflowError가 발생하든, 하지 않든 dtype `np.int32`으로는 무리다. 
+
+# %% [markdown]
+# 여기서 dtype과 객체의 타입을 구분하자. `arr`의 타입(클래스)는 `np.ndarray`이고, `arr`의 dtype은 `np.int32`이다. `arr`은 기본적으로 numpy 배열이고, 배열의 각 원소의 값을 저장하는 방식을 dtype이 결정한다.`np.int32`은 -2147483648에서 2147483648까지의 정수를 저장할 수 있는 dtype이다.
+
+# %%
+type(arr)
+
+# %%
+isinstance(arr, np.ndarray)
+
+# %% [markdown]
+#
+
+# %% [markdown]
+# 다음 넘파이 배열에 사용 가능한 dtype과 특징을 보여준다. `np.int8`, `np.int16`, `np.int32`, `np.int64`은 8비트, 16비트, 32비트, 64비트로 저장되는 정수형이다. 
+
+# %% [markdown]
+# !!! Table (insert here)
+#
+#
+# ### list of numpy array dtype
+#
+# * [types](https://numpy.org/doc/stable/user/basics.types.html)
+# * [sized-aliases](https://numpy.org/doc/stable/reference/arrays.scalars.html#sized-aliases)
+
+# %%
+arr = np.array([1,2,3], dtype=np.int64)
+arr[0] = np.iinfo(np.int32).max + 1
+
+# %%
+arr
+
+# %% [markdown]
+# 위에서 저장할 수 없거나 논리적인 오류를 발생시켰던 값도 64비트 정수형으로는 정확하게 저장된다.
+
+# %% [markdown]
+# 앞에서 배웠던 각 데이터 타입이 넘파이 배열에 어떻게 저장되는지도 확인해보자.
+
+# %%
+from datetime import datetime
+arr_bool  = np.array([True, False, False, True, True])
+arr_int   = np.array([1, 3, 2, 5, 4])
+arr_float = np.array([3.14, 2.14, -4.5, 100, 0.5])
+arr_str   = np.array(["This is a sentence", 
+                      "Hey",
+                      "I don't like this",
+                      "Surely!",
+                      "Am I capable of this?"])
+
+# %%
+arr_datetime = np.array([datetime(2022,1,1),
+                         datetime(2022,4,1),
+                         datetime(2025,3,14,11,14),
+                         datetime(1999,12,31),
+                         datetime(2000,1,4,9,0)])
+
+# %%
+arr_bool.dtype, arr_int.dtype, arr_float.dtype, \
+arr_str.dtype, arr_datetime.dtype
+
+# %%
+np.datetime64('2022-01-01')
+
+# %%
+arr_datetime = np.array(['2022-01-01',
+                         '2022-04-01',
+                         '2025-03-14 11:14',
+                         '1999-12-31',
+                         '2000-01-04 09:00'], dtype='datetime64')
+
+# %%
+arr_datetime
+
+# %%
+np.array(['1', '2'], dtype=np.int64)
+
+# %%
+arr_datetime = np.array([datetime(2022,1,1),
+                         datetime(2022,4,1),
+                         datetime(2025,3,14,11,14),
+                         datetime(1999,12,31),
+                         datetime(2000,1,4,9,0)],
+                       dtype='datetime64')
+
+# %%
+arr_datetime
+
+# %% [markdown]
+# 날짜시간 데이터는 다루기 까다롭고 사전지식이 필요하므로 여기서는 다루지 않고 뒤에 관련 장에서 다룬다.
+#
+
+# %% [markdown]
+# ### * TO-ADD : dtype('O')에 대한 내용, categorical data에 대한 내용
+
+# %% [markdown]
+# ### 1차원 넘파이 배열의 크기(원소의 갯수)
+
+# %% [markdown]
+# 1차원 넘파이 배열에서 가장 중요한 속성은 dtype과 원소의 갯수이다. 원소의 총 갯수는 `.size` 속성으로 확인할 수 있다. `.shape`은 다차원 배열에서 각 차원의 크기를 알려준다. 1차원 배열은 원소의 갯수가 하나인 튜플로 0-번째 차원의 크기를 알 수 있다(1차원의 0-번째 차원이 헷갈릴 수 있지만, 파이썬에서 순번은 0부터 시작하는 게 보통이다. 1차원 배열에서 차원의 갯수는 1, 차원의 순번은 0이다.)
+
+# %%
+arr = np.array([1,3,2], dtype=np.int64)
+
+# %%
+arr.ndim, arr.shape, arr.size  # 차원의 갯수, 각 차원의 크기, 원소의 총갯수
 
 # %% [markdown]
 # ## CREAD(원소의 위치) 
@@ -21,7 +211,6 @@ import numpy as np
 # #### Empty array
 
 # %%
-
 a = np.empty(0)
 a = np.empty((5,2))
 a = np.empty((5,2), dtype='>U3')
@@ -106,6 +295,9 @@ a[3]        # 원소 하나 : a의 3-번째 원소
 a[:5:2]     # 연속된 원소 slice 
 a[[3,4,-1]] # 임의의 원소 Fancy-index : a의 3,4-번째와 마지막 원소
 
+# %%
+# Indexing : https://www.labri.fr/perso/nrougier/from-python-to-numpy/#id58
+
 # %% [markdown]
 # ### Edit
 #
@@ -126,6 +318,14 @@ a[1] = -1
 a[:5:2] = -1  # 0,2,4-번째
 a[[3,4,-1]] = -1 # 3,4,마지막-번째
 print(a)
+
+# %%
+만약 원소의 순서를 거꾸로 바꾸고 싶다면, 
+
+# %%
+a[::-1]
+
+# %%
 
 # %% [markdown]
 # ### Add
@@ -220,6 +420,15 @@ a[np.isin(a, b)] # a 중에서 b에 존재하는 원소
 print(a[np.isin(a,b)])
 np.where(np.isin(a,b))
 print(np.where(np.isin(a,b)))
+
+# %%
+
+# %%
+어디가 nonzero인가?
+
+
+# %%
+np.nonzero(np.array([1,0,0,1,1.4,2]))  # index 구하기
 
 # %% [markdown]
 # ### Edit
@@ -472,11 +681,6 @@ y[1], x[2]
 
 # %%
 
+# %%
 
-## Why not use np.arange() with float?
-# https://forum.quantumatk.com/index.php?topic=110.0
-# https://stackoverflow.com/questions/63130895/how-can-i-fix-the-problem-that-numpy-arange-is-not-working-properly
-# https://stackoverflow.com/questions/40152997/numpy-arange-floating-point-inconsistency/40153453
-# https://github.com/numpy/numpy/issues/17189
-# more in README.md
-
+# %%
