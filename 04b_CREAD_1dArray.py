@@ -70,7 +70,9 @@ arr = np.array([1,2,3])
 arr.dtype
 
 # %% [markdown]
-# `dtype('int32')`이다. 여기서 중요한 것은 이 데이터 타입(**d**ata **type**; `dtype`)의 표현력이다. 정수형이라면 파이썬의 정수형(`int`)와 비슷하게 정확한 값을 저장하지만 저장한 가능한 수에 범위(최솟값, 최댓값)가 있다. 이 정보는 다음과 같이 확인할 수 있다.
+# `dtype('int32')`이다.[^int32] 여기서 중요한 것은 이 데이터 타입(**d**ata **type**; `dtype`)의 표현력이다. 정수형이라면 파이썬의 정수형(`int`)와 비슷하게 정확한 값을 저장하지만 저장한 가능한 수에 범위(최솟값, 최댓값)가 있다. 이 정보는 다음과 같이 확인할 수 있다.
+#
+# [^int32]: 만약 결과가 `dtype('int64')`로 나온다면 논의의 진행 상 `arr=np.array([1,2,3], dtype='int32')`을 다시 하고 진행하자.
 
 # %%
 np.iinfo(np.int32) # integer info
@@ -87,8 +89,13 @@ np.iinfo(np.int32).max + 1
 # %%
 arr[0] = np.iinfo(np.int32).max + 1
 
+# %%
+arr[0]
+
 # %% [markdown]
-# 이게 조금 애매한 데 다음을 보자.
+# 이게 조금 애매한 데 다음을 보자.[^int32overflow]
+#
+# [^inte32overflow]: `numpy` 버전에 따라 OverflowError가 발생하기도 한다.
 
 # %%
 arr[0] = np.int32(np.iinfo(np.int32).max) + 1
@@ -97,7 +104,7 @@ arr[0] = np.int32(np.iinfo(np.int32).max) + 1
 arr[0]
 
 # %% [markdown]
-# OverflowError가 발생하든, 하지 않든 dtype `np.int32`으로는 무리다. 
+# OverflowError가 발생하든, 하지 않든 dtype `np.int32`으로는 계산 결과를 정확하게 저장할 수 없다.
 
 # %% [markdown]
 # 여기서 dtype과 객체의 타입을 구분하자. `arr`의 타입(클래스)는 `np.ndarray`이고, `arr`의 dtype은 `np.int32`이다. `arr`은 기본적으로 numpy 배열이고, 배열의 각 원소의 값을 저장하는 방식을 dtype이 결정한다.`np.int32`은 -2147483648에서 2147483648까지의 정수를 저장할 수 있는 dtype이다.
@@ -108,8 +115,7 @@ type(arr)
 # %%
 isinstance(arr, np.ndarray)
 
-# %% [markdown]
-#
+# %%
 
 # %% [markdown]
 # 다음 넘파이 배열에 사용 가능한 dtype과 특징을 보여준다. `np.int8`, `np.int16`, `np.int32`, `np.int64`은 8비트, 16비트, 32비트, 64비트로 저장되는 정수형이다. 
@@ -134,7 +140,7 @@ arr
 # 위에서 저장할 수 없거나 논리적인 오류를 발생시켰던 값도 64비트 정수형으로는 정확하게 저장된다.
 
 # %% [markdown]
-# 앞에서 배웠던 각 데이터 타입이 넘파이 배열에 어떻게 저장되는지도 확인해보자.
+# 앞에서 배웠던 각 데이터 타입이 넘파이 배열에 어떻게 저장되는지도 확인해보자. (넘파이 배열은 범주형 dtype을 지원하지 않는다.)
 
 # %%
 from datetime import datetime
@@ -154,12 +160,27 @@ arr_datetime = np.array([datetime(2022,1,1),
                          datetime(1999,12,31),
                          datetime(2000,1,4,9,0)])
 
+# %% [markdown]
+# `arr_bool`, `arr_int`, `arr_float`, `arr_str` 그리고 `arr_datetime`을 콘솔에서 출력해보자. 그리고 dtype을 확인해보자.
+
 # %%
 arr_bool.dtype, arr_int.dtype, arr_float.dtype, \
 arr_str.dtype, arr_datetime.dtype
 
+# %% [markdown]
+# `dtype('bool')`, `dtype('int64')`, `dtype('float64')`의 의미는 쉽게 유추 가능할 것이다. 논리형, 64비트 정수형, 64비트 실수형이다. `dtype('<U21')`의 `U`는 유니코드를, `<21`은 최대 글자 갯수를 나타낸다. `arr_str[0][:21]`을 하면 0-번째 원소의 모든 글자를 포함하게 된다.[^strlen] `dtype('O')`는 객체(Object)를 가리킨다. 사실 파이썬의 모든 것은 객체이므로 이건 뭘 특별히 저장하고 있다는 의미가 없다. 뒤에서 설명하겠지만 `dtype('O')`의 경우 값을 저장하지 않고 포인터를 저장한다.
+#
+# [^strlen]: `np.char.str_len()` 함수는 `numpy` 문자열형 배열 각 원소의 글자 갯수를 반환한다. `np.char.str_len(arr_str)`을 해보자.
+
+# %% [markdown]
+# `dtype('O')`는 어떤 자료형인지 알려주지 않는다. 예를 들어 다음과 날짜시간형이 아닌 값도 저장할 수 있다.
+
 # %%
-np.datetime64('2022-01-01')
+arr_datetime[1] = 'This is not datetime.'
+arr_datetime
+
+# %% [markdown]
+# 날짜시간형의 `dtype`은 다음과 같이 정해줄 수 있다.
 
 # %%
 arr_datetime = np.array(['2022-01-01',
@@ -172,17 +193,6 @@ arr_datetime = np.array(['2022-01-01',
 arr_datetime
 
 # %%
-np.array(['1', '2'], dtype=np.int64)
-
-# %%
-arr_datetime = np.array([datetime(2022,1,1),
-                         datetime(2022,4,1),
-                         datetime(2025,3,14,11,14),
-                         datetime(1999,12,31),
-                         datetime(2000,1,4,9,0)],
-                       dtype='datetime64')
-
-# %%
 arr_datetime
 
 # %% [markdown]
@@ -190,7 +200,7 @@ arr_datetime
 #
 
 # %% [markdown]
-# ### * TO-ADD : dtype('O')에 대한 내용, categorical data에 대한 내용
+#
 
 # %% [markdown]
 # ### 1차원 넘파이 배열의 크기(원소의 갯수)
@@ -203,6 +213,53 @@ arr = np.array([1,3,2], dtype=np.int64)
 
 # %%
 arr.ndim, arr.shape, arr.size  # 차원의 갯수, 각 차원의 크기, 원소의 총갯수
+
+# %% [markdown]
+# 이제 1차원 배열에서 기본적인 데이터 처리인 CREAD을 구현하는 방법에 대해 알아볼 것이다. 그 전에 배열은 **가변객체**라는 것을 유의하자.
+
+# %%
+arr1 = np.array([1,3,2], dtype = "int64")
+arr2 = arr1
+arr1[0] = 0
+arr1, arr2
+
+# %% [markdown]
+# 위의 결과는 앞에서 리스트를 설명한 것과 동일한 논리에 의해 설명될 수 있다. 하지만 약간 다른 점도 있으니 위의 결과가 어떻게 나왔는지 설명해보자.
+#
+# `np.array([1,3,2], dtype='int64')`를 통해 메모리의 어딘가에 원소가 1,2,3인 정수형 배열이 생성된다. 이때 배열은 리스트와 달리 단지 정수형 객체 1, 2, 3을 가리키는 것이 아니라 1,2,3을 저장하고 있다. 그러니까 리스트와 정수형 배열의 차이는 다음의 그림과 같다.
+
+# %%
+<그림 ??? 삽입>
+
+# %% [markdown]
+# 이제 변수 `arr1`은 방금 생성한 정수형 배열을 가리키게 되고, `arr2=arr1`을 통해 `arr2`도 동일한 배열을 가리키게 된다. 그리고 `arr1[0]=0`하게 되면 `arr1`이 가리키는 배열의 0-번째 원소를 `0`으로 덮어쓰게 된다. 이때 `arr2`도 `arr1`과 같은 배열을 가리키고 있으므로 `arr2`를 출력하면 원소의 내용이 `0`, `3`, `2`로 나타나게 되는 것이다. 
+
+# %% [markdown]
+# 넘파이 배열에 dtype이 그렇게나 많은 이유는 dtype에 따라 저장할 수 있는 수의 범위와 성격도 달라지고, 넘파이 배열이 메모리에서 차지하는 공간의 크기도 달라지기 때문이다. 만약 0부터 10까지의 수 십만개를 저장한다고 생각해보자. 뒤에서 배우겠지만 `Z = np.random.randint(1,10,100000)`으로 `0`부터 `10`까지의 무작위 정수 십만개의 배열을 생성할 수 있다. 이 배열의 dtype이 `dtype('int64')`라면 이 배열은 800000 바이트(800 KByte)의 메모리 공간을 필요로 한다. 
+
+# %%
+arr1 = np.random.randint(1,10,100000)
+arr1.dtype
+
+# %%
+arr1.itemsize * arr1.size
+# arr1.itemsize는 배열 arr1의 원소 하나를 저장하는 데 필요한 메모리 크기(byte),
+# arr1.size는 배열 arr1의 총 원소 갯수를 나타낸다. 
+
+# %% [markdown]
+# 만약 이 배열의 dtype을 `dtype('int8')`로 정해준다면, 필요한 메모리 크기는 100000바이트로 크게 줄어든다.
+
+# %%
+arr2 = np.random.randint(1,10,100000, dtype='int8')
+
+# %%
+arr2.dtype
+
+# %%
+arr2.itemsize * arr2.size
+
+# %% [markdown]
+# 마지막으로 dtype이 `dtype('O')`인 경우는 리스트와 동일하게 배열은 포인터(객체가 저장된 주소)를 저장하게 된다.
 
 # %% [markdown]
 # ## CREAD(원소의 위치) 

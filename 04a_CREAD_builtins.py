@@ -7,11 +7,11 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.11.2
+#       jupytext_version: 1.13.5
 #   kernelspec:
-#     display_name: rtopython2-pip
+#     display_name: rtopython3-pip
 #     language: python
-#     name: rtopython2-pip
+#     name: rtopython3-pip
 # ---
 
 # %% [markdown]
@@ -353,6 +353,8 @@ lst1, lst2, lst3
 # x.add(5)
 # ```
 
+# %%
+
 # %% [markdown]
 # ### list
 #
@@ -360,7 +362,7 @@ lst1, lst2, lst3
 #
 # 그리고 리스트 `x`의 각 원소는 `x[0]`, `x[1]`, `x[2]`로 쓴다(파이썬의 순번은 0부터 시작한다). `x[0]`은 리스트 `x`의 0-번째 원소, `x[1]`은 리스트 `x`의 1-번째 원소를 가리킨다. 이제 각 원소를 가리키는 방법을 배웠다. 각 원소를 참조하거나, 수정하는 방법은 자명하다(`x[1]`, `x[1]='c'`). 
 #
-# 리스트에 가장 마지막에 원소를 추가하거나, 중간에 원소를 추가하는 방법은 `.append()` 또는 `.insert()` 메쏘드를 쓴다. 리스트 `x`의 가장 마지막에 원소 `'eee'`를 추가하고자 한다면, `x.insert('eee')`라고 쓴다. 0-번째 원소 앞에서 `'0th'`라는 원소를 추가하고 싶다면, `x.insert(0, '0th')`라고 쓴다. 리스트 `x`의 1-번째 원소를 제거하고자 한다면 `del x[1]`이라고 쓴다.
+# 리스트에 가장 마지막에 원소를 추가하거나, 중간에 원소를 추가하는 방법은 `.append()` 또는 `.insert()` 메쏘드를 쓴다. 리스트 `x`의 가장 마지막에 원소 `'eee'`를 추가하고자 한다면, `x.append('eee')`라고 쓴다. 0-번째 원소 앞에서 `'0th'`라는 원소를 추가하고 싶다면, `x.insert(0, '0th')`라고 쓴다. 리스트 `x`의 1-번째 원소를 제거하고자 한다면 `del x[1]`이라고 쓴다.
 
 # %%
 x = [1,2,3]; print(x)
@@ -492,6 +494,51 @@ x[0] = '김종철'; print(x)
 x.append('우상호'); print(x)
 x.insert(3, '추자현'); print(x)
 del x[3]; print(x)
+
+# %% [markdown]
+# ## 일단 간단하게 `for` 루프
+
+# %%
+lst = [1,5,3,2,7]
+s = 0
+for elem in lst:
+    s = s + elem
+print(s)
+
+# %%
+res = []
+for elem in lst:
+    res.append(elem)
+res
+
+# %%
+res = []
+for elem in lst:
+    res.append(elem**2)
+res
+
+# %%
+[x for x in lst]
+
+# %%
+[x**2 for x in lst]
+
+# %%
+[1**2, 5**2, 3**2, 2**2, 7**2],
+[x**2 for x in [1,4,2,1,7]]
+
+# %%
+lst
+[lst[2], lst[4]] # -1은 마지막 원소... !!! 추가  값은 다 실수형 -> (헷갈릴수도)
+
+# %%
+[lst[x] for x in [2,4]]
+
+# %%
+
+# %%
+
+# %%
 
 # %% [markdown]
 # ## 임의의 여러 원소 
