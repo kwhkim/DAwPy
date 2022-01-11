@@ -80,7 +80,7 @@ setx /M path "%path%;c:\temp"
 ```{python}
 import os
 os.environ['path'] # 또는 os.environ.get('path')
-paths = os.environ['path'].strplit(';')
+paths = os.environ['path'].split(';')
 os.environ['path'] = ';'.join(paths + ['c:/temp']) # 새로운 폴더
 ```
 
@@ -110,7 +110,7 @@ import os
 os.environ['PATH'] # 또는 os.environ.get('PATH')
 # 윈도우의 경우 path, Path, PATH 모두 가능하지만,
 # 유닉스 기반의 운영체제에서 대소문자를 구분하기 때문에 꼭 PATH를 쓴다
-paths = os.environ['PATH'].strplit(':')
+paths = os.environ['PATH'].split(':')
 # 새로운 폴더 /usr/tmp 추가 : 유닉스는 대소문자를 구분한다.
 os.environ['PATH'] = ':'.join(paths + ['/usr/tmp']) 
 ```
