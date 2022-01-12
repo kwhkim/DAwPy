@@ -1069,14 +1069,24 @@ def list(*args):
     if len(args) > 1:
         return [*args]
     else:
-        if isinstance(args[0], (tuple, dict, set, range)): 
-            return __builtins__.list(args[0])
-        else: 
+        try:
+            iterator = iter(args[0])
+            return __builtins__.list(iterator)
+        except TypeError:
             return [args[0]]
 
 
+
 # %%
-help(list)
+list(2,4,6,3,2)
+
+# %%
+list({1,3,2,4})
+
+# %%
+list({1,3,2,4},3,6,2,"aaa")
+
+# %%
 
 # %% [markdown]
 # ## 연속적인 여러 원소: 슬라이스(`slice`)
