@@ -7,11 +7,11 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.13.5
+#       jupytext_version: 1.11.2
 #   kernelspec:
-#     display_name: rtopython3-pip
+#     display_name: rtopython2-pip
 #     language: python
-#     name: rtopython3-pip
+#     name: rtopython2-pip
 # ---
 
 # %% [markdown]
@@ -416,7 +416,6 @@ x[0];        print(x[0])
 #
 # 원소를 제거할 때에도 리스트와 동일하게 `del`을 사용한다. 이름이 `'primary'`인 원소를 제거하고자 한다면, `del x['primary']`라고 쓴다.
 #
-#
 
 # %%
 dic = {'a':1, 'b':2, 'c':3}; print(dic)
@@ -425,6 +424,21 @@ dic['a'];      print(dic['a'])
 dic['a'] = -5; print(dic)
 dic['d'] =  4; print(dic)
 del dic['b'];  print(dic)
+
+# %% [markdown]
+#
+# 그런데 파이썬의 딕는 **이름**보다는 **키**(key)라는 용어를 사용한다. 왜냐하면 R과 달리 이름이 항상 문자열일 필요는 없기 때문이다.[^rvectorname] 그래서 딕는 키-값(key-value)의 모임으로 이루어진다. 어쨋든 딕의 여러 원소 중 하나의 원소를 꼭 집어내기 위해 키(key)가 필요하다.  
+#
+# [^rvectorname]: R에서는 벡터의 원소는 순번과 이름을 동시에 가질 수 있었다. 그리고 이때 이름은 항상 문자열이다.
+#
+#
+
+# %%
+dic[3] = 14
+dic[10.4] = "abc" 
+
+# %%
+dic
 
 # %% [markdown]
 # ### set
@@ -477,9 +491,33 @@ x.add(4); print(x)
 x.remove(2); print(x)
 
 # %% [markdown]
+# 다음에는 리스트, 튜플의 `in`과 딕, 셋의 `in`의 연산 속도를 비교한다. 
+
+# %%
+lst = list(range(100000)) # 0~99999의 정수
+tup = tuple(range(100000)) 
+dic = {k:k for k in range(100000)}
+s = set(lst)
+
+# %%
+# %timeit 5000 in lst
+
+# %%
+# %timeit 5000 in tup
+
+# %%
+# %timeit 5000 in dic
+
+# %%
+# %timeit 5000 in s
+
+# %% [markdown]
+# $\mu$s(microsecond)는 ns(nanosecond)보다 1000배 긴 시간이다!
+
+# %% [markdown]
 # ### 생각해볼 거리: 이름으로 쓸 수 있는 값
 #
-# > 딕는 원소를 이름으로 특정하고, 셋은 이름과 값이 동일한 경우로 역시 이름으로 원소를 특정한다고 생각할 수 있다. 이때 모든 값이 이름이 될 수 있을까? 
+# > 딕는 원소를 이름(또는 키)으로 특정하고, 셋은 이름(키)과 값이 동일한 경우로 역시 이름으로 원소를 특정한다고 생각할 수 있다. 이때 모든 값이 이름이 될 수 있을까? 위에서 정수형과 실수형 값은 키가 될 수 있었다. 다른 타입의 데이터는 어떨까? 
 
 # %% [markdown]
 # #### 연습문제
@@ -505,183 +543,50 @@ del x[3]; print(x)
 # %% [markdown]
 # ## 일단 간단하게 `for` 루프
 
-# %%
-lst = [1,5,3,2,7]
-s = 0
-for elem in lst:
-    s = s + elem
-print(s)
-
-# %%
-res = []
-for elem in lst:
-    res.append(elem)
-res
-
-# %%
-res = []
-for elem in lst:
-    res.append(elem**2)
-res
+# %% [markdown]
+# 다음의 내용을 배우기 위해서는 리스트 컴프리헨션(list-comprehension)이라는 구문(syntax)를 이해하고 있어야 한다. 여기서는 간단하게 for문에서 시작해서 list-comprehension을 소개한다. 자세한 내용은 뒤의 장(???)을 참조하라.
 
 # %% [markdown]
-# ### List Comprehension
+# ### 모든 원소에 연산을 적용하기
+
+# %% [markdown]
+# `[1,5,3,2,7]`이라는 리스트의 각 원소를 제곱하고자 한다면 어떻게 해야 할까? 일단 결과를 상상해보자. 결과를 `res`라고 놓으면 다음과 같이 쓸 수 있다.
 
 # %%
-range(8)       # iterator
+lst = [1,5,3,2,7]
+lst
 
 # %%
-list(range(8)) # 추가!!! 리스트 생성 함수....
+[lst[0]**2, lst[1]**2, lst[2]**2, lst[3]**2, lst[4]**2]
+
+# %% [markdown]
+# 결과 리스트에서 변하지 않는 부분과 변하는 부분을 구분해보자. `lst[0]**2`, `lst[1]**2`, ...에서 변하는 부분은 `lst[0]`, `lst[1]`이고, 변하지 않는 부분은 `**2`이다. 따라서 이들 모두를 `x**2`(`x=[lst[0], lst[1], ..., lst[4]`)라고 쓸 수 있다.
+
+# %% [markdown]
+# 이를 list-comprehesion으로 쓰면 다음과 같다.
 
 # %%
-[lst[i] for i in range(len(lst))] 
+[x**2 for x in [lst[0], lst[1], lst[2], lst[3], lst[4]]]
 
-# %%
-len(lst)  # length : 리스트의 원소 갯수
-
-# %%
-
-# %%
-x = 3 * 2  # 식
-
-# %%
-x = if x in [0,1,2,3]: x  # 문
-
-# %%
-[lst[i] for i in [0,1,2,3,4]]  # i = 0, 1, 2, 3, 4
-# expression(식)
-
-# %%
-for i in [0,1,2,3,4]: # statement(문)
-    print(i)
-
-# %%
-[x for x in lst] 
+# %% [markdown]
+# 근데 `[lst[0], lst[1], lst[2], lst[3], lst[4]]`는 `lst`와 같으므로 다음과 같이 깔끔하게 정리 가능하다.
 
 # %%
 [x**2 for x in lst]
 
-# %%
-[1**2, 5**2, 3**2, 2**2, 7**2],
-[x**2 for x in [1,4,2,1,7]]
+# %% [markdown]
+# 만약 두 리스트의 원소를 합치거나, 곱해서 새로운 원소를 만들어야 한다면 다음과 같이 쓸 수 있다.
 
 # %%
-lst
-[lst[2], lst[4]] # -1은 마지막 원소... !!! 추가  값은 다 실수형 -> (헷갈릴수도)
-
-# %%
-[lst[x] for x in [2,4]]
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-# v[1:4]
-v[0:4] # 0,1,2,3 # from ~ to ~ (exclusive), [a,b) : half closed interval
+lst1 = [3,4,5]
+lst2 = [100,0,50]
+[x+y for x,y in zip(lst1, lst2)]
 
 # %% [markdown]
-# ### 벡터화 연산(Vectorized operation)
+# 만약 `zip()`의 의미가 궁금하다면 다음과 같이 해보자.
 
 # %%
-import numpy as np
-import pandas as pd
-
-# %%
-# R 비교
-#v = c(1,2,3)
-#v^2 # &, &&
-
-# %%
-v = np.array([1,2,3])
-w = np.array([3,4,9])
-
-
-# %%
-v + w
-
-# %%
-v**2
-
-# %%
-lstA = [100,200,300]; lstB = [300,400,500]
-
-# %%
-lstA + lstB # + 의미가 다름.... 
-
-# %%
-[lstA[0] + lstB[0], lstA[1] + lstB[1]]
-
-# %%
-## Q1. for-문으로 돌린다면?
-
-# %%
-res = []
-for i in range(len(lstA)):
-    res.append(lstA[i] + lstB[i])
-res
-
-# %%
-## list comprehension
-[lstA[i]**2 for i in range(len(lstA))]
-[x**2 for x in lstA]
-
-# %%
-## list comprehension
-[lstA[i] + lstB[i] for i in range(len(lstA))] # index (순서 색인)
-[x+y for x,y in zip(lstA, lstB)] # lstA와 lstB를 합쳐서 튜플로 만들어서 돌리겠다.
-#[(x,y) for x,y in zip(lstA, lstB)]
-
-# %%
-## Q2. index를 사용하지 않는다면 : zip
-##   - zip(lstA, lstB) : lstA의 원소와 lstB의 원소를 순서대로 tuple을 만들어 줌
-
-# %%
-for x,y in zip(lstA, lstB):
-    print(x,y)
-
-# %%
-res = []
-for x,y in zip(lstA, lstB):
-    res.append(x+y)
-res
-
-# %%
-## List comprehension
-
-# %%
-[x+y for x,y in zip(lstA, lstB)]
-
-# %%
-
-# %%
-lst = list(range(10))
-lst = [1,7,6,5,4,2,8,1]
-
-# %%
-[x for x in lst]
-
-# %%
-[x for x in lst if x % 2 == 0] # % 나머지 구하기 7 % 2 == 1(7에서 2를 나눌 때 나머지 1)
-
-# %%
-[x for x in lst if x > 5]
-#[x if x > 5 for x in lst]
-
-# %%
-[-x if x > 5 else x**2 for x in lst if x < 7 ] 
-# 마지막 if는 filtering
-# 중간의 if/else는 값 선택
-
-# %%
-x =[print(-x) if x > 5 else x**2 for x in lst if x < 7 ]
-
-# %%
-x
-
-# %%
+[(x,y) for x,y in zip(lst1, lst2)]
 
 # %% [markdown]
 # ## 임의의 여러 원소 
@@ -809,26 +714,35 @@ print([i for i in reversed2(elems_add)])
 
 # %%
 x = [1,2,3,4,5,6]; print(x)
+# 리스트 x에 대해 
 
-# Read
+# Read : 순번 리스트 indices를 참조하겠다
 indices = [0,2,-1]
 [x[i] for i in indices]; print([x[i] for i in indices])
 
-# Edit
+# Edit : 리스트 indices의 순번을 리스트 values의 원소로 수정하겠다.
 indices = [0,2,-1]
 values = ['a', 'b', 'c']
 for i,v in zip(indices, values):
     x[i] = v
 print(x)
 
-# Add
+# Add : 리스트 x의 마지막에 values라는 리스트의 원소를 추가하겠다.
 values = [-10,-20,-30]
 x.extend(values)
 print(x)
 
-# Delete
+# Delete : indices의 순번을 삭제하겠다.
 indices = [-1, 1, -2] 
-# 순서에 따라 그 의미가 달라지므로...
+# 아래 코드의 의미를 간단하게 설명해보자.
+# 리스트의 원소 하나를 지우면 그 원소 이후의 원소는
+# 순번이 하나씩 줄어든다. 
+# 따라서 원소를 지울 때에는 마지막 원소부터 지워야
+# 다음에 지울 원소의 순번이 바뀌지 않는다.
+# 그런데 -1과 같은 순번은 수의 크기와 순번이 일치하지 않는다.
+# (-1 < 1 이지만 보통 마지막 원소의 순번은 1-번째 원소의 순번 1보다 크다)
+# 그래서 일단 -1과 같은 것은 len(x)-1로 모두 바꾼 후,
+# 마지막 원소부터 삭제한다.
 indices2 = [i if i>=0 else len(x)+i for i in indices]
 for i in sorted(indices2, reverse=True):
     del x[i]
@@ -947,9 +861,6 @@ for k, v in zip(menu, count):
 print(x)
 del x['레몬에이드']; print(x)
 
-
-# %%
-### 부록
 
 # %% [markdown]
 # ## 부록 : 임의의 여러 원소 2
@@ -1149,17 +1060,23 @@ del x[1,2,'a']; print(x)
 # %%
 
 # %% [markdown]
-# * `list()` 역시 R과 비슷하게 만들 수 있다.
+# * `list()` : 파이썬 `list()`는 튜플, 셋, 딕을 리스트로 바꾸는 역할을 하지만 새로운 리스트를 생성하는 역할은 없다. R의 경우 `list(1,3,2)`를 하면 원소 `1`,`3`,`2`의 리스트가 만들어진다. 파이썬에서도 이런 식으로 사용하려면 다음과 같이 한다.
+#
+# [^pythonlist]: `list([1,3,2])`는 가능하지만 `list(1,3,2)`는 안 된다. `list([1,3,2])`에서 `[1,3,2]`는 이미 리스트이다.
 
 # %%
 def list(*args):
     if len(args) > 1:
         return [*args]
     else:
-        return __builtins__.list(args[0])
+        if isinstance(args[0], (tuple, dict, set, range)): 
+            return __builtins__.list(args[0])
+        else: 
+            return [args[0]]
 
 
 # %%
+help(list)
 
 # %% [markdown]
 # ## 연속적인 여러 원소: 슬라이스(`slice`)
@@ -1234,6 +1151,11 @@ x[10:11]
 # `step`이 양수일 때, `x[::step]`에서 `x[:]`은 `x`의 모든 원소를 의미한다.
 # 따라서 `x[0:len(x)]`와 같다.(여기서 `x[0:len(x)-1]`이 아님을 유의하자.)
 #
+# `x[::1]`이라면 `1`도 생략하면 `x[::]` 또는 `x[:]`로 쓸 수 있다.
+#
+
+# %%
+x[::], x[:]
 
 # %%
 x = ['a0', 'b1', 'c2', 'd3', 'e4', 'f5', 'g6', 'h7', 'i8', 'j9']
@@ -1243,6 +1165,9 @@ x[0:-1:3]; print(x[0:-1:3])
 # 위의 예에서 `x[0:-1:3]`은 0-번째 원소에서 가장 마지막 원소 **직전**까지 원소 중에서 0,3,6,9,...번째 원소를 의미한다. 
 # 따라서 `x[0:-1]`은 `['a0', 'b1', 'c2', 'd3', 'e4', 'f5', 'g6', 'h7', 'i8']`이고, 
 # 여기서 0,3,6,9,...번째 원소를 고르면, 결과는 `['a0', 'd3', 'g6']`가 된다.
+
+# %% [markdown]
+# 만약 마지막 까지 포함하고자 한다면 다음과 같이 쓴다.
 
 # %%
 x[::3]
@@ -1294,7 +1219,7 @@ x = ['a0', 'b1', 'c2', 'd3', 'e4', 'f5', 'g6', 'h7', 'i8', 'j9']
 x[5:15:3]; print(x[5:15:3])
 
 # %% [markdown]
-# `x[5:15:3]`는 `x`의 5-번째 원소에서 14-번째 원소 중에서 0,3,6,... 번째 원소를 골라낸다. 
+# `x[5:15:3]`는 `x`의 5-번째 원소에서 14-번째 원소 중에서 0,3,6,... 번째를 골라낸다. 
 # 따라서 `x`의 5,8,11,14-번째 원소가 된다. 이때 `x`의 11, 14-번째 원소는 존재하지 않기 때문에 단순히 무시된다.
 
 # %% [markdown]
@@ -1348,8 +1273,9 @@ x[:1] + ['aa', 'bb'] + x[1:]
 # %%
 
 # %% [markdown]
-# `x[start:stop:end]`는 왜 `start`에서 시작해서 `stop` **직전**인가?
-#
+# ### 참고: `x[start:stop:end]`는 왜 `start`에서 시작해서 `stop` **직전**인가?
+
+# %% [markdown]
 # `x` 전체를 다음과 같이 간단하게 slice 가능하다. 
 # `x[:2] + x[2:5] + x[5:]`
 
@@ -1384,62 +1310,85 @@ x[:7:-1] + x[7:3:-1] + x[3::-1]
 x = ['a0', 'b1', 'c2', 'd3', 'e4', 'f5', 'g6', 'h7', 'i8', 'j9']; print(x)
 del x[3::3]; print(x)
 
-# %%
+# %% [markdown]
+# #### 복사인가?
+
+# %% [markdown]
+# 앞에서 단순히 `lst2 = lst1`으로 하면 두 리스트의 원소 값이 연결된다는 것을 봤다.
+#
+# 그렇다면 리스트를 슬라이싱해서 만든 `lst2 = lst1[2:5]`은 어떨까?
+#
+# 먼저 `lst2=[lst1[2], lst1[3], lst1[4], lst1[5]]`를 생각해보자.
+# `lst1[2]`, `lst1[3]`, `lst1[4]`, `lst1[5]`가 가변 객체가 아니라면, `lst1`과 `lst2`는 연결되지 않는다.
 
 # %%
-x = [1,3,2,5,6]
+lst1 = [0,1,2,3,4,5,6,7,8]
+lst2=[lst1[2], lst1[3], lst1[4], lst1[5]]
 
 # %%
-y = x[4]
+lst1[4] = 44
 
 # %%
-y 
+lst1, lst2
+
+# %% [markdown]
+# 그렇다면 `lst1[2:5]`는 어떨까?
 
 # %%
-y = 'a'
+lst1 = [0,1,2,3,4,5,6,7,8]
+lst2 = lst1[2:5]
+lst1[4] = 44
+lst1, lst2
+
+# %% [markdown]
+# 그리고 `lst2 = lst1[:]`은 `lst2 = lst1`과 달리 값이 서로 분리되는 **복사**가 된다. 이때 복사는 얕은 복사임을 유의하자.
 
 # %%
-x
-
-# %%
-y = x
-
-# %%
-y[0] = 'a'
-
-# %%
-x
-
-# %%
-x
-
-# %%
-
-# %%
-y = x[2:5] # 이건 copy
-
-
-# %%
-y[0] = 'c'
-
-# %%
-x
+lst1 = [0,1,2,3,4,5,6,7,8]
+lst2 = lst1[:]
+lst1[4] = 44
+lst1, lst2
 
 # %%
 
 # %% [markdown]
-# 그래서 `y = x`를 하면 `x`와 `y`는 연결되지만,
-# `y = x[:]`를 하면 복사됨
+# 참고로 `lst1[start:stop:step]`을 list-comprehension으로 나타내면 다음과 같다.
 
 # %%
-y = x[:]
+lst = [1,3,5,7,9,11,13]
+start = 20
+stop = 3
+step = -1
+if start < 0:
+    start = len(lst) + start
+if stop < 0:
+    stop = len(lst) + stop
+
+if step > 0:
+    if start is None:
+        start = 0
+    elif start > len(lst) - 1:
+        start = len(lst) - 1
+    if stop is None:
+        stop = len(lst)
+    elif stop > len(lst):
+        stop = len(lst)
+if step < 0:
+    if start is None:
+        start = len(lst) - 1
+    elif start > len(lst) - 1:
+        start = len(lst) - 1
+    if stop is None:
+        stop = -1
+    elif stop > len(lst) - 1:
+        stop = len(lst) - 1
+
+[lst[x] for x in range(start,stop,step)]
 
 # %%
-x, y
-
-# %%
-x[0] = 'c'
-x,y
+lst = [1,3,5,7,9,11,13]
+# start = 20; stop = 3; step = -1
+lst[20:3:-1]
 
 # %% [markdown]
 # ### 연습문제(리스트 슬라이싱)
@@ -1463,6 +1412,214 @@ print(x[10:-5])
 x[10:-5] = ['a', 'b', 'c', 'd', 'e', 'f']; print(x)
 del x[14:16]
 print(x)
+
+# %% [markdown]
+# ### 참고: Hashable
+#
+# 리스트와 같은 가변 객체는 딕의 키나 셋의 원소가 될 수 없다. 
+#
+# 딕 또는 셋은 어떻게 이름을 빠르게 찾을 수 있을까? 리스트와 같이 메모리 주소를 **계산**할 수 있다면 바로 원소를 찾을 수 있겠지만 딕의 키는 정수형, 문자형 등 다양한 타입이지 않은가? 맞다. 딕의 키로 다양한 타입의 값을 사용할 수 있지만, 모든 값이 가능한 것은 아니다. 왜냐하면 딕은 키를 주소처럼 사용한다. 정확히 말하면 키에 특별한 계산을 하여 값이 존재하는 메모리를 단 순간에 찾아내는 것이다. 
+#
+# 간단한 예를 들어보자. `d = {'apple':3, 'banana':35, 'melon':45', 'grape':32}`라고 하자. `d['apple']`은 `3`이다. 이때 값의 종류나 크기는 문제가 아니다. 왜냐하면 딕은 포인터를 가지고 있을 뿐 객체를 모두 저장하지 않기 때문이다. 따라서 딕는 여러 개의 포인터를 가지고 있다. 여기서 정확히 4개가 아닌 이유는 딕은 여유분의 메모리가 필요하다. 왜냐하면 딕의 키로 어떤 값이 필요할지 미리 알 수 없기 때문이다. 그리고 키가 몇 개나 필요할지도 미리 알 수 없다(딕은 가변객체이다. 딕에 원소를 추가할 수 있다). 
+#
+# 만약 딕에 기본적으로 100개의 주소를 마련한다고 해보자. 이제 키에서 주소를 찾는 법을 알아야 한다. 가장 쉬운 방법은 첫 번째 문자의 아스키코드에서 100을 나눈 나머지로 주소를 정하는 것이다. 첫 번째 문자의 아스키 코드값을 구해보자. `a`는 97, `b`는 98, `m`은 109, `g`는 103이다. 이제 100을 나눠보면 `d['apple']`의 값은 메모리 주소 97에, `d['melon']`의 값은 메모리 주소 9에 저장하면 된다. 이런 식으로 저장하면 일렬로 키와 값(을 가리키는 포인터)를 저장한 후 처음부터 키를 확인하는 과정에 비해 훨씬 빠른 속도로 값을 찾을 수 있다. 이렇게 수가 아닌 데이터에 적절한 계산을 하여 주소를 생성하는 방법을 해쉬표(hash table)을 만든다고 한다. 
+#
+# 그런데 만약 키가 변화된다면 어떻게 될까? 키가 가리키는 주소도 바뀌게 되고 따라서 원래 주소로 가서 원래 객체를 찾을 수 없다. 예를 들어 `d={lst:'three'}`이고, `lst=[3,4]`가 `lst[1]=5`로 해서 `lst`가 `[3,5]`로 바뀌었다고 해보자. 이렇게 키로 쓰인 `lst`가 바뀌면 바뀌기 전에 계산된 주소(해쉬값)를 얻을 수 있는 방법이 없게 되는 문제가 생긴다. 그래서 딕의 키는 불변 객체만 사용할 수 있다. 딕의 키로 쓸 수 있는 값을 Hashable이라고 하기도 한다. 
+#
+#
+
+# %%
+
+# %% [markdown]
+# # === END OF DOCUMENT
+
+# %% [markdown]
+# ### 추가???
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+res = []
+# result를 간단하게 res로 썼다.
+for elem in lst:
+    res.append(elem**2)
+res
+
+# %% [markdown]
+# 만약 `res`라는 리스트의 공간을 미리 확보해 놓는다면 다음과 같이 할 수 있다.
+
+# %%
+res = [0]*len(lst)  # len(lst) : lst의 원소 총 갯수
+for i in range(len(lst)):
+    res[i] = lst[i]**2
+res
+
+# %% [markdown]
+# ### List Comprehension
+
+# %%
+range(8)       # iterator
+
+# %%
+list(range(8)) # 추가!!! 리스트 생성 함수....
+
+# %%
+[lst[i] for i in range(len(lst))] 
+
+# %%
+len(lst)  # length : 리스트의 원소 갯수
+
+# %%
+
+# %%
+x = 3 * 2  # 식
+
+# %%
+x = if x in [0,1,2,3]: x  # 문
+
+# %%
+[lst[i] for i in [0,1,2,3,4]]  # i = 0, 1, 2, 3, 4
+# expression(식)
+
+# %%
+for i in [0,1,2,3,4]: # statement(문)
+    print(i)
+
+# %%
+[x for x in lst] 
+
+# %%
+[x**2 for x in lst]
+
+# %%
+[1**2, 5**2, 3**2, 2**2, 7**2],
+[x**2 for x in [1,4,2,1,7]]
+
+# %%
+lst
+[lst[2], lst[4]] # -1은 마지막 원소... !!! 추가  값은 다 실수형 -> (헷갈릴수도)
+
+# %%
+[lst[x] for x in [2,4]]
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+# v[1:4]
+v[0:4] # 0,1,2,3 # from ~ to ~ (exclusive), [a,b) : half closed interval
+
+# %% [markdown]
+# ### 벡터화 연산(Vectorized operation)
+
+# %%
+import numpy as np
+import pandas as pd
+
+# %%
+# R 비교
+#v = c(1,2,3)
+#v^2 # &, &&
+
+# %%
+v = np.array([1,2,3])
+w = np.array([3,4,9])
+
+
+# %%
+v + w
+
+# %%
+v**2
+
+# %%
+lstA = [100,200,300]; lstB = [300,400,500]
+
+# %%
+lstA + lstB # + 의미가 다름.... 
+
+# %%
+[lstA[0] + lstB[0], lstA[1] + lstB[1]]
+
+# %%
+## Q1. for-문으로 돌린다면?
+
+# %%
+res = []
+for i in range(len(lstA)):
+    res.append(lstA[i] + lstB[i])
+res
+
+# %%
+## list comprehension
+[lstA[i]**2 for i in range(len(lstA))]
+[x**2 for x in lstA]
+
+# %%
+## list comprehension
+[lstA[i] + lstB[i] for i in range(len(lstA))] # index (순서 색인)
+[x+y for x,y in zip(lstA, lstB)] # lstA와 lstB를 합쳐서 튜플로 만들어서 돌리겠다.
+#[(x,y) for x,y in zip(lstA, lstB)]
+
+# %%
+## Q2. index를 사용하지 않는다면 : zip
+##   - zip(lstA, lstB) : lstA의 원소와 lstB의 원소를 순서대로 tuple을 만들어 줌
+
+# %%
+for x,y in zip(lstA, lstB):
+    print(x,y)
+
+# %%
+res = []
+for x,y in zip(lstA, lstB):
+    res.append(x+y)
+res
+
+# %%
+## List comprehension
+
+# %%
+[x+y for x,y in zip(lstA, lstB)]
+
+# %%
+
+# %%
+lst = list(range(10))
+lst = [1,7,6,5,4,2,8,1]
+
+# %%
+[x for x in lst]
+
+# %%
+[x for x in lst if x % 2 == 0] # % 나머지 구하기 7 % 2 == 1(7에서 2를 나눌 때 나머지 1)
+
+# %%
+[x for x in lst if x > 5]
+#[x if x > 5 for x in lst]
+
+# %%
+[-x if x > 5 else x**2 for x in lst if x < 7 ] 
+# 마지막 if는 filtering
+# 중간의 if/else는 값 선택
+
+# %%
+x =[print(-x) if x > 5 else x**2 for x in lst if x < 7 ]
+
+# %%
+x
+
+# %%
+
+# %%
+
+# %%
 
 # %% [markdown]
 # ## 가변(mutable)객체, 불변(immutable)객체
@@ -1550,20 +1707,7 @@ id(b)
 # %%
 id(a) == id(b) # 변수 a와 변수 b는 정확하게 같은 지점을 가리킨다.
 
-# %% [markdown]
-# ### Hashable
-#
-# 리스트와 같은 가변 객체는 딕의 키나 셋의 원소가 될 수 없다. 
-#
-# 딕 또는 셋은 어떻게 이름을 빠르게 찾을 수 있을까? 리스트와 같이 메모리 주소를 **계산**할 수 있다면 바로 원소를 찾을 수 있겠지만 딕의 키는 정수형, 문자형 등 다양한 타입이지 않은가? 맞다. 딕의 키로 다양한 타입의 값을 사용할 수 있지만, 모든 값이 가능한 것은 아니다. 왜냐하면 딕은 키를 주소처럼 사용한다. 정확히 말하면 키에 특별한 계산을 하여 값이 존재하는 메모리를 단 순간에 찾아내는 것이다. 
-#
-# 간단한 예를 들어보자. `d = {'apple':3, 'banana':35, 'melon':45', 'grape':32}`라고 하자. `d['apple']`은 `3`이다. 이때 값의 종류나 크기는 문제가 아니다. 왜냐하면 딕은 포인터를 가지고 있을 뿐 객체를 모두 저장하지 않기 때문이다. 따라서 딕는 여러 개의 포인터를 가지고 있다. 여기서 정확히 4개가 아닌 이유는 딕은 여유분의 메모리가 필요하다. 왜냐하면 딕의 키로 어떤 값이 필요할지 미리 알 수 없기 때문이다. 그리고 키가 몇 개나 필요할지도 미리 알 수 없다(딕은 가변객체이다. 딕에 원소를 추가할 수 있다). 
-#
-# 만약 딕에 기본적으로 100개의 주소를 마련한다고 해보자. 이제 키에서 주소를 찾는 법을 알아야 한다. 가장 쉬운 방법은 첫 번째 문자의 아스키코드에서 100을 나눈 나머지로 주소를 정하는 것이다. 첫 번째 문자의 아스키 코드값을 구해보자. `a`는 97, `b`는 98, `m`은 109, `g`는 103이다. 이제 100을 나눠보면 `d['apple']`의 값은 메모리 주소 97에, `d['melon']`의 값은 메모리 주소 9에 저장하면 된다. 이런 식으로 저장하면 일렬로 키와 값(을 가리키는 포인터)를 저장한 후 처음부터 키를 확인하는 과정에 비해 훨씬 빠른 속도로 값을 찾을 수 있다. 이렇게 수가 아닌 데이터에 적절한 계산을 하여 주소를 생성하는 방법을 해쉬표(hash table)을 만든다고 한다. 
-#
-# 그런데 만약 키가 변화된다면 어떻게 될까? 키가 가리키는 주소도 바뀌게 되고 따라서 원래 주소로 가서 원래 객체를 찾을 수 없다. 예를 들어 `d={lst:'three'}`이고, `lst=[3,4]`가 `lst[1]=5`로 해서 `lst`가 `[3,5]`로 바뀌었다고 해보자. 이렇게 키로 쓰인 `lst`가 바뀌면 바뀌기 전에 계산된 주소(해쉬값)를 얻을 수 있는 방법이 없게 되는 문제가 생긴다. 그래서 딕의 키는 불변 객체만 사용할 수 있다. 딕의 키로 쓸 수 있는 값을 Hashable이라고 하기도 한다. 
-#
-#
+# %%
 
 # %%
 
@@ -1664,5 +1808,3 @@ d.pop('a')
 
 # %%
 help(d.fromkeys)
-
-# %%
