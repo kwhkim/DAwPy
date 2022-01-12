@@ -624,7 +624,7 @@ print(arr2)
 #
 # 예를 들어 `arr5 = arr1.view()`를 하면 내용이 그대로인 배열이고, `arr5=arr1.view(dtype='f')`를 하면 `arr1`이 저장되어 있는 메모리의 이진수들을 float(실수형)으로 해석한다. 
 #
-# `arr6 = arr1[:]`은 `arr6=arr1`과 비슷하지만 
+# `arr6 = arr1[:]`은 `arr6=arr1`과 거의 비슷하다. 둘 다 동일한 원소를 가지고 있으니까.
 #    
 
 # %%
@@ -635,10 +635,46 @@ arr5
 arr6 = arr1[:]
 
 # %%
-arr6 is arr1
+arr1 == arr6 
+
+# %% [markdown]
+# 여기서 `==`는 벡터화된 비교 연산으로 각 원소의 같고 다름을 판단한다. 원소가 모두 `True`라는 것은 `arr1`과 `arr6`의 대응하는 원소가 모두 같음을 나타낸다. 그렇지만 완전히 같지는 않은데, 다음에서 `arr2 = arr1`의 `arr2`와 `arr6 = arr1[:]`의 `arr6`을 비교해 보면 다음과 같다.
 
 # %%
-arr6
+arr2 = arr1
+arr6 = arr1[:]
+
+# %%
+arr2 is arr1, arr6 is arr1
+
+# %%
+arr2.base is None, arr6.base is None
+
+# %%
+`arr2`는 `arr1`의 별칭(alias)이고, `arr6`는 `arr1`의 뷰(view)이다. `arr7 is arr1.view()
+
+# %%
+arr7 = arr1.view()
+
+# %%
+arr8 = arr1.view()
+
+# %%
+
+# %%
+dir(arr7)
+
+# %%
+np.info(arr7)
+
+# %%
+np.info(arr8)
+
+# %%
+arr7 is arr8
+
+# %%
+arr2 is arr1
 
 # %%
 arr6.base
