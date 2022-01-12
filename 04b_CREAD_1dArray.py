@@ -750,18 +750,84 @@ help(arr1.view)
 # * view
 
 # %%
-# # copy
+import numpy as np
+a = np.array([1,2,3,4])
+
+# %%
+a
+
+# %%
+# view
 b = a[:]
 a is b
+
+# a[:] 표현은 헷갈릴 수 있다.
+# 리스트에서 lstB = lstA[:]를 하면 리스트가 복사된다. (lstB = lstA는 동일한 리스트를 가리킨다.)
+# numpy 배열에서 arrB = arrA[:]를 하면 arrA의 view가 생성된다. numpy 배열에서 slicing은 기본적으로 view를 생성한다.
+# pandas 시리즈에서도 serB = serA[:]를 하면 serB의 view가 생성된다.
+
+# %%
+import pandas as pd
+serA = pd.Series(['a', 'b', 'c', 'd'])
+serB = serA[:]
+
+# %%
+serA is serB
+
+# %%
+serB[0] = 'A'
+
+# %%
+serA
+
+# %%
+serB._is_view
+
+# %%
+serA.values.base
+
+# %%
+serB.values.base
+
+# %%
+dir(serA)
+
+
+# %%
+type((3,))
+
+# %%
+type((3))
+
+# %%
+serB.values
+
+# %%
+serB = serA.copy() 
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+a.base, b.base
 
 # %%
 b = a.copy()
 a is b
 
 # %%
+a.base, b.base
+
+# %%
 # view
 b = a
 a is b
+
+# %%
+a.base, b.base
 
 # %% [markdown]
 # #### 다른배열의 일부
