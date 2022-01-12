@@ -49,16 +49,17 @@
 
 # %% [markdown]
 # # 3. 파이썬의 변수, 자료형, 연산/함수
-#
 
 # %% [markdown]
 # ## 3.1 파이썬의 변수
-#
+
+# %% [markdown] tags=[]
 # 파이썬의 변수는 어떤 값도 저장할 수 있다. (사실 엄밀히 말하면 파이썬의 변수는 어떤 값을 가리키는 지시자일 뿐이다. 예를 들어 `x=3`을 하면 변수 `x`는 수 `3`을 가리킨다. 하지만 이번 장에서는 변수에 값이 저장된다고 무방하다. 뒤에 클래스, 인스턴스, 가변객체를 다룰 때에는 엄밀한 설명이 필요하다.)
 
+# %% [markdown] tags=[]
+# ### 3.1.1 변수 이름
+
 # %% [markdown]
-# ## 3.1.1 변수 이름
-#
 # > 수학에서 미지수는 $x$, $y$ 등으로, 상수는 $a$, $b$ 등으로 쓴다. 그리고 $\sum_{i=1}^{10} i^2$와 같이 $\sum$을 쓸 때는 $i$, $j$ 등으로 쓴다. **컴퓨터 언어의 변수**는 $\sum_{i=1}^{10} i^2$의 $i$와 비슷하다. 그런데 미지수를 꼭 $x$, $y$ 등으로 써야 하는 것은 아니다. 미지수에 $a$나 $i$를 사용한 $a+4=3$ 이나 $i-1=4$와 같은 방정식은 유효하다. 단지 미지수를 나타낼 때 $x$, $y$, $z$와 같은 문자를 쓰는 것이 관례이기 때문에 미지수를 $x$, $y$ 등으로 쉽게 이해할 수 있다. 다시 말해 가독성(readability)이 높아진다.
 
 # %% [markdown]
@@ -138,7 +139,7 @@ print(day_of_Month)
 print(whatIGotForMy23thBirthday)
 
 # %% [markdown]
-# ## 3.1.2 변수 할당
+# ### 3.1.2 변수 할당
 
 # %% [markdown]
 # 변수 할당을 위해서는 `=`를 사용한다.
@@ -183,16 +184,31 @@ hzC5, hzD5, hzE5 = 523.25, 587.33, 659.25
 print(hzC5); print(hzD5); print(hzE5)
 
 # %% [markdown]
-# 만약 변수 이름이 문자열 변수에 저장되어 있다면 어떻게 할당해야 하나? 예를 들어 `varname`에 `"myVar"`이라는 값이 저장되어 있다면 `myVar=10`을, `varname`에 `"amount"`가 저장되어 있다면 `amount=10`를 해야 한다면? R에서는 쉽게 `assign(varname, 10)`을 하면 되지만 파이썬에서는 쉽지 않다. 이 장의 마지막에 R의 `assign`과 같은 기능을 하는 함수를 몇 개 정의하여 소개하였다. (간단하게 설명하면 `globals()[varname] = 10`으로 쓴다.)
+# 만약 변수 이름이 문자열 변수에 저장되어 있다면 어떻게 할당해야 하나? 예를 들어 `varname`에 `"myVar"`이라는 값이 저장되어 있다면 `myVar=10`을, `varname`에 `"amount"`가 저장되어 있다면 `amount=10`를 해야 한다면? R에서는 쉽게 `assign(varname, 10)`을 하면 되지만 파이썬에서는 간단한 함수가 존재하지 않는다. 약간 복잡한 방법으로 `globals()[varname] = 10`으로 쓸 수 있다. 여기서는 R의 `assign`과 같은 기능을 하는 함수 `assign`을 정의하여 간편하게 사용할 수 있도록 하였다.[^scope]
 
 # %%
-globals()
+varname = 'amount'
+globals()[varname] = 10
+print(amount)
+
+# %%
+del amount
+
+
+# %%
+def assign(varname, value):
+    globals()[varname] = value
+assign(varname, 10)
+print(amount)
 
 # %% [markdown]
-# ## 3.1.3. 변수관리
+# [^scope]: 이때 할당은 전역 변수만 가능하다. 변수이름을 찾을 수 있는 **범위**는 보통 변수를 만든 장소에 따라 달라진다. 좀더 자세한 내용은 함수와 관련된 장(???)을 참고하자.
 
 # %% [markdown]
-# ### 변수의 존재 확인
+# ### 3.1.3. 변수관리
+
+# %% [markdown]
+# #### 변수의 존재 확인
 
 # %% [markdown]
 # 사용 가능한 변수의 목록은 `globals()`로 확인 가능하다. (이때 사용 가능한 변수의 목록은 맥락 의존적이다. 현재 모듈에서 사용 가능한 변수와 다른 모듈에서 사용가능한 변수가 다르고, 함수 밖에서와 함수 안에서, 그리고 객체 안에서, 밖에서 사용 가능한 변수가 다르다.) 여기서는 현재 모듈의 어떤 함수 또는 객체에 속하지 않는 가장 최상의 수준에서의 가능한 변수 목록을 출력한다. 특정한 맥락을 가정할 경우에는 `locals()` 또는 `vars()`를 써서 사용 가능한 변수 목록을 확인할 수 있다.)
@@ -200,19 +216,16 @@ globals()
 # `globals()`의 결과는 다음 장에서 소개될 딕 형태로 제공된다. 만약 변수 이름만 확인하고 싶다면 `globals().keys()`를 사용한다.
 
 # %%
-globals()
-
-# %%
 globals().keys()
 
 
 # %% [markdown]
-# 목록을 살펴보면 우리가 위에서 할당했던 변수들을 확인할 수 있다. 그 밖에서 `__`(dunbar; **d**ouble **un**der **bar**)로 시작하고 끝나는 변수를 볼 수 있다(`__name__`, `__doc__`, `__package__`, `__loader__`, `__spec__`). 이들은 거의 모든 모듈에서 자동적으로 생성되는 변수로 사용자가 수정하지 않는게 좋다. 그 외에 `__builtin__` 또는 `__builtins__`는 모두 파이썬 내장 모듈 중 `builtins`라는 모듈을 가리킨다. 
+# 목록을 살펴보면 우리가 위에서 할당했던 변수들을 확인할 수 있다. 그 밖에서 `__`(dunbar; **d**ouble **un**der **bar**)로 시작하고 끝나는 변수를 볼 수 있다(`__name__`, `__doc__`, `__package__`, `__loader__`, `__spec__`). 이들은 거의 모든 모듈에서 자동적으로 생성되는 변수로 사용자가 수정하지 않는게 좋다(앞에서 모듈이 다른 모듈로 임포트되면 해당 모듈의 `__name__`은 모듈의 이름이 되고, 직접 실행되면 `__name__`은 `__main__`이 됨을 설명했다). 그 외에 `__builtin__` 또는 `__builtins__`는 모두 파이썬 내장 모듈의 하나인 `builtins` 모듈을 가리킨다. 
 #
-# 주피터 노트북(jupyter notebook)에서 사용할 경우 `_i1`, `_i2`와 같은 변수들도 보인다. 이 변수는 셀의 결과를 담고 있다(셀의 왼쪽을 보면 `In [1]:`, `Out[1]:`과 같이 몇 번째로 계산된 셀임을 나타내는 표식이 있다. `Out[1]`의 결과는 `i_1`에도 저장된다). 쥬피터 노트북에서 `In`과 `Out`은 가장 최근 셀의 입력과 출력을 가리킨다. `exit`와 `quit`은 파이썬의 가장 기본적인 함수이다. 파이썬 콘솔에서 `exit()` 또는 `quit()`으로 파이썬 콘솔을 종료할 수 있다.
+# 주피터 노트북(jupyter notebook)에서 사용할 경우 `_i1`, `_i2`와 같은 변수들도 보인다. 이 변수는 셀의 결과를 담고 있다(셀의 왼쪽을 보면 `In [1]:`, `Out[1]:`과 같이 몇 번째로 계산된 셀인지를 나타내는 표식이 있다. `Out[1]`의 결과는 `i_1`에도 저장된다). 쥬피터 노트북에서 `In`과 `Out`은 이때까지의 셀 입력과 셀 출력을 가리킨다. `exit`와 `quit`은 파이썬의 가장 기본적인 함수이다. 파이썬 콘솔에서 `exit()` 또는 `quit()`으로 파이썬 콘솔을 종료할 수 있다.
 
 # %% [markdown]
-# 특정 변수의 존재 여부를 확인하고자 한다면 `in globals().keys()`를 쓸 수 있다. 만약 변수 `x`가 존재하는지 확인하고자 한다면 `"x" in globals().keys()`라고 쓴다. 
+# 어떤 변수 `x`의 존재 여부를 확인하고자 한다면 `"x" in globals().keys()`를 쓸 수 있다. 따옴표를 유의하자. 변수의 이름을 따옴표에 감싸 문자열로 제공해야 한다.
 
 # %% [markdown]
 # 다음 함수 `globals_user()`는 `globals().keys()`의 결과에서 밑줄이 `_`로 시작하는 변수를 제거하여 보여준다(`dict_=True`로 하면 목록의 딕형태로 반환하고, `dict_=False`로 하면 변수 목록만 리스트로 반환한다. 기본값은 `dict_=True`이다.)
@@ -230,14 +243,14 @@ globals_user()
 # %% [markdown]
 # `dir()`을 사용해도 목록을 뽑아 볼 수 있다. (`globals().keys()`, `locals().keys()`, `vars().keys()`, `dir()`의 결과는 상황에 따라 조금씩 달라진다. 이에 대해서는 후에 설명된다.)
 
-# %%
+# %% tags=[]
 dir()
 
 # %% [markdown]
-# ### 변수 제거
+# #### 변수 제거
 
 # %% [markdown]
-# 특정한 변수를 제거하려면 `del` 문을 사용한다. 변수 `a`를 제거하고자 한다면 `del a`라고 쓴다(`del(a)`도 가능하다). 여러 변수를 한꺼번에 제거하고자 한다면 `del a, b, c`와 같이 쓸 수도 있다(`del(a,b,c)`도 가능하다).
+# 특정한 변수를 제거하려면 `del` 문을 사용한다. 변수 `a`를 제거하고자 한다면 `del a`라고 쓴다. 여러 변수를 한꺼번에 제거하고자 한다면 `del a, b, c`와 같이 쓸 수도 있다(`del(a,b,c)`도 가능하기 때문에 `del`을 함수로 오해할 수도 있지만, `if`문도 `if(1==1):`라고 쓸 수 있는 것과 비슷하다. `del`도 함수가 아니라 문(statement)이다).
 
 # %%
 a = 3; b=4; c=5
@@ -253,25 +266,27 @@ varname = 'myVar'
 del globals()[varname]
 'myVar' in globals().keys() # varname in globals().keys()
 
-
 # %% [markdown]
 # 모든 변수를 제거하려면 어떻게 해야 할까? 앞에서 설명한 모든 변수 목록을 얻은 후 제거를 하면 될 것이다. 이때 사용자가 정의하지 않은 기본적인 변수는 제외하는 게 나을 것이다. 예를 들면 `exit`, `quit`과 같은 함수, `_`로 시작하는 변수, 그리고 파이썬 노트북의 `get_ipython`이란 함수가 대표적이다. 다음 함수는 `globals()`에서 `_`로 시작하는 변수, `exit`, `quit`, 그리고 `get_ipython`, 그리고 자기 자신(`delall`)을 제외한 모든 변수를 제거한다. 
 
 # %%
-def del_all(types='all'):
-    if types != 'all' and not isinstance(types, tuple):
-        raise ValuerError("types should be either 'all' or tupe of types")
+import types
+def del_all(types_skip=(type, types.FunctionType, types.ModuleType)):
+    #print(types_skip)
+    #print(type(types_skip))
+    if types_skip is not None and not isinstance(types_skip, tuple):
+        raise ValueError("types should be either 'all' or tuple of types to skip")
     varnames = set(globals().keys()) # 제거할 변수
     # 맥락에 따라 globals().keys()를 locals().keys(), dir() 등으로 교체할 수 있다.
-    varnames = varnames.difference({'exit', 'quit', 'get_ipython', 'delall', 'globals_user', 'builtins', 'In', 'Out'})
+    #varnames = varnames.difference({'exit', 'quit', 'get_ipython', 'delall', 'globals_user', 'builtins', 'In', 'Out'})
     varnames_underbar = [varname for varname in varnames if varname.startswith('_')]    
     varnames = varnames.difference(set(varnames_underbar))    
-    if types == 'all':
+    if types_skip is None:
         for varname in varnames:
             del globals()[varname]
     else:
         for varname in varnames:
-            if isinstance(globals()[varname], types):
+            if not isinstance(globals()[varname], types_skip):
                 del globals()[varname]            
 
 
@@ -287,16 +302,6 @@ globals_user()
 
 # %% [markdown]
 # 뒤에서 설명하겠지만 대부분의 경우 변수를 제거할 때 함수나 모듈은 제외한다. 그런 경우에는 `del_all()` 함수의 `types=` 매개변수를 활용하여 변수의 타입을 확인하여 제거할 수도 있다.
-
-# %%
-
-# %%
-# exit : notebook 바로 종료
-
-# %%
-# rm(list = setdiff(ls(), lsf.str()))
-# save.image()
-# load(".RData")
 
 # %%
 # R
@@ -325,10 +330,10 @@ globals_user()
 #                                 .RData 에 저장된 객체 불러오기
 
 # %% [markdown]
-# # 3.2 파이썬의 데이터타입(자료형)
+# ## 3.2 파이썬의 데이터타입(자료형)
 
 # %% [markdown]
-# # 3.2.1 데이터타입(Data types)
+# ### 3.2.1 내장 데이터타입(Data types)
 
 # %% [markdown]
 # 프로그래밍에서 가장 기본적인 변수 타입(`type`)에 대해 얘기해 보자.
@@ -353,13 +358,22 @@ print(type(3), type(3.0))
 # [^store2]: 정확히 얘기하면 변수를 객체를 가리킬 뿐이고, 객체에 타입(클래스)이 존재한다. 이 얘기가 생소하다면 이 각주도 당분간 무시하자.
 
 # %% [markdown]
-# 파이썬의 기본적인(내장 모듈에서 정의된) 데이터 타입은 https://docs.python.org/ko/3.8/library/index.html 에서 확인할 수 있습니다. `dir(__builtins__)`을 통해서도 모듈 빌트인(`builtins`)에 정의된 클래스나 함수를 확인할 수 있습니다. 앞에서 설명했듯이 내장 모듈에 정의된 클래스, 객체, 함수 들은 파이썬 실행 후 바로 사용할 수 있습니다. 아마도 파이썬에서 `from builtins import *`를 하는 듯 합니다. 
+# 파이썬의 기본적인(내장 모듈에서 정의된) 데이터 타입은 https://docs.python.org/ko/3.8/library/index.html 에서 확인할 수 있습니다. `dir(__builtins__)`을 통해서도 모듈 빌트인(`builtins`)에 정의된 클래스나 함수를 확인할 수 있습니다(`__builtins__`와 `__builtin__`은 모두 모듈 `builtins`을 가리킵니다). 앞에서 설명했듯이 내장 모듈에 정의된 클래스, 객체, 함수 들은 파이썬 실행 후 바로 사용할 수 있습니다. 아마도 파이썬에서 `from builtins import *`를 하는 듯 합니다. 
+
+# %%
+import builtins
+
+# %%
+__builtins__ is builtins, __builtin__ is builtins
+
+# %%
+builtins
 
 # %%
 builtins.int is int, builtins.float is float, builtins.str is str
 
 # %% [markdown]
-# 파이썬 사이트에는 숫자형(`int`, `float`, `complex`), 문자열(`str`), 시퀀스형(`list`, `tuple`), 매핑형(`dict`), 집합형(`dict`, `frozenset`) 등이 소개 되어 있는데, 이 중에 대표적인 데이터 타입은 논리형(`bool`), 숫자형과 문자열(파이썬 사이트에는 텍스트 시퀀스형이라고 표기됨)입니다.
+# [파이썬 표준 라이브러리 사이트](https://docs.python.org/3.8/library/)에서 내장 타입(Built-in Types)를 확인해보세요. 숫자형(`int`, `float`, `complex`), 문자열(`str`), 시퀀스형(`list`, `tuple`), 매핑형(`dict`), 집합형(`dict`, `frozenset`) 등이 소개 되어 있는데, 이 중에 대표적인 데이터 타입은 **논리형**(`bool`), **숫자형**(`int`, `float`, `complex`)과 **문자열**(`str`; 파이썬 사이트에는 텍스트 시퀀스형이라고 표기됨)입니다.
 
 # %% [markdown]
 #
@@ -376,9 +390,10 @@ builtins.int is int, builtins.float is float, builtins.str is str
 # %% [markdown]
 # #### 정수형(`int`)
 #
-# 정수형은 정수를 나타낸다. 파이썬 3+에서 정수는 최소값이나 최대값이 존재하지 않는다(메모리가 허용하는 한 매우 큰 정수 또는 매우 작은 정수를 사용할 수 있다). 정수형 수를 나타내는 방법은 `16`과 같이 10진수로 표기하는 방법과 더불어 2진수, 8진수, 16진수로 표기할 수 있다. `0b`는 2진수, `0o`는 8진수, `0x`는 16진수를 나타내기 위해 앞에 쓴다. 자릿수가 많은 숫자를 읽기 쉽게 표기하기 위해 숫자 사이에 `_`를 넣을 수 있다. 
+# 정수형은 정수를 나타낸다. 파이썬 3+(???)에서 정수는 (메모리가 허용한다면) 최소값이나 최대값이 존재하지 않는다. 메모리만 허용한다면 임의의 큰 양수, 임의의 작은 음수를 저장할 수 있다. 정수형 수를 나타내는 방법은 `16`과 같이 10진수로 표기하는 방법이 가장 기본적인다. 그외에도 2진수, 8진수, 16진수로 표기할 수 있다. `0b`는 2진수, `0o`는 8진수, `0x`는 16진수를 나타내기 위해 앞에 쓴다. 자릿수가 많은 숫자를 읽기 쉽게 표기하기 위해 숫자 사이에 `_`를 넣을 수 있다. 
 
 # %%
+# 정수를 표기하는 여러 가지 방법
 a = 0; b=-1; c=1; d=3; e=-100; f=10_000_0_0_0; g=0b0010; h=0o32; i=0xff;
 # 0, -1, 1, 3, -100, 이진수 0010, 팔진수 32, 16진수 ff
 print(a,b,c,d,e,f,g,h,i) # print() 결과는 모두 10진수로 출력된다.
@@ -386,33 +401,34 @@ type(a), type(b), type(c), type(d), type(e), type(f), type(g), type(h), type(i)
 
 # %%
 # _를 사용해서 수를 좀더 쉽게 읽을 수 있는 방식으로 표기할 수 있다.
-a = 0; b=0o_32; c=0x_f_f; d=10_000_000; e=1_00_0000
+# 숫자 사이의 원하는 곳에 _를 추가할 수 있다. 하지만 _를 두 번 연속 쓸 수 없다.
+a = 0; b=0o_32; c=0x_f_f; d=10_000_000; e=10_00000
 print(a, b, c, d, e)
 type(a), type(b), type(c), type(d), type(e)
 
 # %%
 100_0000 == 1000000, 1_0_0 == 100
 
-# %%
-## 저장 
-## 정확한 값, 근사값
-
-# %%
-x = 0.2
-print(f'{x:.18f}')
-
-# %%
-import math
-math.isclose(1e-18, 1e-19)
-
-# %%
-
-# %%
-# R> print(x,digits=3)
-# 123000, 1.23, ...
+# %% [markdown]
+# 뒤에서 보겠지만 너무 큰 수를 표기하기 위해 지수법을 사용한다. 파이썬에서 지수법을 사용하여 수를 표기할 경우 그 수는 실수형으로 인식된다. 만약 정수형으로 바꾸고자 한다면 `int()`로 정수형으로 변환해준다.
 
 # %%
 print(12.3e7, 12.30e7)
+
+# %%
+print(int(12.3e7), int(12.30e7))
+
+# %% [markdown]
+# 하지만 이 방법은 지수법 자체가 부정확한 값이라는 점에 유의해야 한다. 예를 들면 `1.1e+300`은 정확하게 1.1e+300이 아니고, 따라서 `int(1.1e+300)`를 하면 생소한 수가 나타난다
+
+# %%
+int(1e+300)
+
+# %% [markdown]
+# 정확한 1e+300은 뒤에서 배울 문자열을 활용하여 다음과 같이 쓸 수 있다.
+
+# %%
+int('3'+'0'*300)
 
 # %% [markdown]
 # #### 실수형(`float`)
@@ -447,6 +463,7 @@ b = -2.5
 # %%
 a - b j
 
+
 # %%
 a - b*(1j)
 
@@ -472,6 +489,7 @@ type(a), type(b)
 # %%
 True = 3
 
+
 # %% [markdown]
 # #### 문자열형
 #
@@ -484,9 +502,21 @@ True = 3
 #
 # 시작과 끝을 `"` 따옴표로 할 경우 따옴표 사이에 문자 따옴표를 사용하면 문자열의 끝을 의미하는 따옴표와 구분이 되지 않기 때문에 탈출문자를 써서 `"\""`로 표기한다. 문자 백슬래쉬 역시 비슷한 이유로 `"\\"`로 쓴다. 
 #
+# 탈출 문자로 표기할 수 있는 제어 문자는 대여섯개에 불과하다. 그에 비해 자주 사용되지 않는 제어문자, 키보드로 입력할 수 없는 문자들도 많다. 키보드로 입력해도 폰트가 없어서 화면에 출력되지 않을 수도 있다. 가장 확실한 방법은 문자에 해당하는 코드를 적어주는 것이다. 편의를 위해 코드는 16진수, 8진수 등의 다양한 방법으로 지정해 줄 수 있다.
+#
 # `"\x41"`은 16진수 41에 해당하는 문자, `"\101"`은 8진수 101에 해당하는 문자를 나타낸다. 대부분의 컴퓨터에서 16진수 41에 해당하는 문자는 `'a'`이다. 그냥 `a`를 사용하지 왜 `\x41` 또는 `\101`을 사용하느냐고? 이 방법은 어떤 문자에도 사용할 수 있다. 예를 들면 `"\n"`(newline)은 `"\x0a"` 또는 `"\012"`로 쓸 수 있다. 왜냐하면 newline에 해당하는 문자가 ASCII에서 10번에 해당하기 때문이다(10진수 10은 16진수로 0a, 8진수로는 12이다).
 #
 # 유니코드 문자는 문자마다 이름이 있다. INVERTED EXCLAMATION MARK라는 유니코드 이름을 가진 문자는 `"\N{INVERTED EXCLAMATION MARK}"`로 나타낸다. "\uxxxx"는 유니코드 코드 포인트가 16진수 0000xxxx인 문자, "\UXXXXXXXX"는 유니코드 코드포인트가 16진수 XXXXXXXX인 문자를 나타낸다. 
+#
+# `\x`과 `\u`, 그리고 `\U`의 차이는 뒤에 오는 문자 몇 개를 문자 코드(문자에 대응하는 코드)로 읽을 것인지로 구분할 수 있다. `print('\u0041')`을 해보자. `print('\x0041')`과 어떻게 다른가? 이에 대한 자세한 사항은 문자열 관련 장(???)에서 다룬다.
+#
+#
+
+# %%
+print('\u0041')
+
+# %%
+print("\x0041")
 
 # %% [markdown]
 # 마지막으로 큰 따옴표 또는 작은 따옴표 안에서 백슬래쉬를 탈출 문자로 쓰지 않고 문자 그대로 사용하려면 큰 따옴표 또는 작은 따옴표 앞에 `r`이라는 문자를 덧붙인다. 예를 들면 `r'\n'`라고 쓰면 newline 문자 하나가 아니라 백슬래쉬(`\`)와 문자 엔(`n`)으로 구성된 두 문자를 의미한다. 만약 백슬래쉬가 많이 포함된 문자열을 따옴표 안에 적으려면 이중 백슬래쉬(`\\`)를 써야 하고 따옴표 안에 백슬래쉬가 지나치게 많아져 문자열을 읽기가 쉽지 않을 때 도움이 된다. 예를 들어 C:\Windows\Temp를 의미하기 위해 따옴표를 써서 `"C:\\Windows\\Temp"`로 나타내야 할 문자열을 `r"C:\Windows\Temp"`로 쓸 수 있다.
@@ -504,19 +534,47 @@ type(a), type(b), type(c), type(d), type(e), type(f), type(g), type(h), type(i),
 # 그 밖에 builtins 모듈의 데이터 타입에는 포함되어 있지 않지만, 데이터 분석에 자주 사용되는 데이터형에는 **범주형**, **날짜시간형**이 있다. 
 
 # %% [markdown]
-# 범주형은 특정한 값(수준)만을 가질 수 있는 값이다. 예를 들어 "커피를 드릴까요? 아니면 차를 드릴까요?"라는 질문에 대답은 "커피" 또는 "차"만 가능하다. 이때 질문의 답을 범주형으로 생각할 수 있다. **범주형**에는 수준 사이에 우위 또는 선후가 없는 경우와 "저", "중", "고"처럼 수준 사이에 비교가 가능한 **순위형**으로 나뉜다. 
+# ### 범주형과 날짜시간형
+
+# %% [markdown]
+# #### 범주형
+
+# %% [markdown]
+# 범주형은 특정한 값(수준)만을 가질 수 있는 값이다. 예를 들어 "커피를 드릴까요? 아니면 차를 드릴까요?"라는 질문에 대답은 "커피" 또는 "차"만 가능하다. 이때 질문의 답을 범주형으로 생각할 수 있다. **범주형**에는 수준 사이에 우위 또는 선후가 없는 **명목형**(nominal)와 "저", "중", "고"처럼 수준 사이에 비교가 가능한 **순위형**(ordered)으로 나뉜다. 
 #
-# 파이썬에서 범주형을 저장하기 위해 가장 많이 사용하는 방법은 패키지 `pandas`의 `Categorical`이라는 클래스를 사용하는 것이다. 
+# 여기서는 여러 용도로 쉽게 사용할 수 있는 `pandas`의 `Series`에서 `dtype='category'`로 범주형 또는 순위형을 사용하는 방법을 소개한다. 
+#
 
 # %%
 import pandas as pd
-a = pd.Categorical(['Right', 'Left', 'Middle', 'Middle', 'Right'])
-b = pd.Categorical(['low', 'medium', 'high', 'high', 'low'], 
-                   categories= ['low', 'medium', 'high'],
-                   ordered=True)
+a = pd.Series(['Coffee', 'Tea', 'Tea'], dtype='category')
+print(a)
 
-print(a, b)
-type(a), type(b)
+from pandas.api.types import CategoricalDtype
+b = pd.Series(['low', 'medium', 'high', 'high', 'low'], 
+              dtype = CategoricalDtype(categories=['low', 'medium', 'high'], ordered=True))
+
+
+# %% [markdown]
+# 명목형 자료를 만드는 방법은 뒤에서 자주 사용할 `pd.Series()`에 `dtype='category'`만 설정하면 된다. 순위형 자료를 만드는 법은 다소 복잡하다. 복잡하게 `import`하고, 다시 다소 복잡한 과정으로 `dtype=`을 설정해야 한다. 필자라면 다음과 같은 함수를 만들어 쓸 것이다.
+
+# %%
+def ordered(categories):
+    #print(categories)
+    from pandas.api.types import CategoricalDtype
+    return CategoricalDtype(categories=categories, ordered=True)
+b = pd.Series(['low', 'medium', 'high', 'high', 'low'],
+              dtype=ordered(['low', 'medium', 'high']))
+b
+
+# %% [markdown]
+# 순위형은 범주 사이의 순위 정보가 필수적으로므로 `dtype=` 설정이 편리하다.
+
+# %% [markdown]
+# 범주형은 컴퓨터에 자료를 저장할 때 범주 목록과 범주 따로 저장한다. 그리고 실제 자료는 각 범주를 정수 코드로 저장한다. 위에서 커피는 `0`으로 차는 `1`로 저장하는 식이다. 이런 저장 방법은 범주의 갯수가 자료의 갯수보다 작을 때 저장공간을 절약할 수 있다.
+
+# %% [markdown]
+# #### 날짜시간형
 
 # %% [markdown]
 # 날짜시간형은 여러 가지 방식으로 저장될 수 있다. 파이썬 표준 라이브러리에는 datetime 패키지가 있고, 제3자 패키지인 numpy나 pandas를 사용할 수도 있다. 여기서는 파이썬 표준 라이브러리인 datetime 패키지의 `date`, `time`, `datetime` 클래스를 사용하여 날짜형, 시간형, 날짜시간형 값을 저장해보자.
@@ -527,10 +585,37 @@ a = datetime.date(2022, 3, 4)
 b = datetime.time(19,30,0)
 c = datetime.datetime(2022, 3, 4, 19, 30, 0)
 print(a,b,c)
+a, b, c
+
+# %%
 type(a), type(b), type(c)
 
 # %% [markdown]
-# # 3.2.2 변수의 데이터 타입 확인하기
+# 보통은 년, 월, 일을 한꺼번에 문자열로 저장하는 경우가 많다. 이런 경우에는 다음과 같이 날짜/시간/날짜시간형으로 변환한다.
+
+# %%
+str_date = "2022-03-04"
+str_time = "19:30:00"
+str_datetime = "2022-03-04 19:30:00"
+v_date = datetime.datetime.strptime(str_date, "%Y-%m-%d").date()
+print(v_date)
+v_date
+
+
+# %%
+v_time = datetime.datetime.strptime(str_time, "%H:%M:%S").time()
+print(v_time)
+v_time
+
+# %%
+v_datetime=datetime.datetime.strptime(str_datetime, "%Y-%m-%d %H:%M:%S")
+print(v_datetime)
+v_datetime
+
+# %%
+
+# %% [markdown]
+# ### 3.2.2 변수의 데이터 타입 확인하기
 
 # %%
 # R
@@ -547,14 +632,14 @@ type(a), type(b), type(c)
 # 날짜시간리스트(POSIXlt) is.integer( , "POSIXlt)  as.POSIXlt()
 
 # %%
-# 파이썬
+# 파이썬(???변환???)
 
 # 데이터타입              확인하는 함수                  변환하는 함수
 # 논리(bool)             isinstance( , bool)         
 # 정수                   isinstance( , int)               int()
 # 실수                   isinstance( , float)             float()
 # 문자                   isinstance( , str)               str()
-# 범주                   isinstance( , pd.Categorical)    pd.Categorical()    
+# 범주                   isinstance( , pd.Series) and     pd.Categorical()    
 # 순위범주                isinstance(x, pd.Categorical) and x.ordered
 #                                                        pd.Cateogrical( , orderd=True, categories=[])
 # 날짜                   isinstance( , datetime.date)     datetime.date(년,월,일)     
@@ -574,8 +659,8 @@ type(a), type(b), type(c)
 # |  정수형     |  `int`         |
 # |  실수형     |  `flaot`         |
 # |  문자형     |  `str`         |
-# |  범주형     |  `pd.Categorical`         |
-# |  순위형     |  `pd.Categorical` 그리고 `.ordered`         |
+# |  범주형     |  `pd.Series` and `.dtype=="category"` and `cat.ordered ==False`         |
+# |  순위형     |  `pd.Series` and `.dtype=="category"` and `cat.ordered ==True`      |
 # |  날짜형     |  `datetime.date`         |
 # |  시간형     |  `datetime.time`         |
 # |  날짜시간형 |  `datetime.datetime`         |
@@ -586,26 +671,46 @@ import pandas as pd
 x1 = 23; print(type(x1))
 x2 = 22.3; print(type(x2))
 x3 = "strings"; print(type(x3))
-x4 = pd.Categorical(['Hi', 'Lo', 'Lo']); print(type(x4))
-x5 = datetime.date(2020, 1, 1); print(type(x5))
-x6 = datetime.time(9, 0, 0); print(type(x6))
-x7 = datetime.datetime(2020, 1, 1, 12, 11, 11); print(type(x7))
-isinstance(x1, int), isinstance(x2, float), isinstance(x3, str), isinstance(x4, pd.Categorical), \
-isinstance(x5, datetime.date), isinstance(x6, datetime.time), isinstance(x7, datetime.datetime)
+x4 = pd.Series(['Hi', 'Lo', 'Lo'], dtype='category'); print(type(x4))
+x5 = pd.Series(['Hi', 'Lo', 'Lo'], dtype=ordered(['Hi', 'Lo'])); print(type(x5))
+x6 = datetime.date(2020, 1, 1); print(type(x6))
+x7 = datetime.time(9, 0, 0); print(type(x7))
+x8 = datetime.datetime(2020, 1, 1, 12, 11, 11); print(type(x8))
+isinstance(x1, int), isinstance(x2, float), isinstance(x3, str), \
+isinstance(x4, pd.Series) and x4.dtype=="category" and x4.cat.ordered == False, \
+isinstance(x5, pd.Series) and x5.dtype=="category" and x5.cat.ordered == True, \
+isinstance(x6, datetime.date), isinstance(x7, datetime.time), isinstance(x8, datetime.datetime)
+
+# %% [markdown]
+# 아래를 보면 각 조건식이 서로 다른 타입일 때에도 오류를 발생시키지 않고 잘 작동하고 있음을 보여준다(이 부분은 뒤에서 리스트를 배운 후에 봐야 이해할 수 있다).
+
+# %%
+lst = [x1, x2, x3, x4, x5, x6, x7, x8]
+for x in lst:
+    print(isinstance(x, int), isinstance(x, float), isinstance(x, str), \
+    isinstance(x, pd.Series) and x.dtype=="category" and x.cat.ordered == False, \
+    isinstance(x, pd.Series) and x.dtype=="category" and x.cat.ordered == True, \
+    isinstance(x, datetime.date), isinstance(x, datetime.time), isinstance(x, datetime.datetime))
 
 # %% [markdown]
 # 여기서 다시 한번 유의할 점은 다음과 같다. 범주형, 순위형의 경우 파이썬의 builtins 모듈에서 제공되는 타입이 아니다. 제3자 패키지인 pandas에서 제공되는 타입이고, 다른 제3자 패키지에서 제공되는 타입을 사용하여 값을 저장할 수도 있다. 날짜형, 시간형, 날짜시간형의 경우는 파이썬 표준 라이브러리의 하나인 datetime 패키지에서 제공되는 타입이지만 효율적인 데이터 처리가 필요한 경우에는 제3자 패키지인 numpy나 pandas의 타입을 더 많이 사용하는 경향이 있다. 그래서 `isinstance(x, datetime.datetime)`이 거짓으로 나온다고 `x`가 날짜시간형이 아니라고 확신하기 힘들다. 다음의 예를 보자.
 
 # %%
-import numpy as np
-x= np.array(['2022-12-01 13:00'], dtype='datetime64') # 64비트로 저장하겠다
+x = pd.Series(pd.to_datetime(['2022-12-01 13:00']))
+print(x)
 isinstance(x, datetime.datetime)
 
 # %% [markdown]
 # 이 경우 다음과 같이 시간자료형 데이터(값)을 저장하고 있음을 확인할 수 있다. (이에 대해서는 넘파이 배열에서 확인한다.)
 
 # %%
-isinstance(x, np.ndarray) and str(x.dtype).startswith('datetime64')
+isinstance(x, pd.Series) and str(x.dtype).startswith('datetime')
+
+# %% [markdown]
+# 다시 한번 강조할 필요가 있다. 앞에서 말한 정수형, 실수형, 복소수형, 논리형, 문자열형, 범주형, 날짜시간형은 우리가 어떤 값을 분류한 추상적인 구분이다. 실제 컴퓨터에 저장되고, 해석되는 방식은 `int`, `float`, `complex` 등과 같은 데이터 타입이 결정한다. 정수형을 `int`로 저장할 수도 있지만 뒤에서 소개하는 `numpy`의 `dtype='int'`로도 저장할 수 있다. 따라서 데이터 타입을 확인하거나 구분할 때에도 이런 다양성을 고려해야 한다.
+
+# %% [markdown]
+# ### 데이터 타입 변환
 
 # %% [markdown]
 # 타입을 변환하는 것은 원래 타입에 따라 다른 방법을 사용해야 한다. 빌트인 타입 내에서는 동일한 함수를 사용할 수 있다. 예를 들어 `int()`는 실수형을 정수형을 변환할 때에도, 문자열형을 정수형으로 변환할 때에도 사용한다. 하지만 소수점 이하가 포함된 문자열을 바로 정수형으로 변환할 수는 없다. `int(float())`을 사용하자.
@@ -614,13 +719,13 @@ isinstance(x, np.ndarray) and str(x.dtype).startswith('datetime64')
 int(32.4)
 
 # %%
-int("32") # int("32.4") <- Error
+int("32") 
 
 # %%
-int(float("32.4"))
+int(float("32.4")) # int("32.4") <- Error
 
 # %% [markdown]
-# # 3.3 연산과 함수
+# ## 3.3 연산과 함수
 
 # %% [markdown]
 # 어떤 값의 데이터 타입은 값을 저장하는 방식을 결정한다. 우리가 추상적으로 생각하는 값과 컴퓨터에 저장되는 값을 분리해서 생각할 필요가 있었다. 데이터 타입은 컴퓨터에 저장된 이진수가 어떤 의미를 갖는지를 알려준다.
@@ -630,10 +735,10 @@ int(float("32.4"))
 # 다시 말해 데이터 타입에 의해 가능한 함수 또는 연산이 결정되고, 그 의미도 결정된다. 여기서는 각 데이터 타입별로 가능한 연산/함수, 자주 사용하는 연산/함수를 간단하게 소개한다. 자세한 활용법은 뒤의 각 장에서 상세하게 소개할 것이다.
 
 # %% [markdown]
-# ## 3.3.1 정수형
+# ### 3.3.1 정수(`int`)형
 
 # %% [markdown]
-# ### 3.3.1.1. 산술연산
+# #### 3.3.1.1. 산술연산
 
 # %% [markdown]
 # 산술연산으로 별다른 라이브러리 활용없이 기본적인 사칙연산을 제공한다. 
@@ -657,7 +762,13 @@ int(float("32.4"))
 15 == (15 // 4)*4 + 15 % 4
 
 # %% [markdown]
-# ### 3.3.1.2. 비교연산
+# 내장 builtins 모듈의 `divmod()`을 사용하면 몫과 나머지를 한꺼번에 구한다.
+
+# %%
+divmod(15,4) == (15//4, 15%4)
+
+# %% [markdown]
+# #### 3.3.1.2. 비교연산
 #
 # 비교 연산은 크기가 같음 또는 크기의 대소를 비교한다. 그 결과는 `True`(참) 또는 `False`(거짓)이 된다.
 
@@ -669,7 +780,7 @@ x < 6, x <= 6, x == 6, x != 6, x >= 6, x > 6
 # `==`은 같음, `!=`는 같지 않음을 나타낸다.
 
 # %% [markdown]
-# ### 3.3.1.3 할당 연산
+# #### 3.3.1.3 할당 연산
 
 # %% [markdown]
 # `**`, `*`, `/`, `//`, `%`, `+`, `-`와 같은 기본적인 산술연산의 경우 `x=x+1`과 같이 어떤 변수의 값에 연산을 한 후 다시 변수에 넣는 작업이 자주 필요하다. 그런 경우에 다음과 같이 축약형으로 쓸 수 있다.
@@ -685,7 +796,7 @@ x < 6, x <= 6, x == 6, x != 6, x >= 6, x > 6
 #
 
 # %% [markdown]
-# ### 3.3.1.4 비트 연산
+# #### 3.3.1.4 비트 연산
 #
 # 비트 연산은 메모리에 저장된 이진수를 각 비트별로 연산을 적용한다. 예를 들어 `0b10`과 `0b11`에 대해 비트 연산 AND를 행하면, 첫 번째 수의 첫 번째 자리 `1`과 두 번째 수의 첫 번째 자리 `1`에 AND 연산을 한 결과 `1`이 결괏값의 첫 번째 자리 수가 된다. 그리고 첫 번째 수의 두 번째 자리 `0`과 두 번째 수의 두 번째 자리 `1`의 AND 결과 `0`이 결괏값의 `0`이다. 그 결과는 `0b10`이고 이를 10진수로 나타내면 `2`가 된다. 
 
@@ -698,13 +809,13 @@ x & y
 # 파이썬의 비트 연산은 다음의 기호를 활용한다.
 
 # %% [markdown]
-# 비트 연산  |   파이썬 기호
-# :----------|:-------------
-# NOT        | `~`
-# AND        | `&`
-# OR         | `|`
-# XOR        | `^`
-# SHIFT      | `<<`, `>>`
+# |비트 연산  |   파이썬 기호|
+# |:----------|:-------------|
+# | NOT        | `~`   |
+# | AND        | `&`  |
+# | OR         | ` \| `  |
+# | XOR        | `^`  |
+# | SHIFT      | `<<`, `>>` |
 
 # %% [markdown]
 # 다음은 비트 연산을 실시한 결과를 보여준다.
@@ -722,7 +833,7 @@ print(f'{x >> 1:04b}') # SHIFT
 print(f'{x >> 2:04b}') # SHIFT
 
 # %% [markdown]
-# ### 3.3.1.4 수학 함수
+# #### 3.3.1.4 수학 함수
 
 # %% [markdown]
 # 그 밖의 다양한 수학 함수는 내장 모듈인 `math`에서 찾을 수 있다. `math.pow()`, `math.sqrt()`는 거듭제곱을 하는 함수, 거듭제곱근을 구하는 함수이다. 
@@ -756,17 +867,56 @@ def lsf(module):
     import types
     if not isinstance(module, (types.ModuleType, type)):
         raise ValueError("argument should be module type")
-    return [k for k, v in vars(module).items() if callable(v) and not k.startswith('_')]
+    return [k for k, v in vars(module).items() 
+            if not k.startswith('_') and callable(v) and not isinstance(v, type)] 
+    # '_'로 시작하지 않는 함수 종류만 출력
 
 
 # %%
-lsf(math)
+# lsf(__builtins__)의 결과를 조금 정리하면
+' '.join(lsf(__builtins__))
+
+# %%
+' '.join(lsf(math))
+
 
 # %% [markdown]
-# ## 3.3.2 실수형
+# 다음의 `lst_doc()`은 모듈의 함수와 함수의 `.__doc__`(문서)를 같이 보여준다. 어떤 함수가 있는지 천천히 살펴보고, 어떤 함수를 어떻게 활용할 수 있을지 생각해보자.
+
+# %%
+def lsf_doc(module):
+    funcs = lsf(module)
+    funcs_dic = {func:vars(module)[func].__doc__ for func in funcs}
+    for k,v in funcs_dic.items():
+        #print(k,v.split('\n')[0])
+        try:
+            dochead = v.split('\n')[0]
+            print(f"{k:10}: {dochead:30}")
+            # SyntaxError: f-string expression part cannot include a backslash
+            # 왜 backslash는 포함하지 못하나?
+        except Exception as e:
+            print(f"{k:10}:")
+
 
 # %% [markdown]
-# ### 3.3.2.1 산술연산, 비교연산, 할당연산, 수학함수
+# 모든 내장 모듈에 대해 함수와 문서 첫 줄을 출력해보면 다음과 같다.
+
+# %%
+import sys
+for x in sys.builtin_module_names:
+    if not x.startswith('_'):
+        print('*'*(len(x)+4))
+        print('* '+x+' *')
+        print('*'*(len(x)+4))
+        module = __import__(x)
+        lsf_doc(module)
+        print()
+
+# %% [markdown]
+# ### 3.3.2 실수(`float`)형
+
+# %% [markdown]
+# #### 3.3.2.1 산술연산, 비교연산, 할당연산, 수학함수
 
 # %% [markdown]
 # **산술연산**, **비교연산**, **할당연산**, **수학함수**는 정수형과 마찬가지로 실수형에도 동일하게 적용된다. **비트연산**은 실수형에 적용되지 않는다.
@@ -782,6 +932,9 @@ x -= y; x
 x >> 1
 
 # %% [markdown]
+# #### 3.3.2.2 `float`타입의 한계
+
+# %% [markdown]
 # 실수형에서 유의할 점은 실수형은 정확성에 한계가 존재한다는 점이다. 
 
 # %%
@@ -793,9 +946,17 @@ print(num)
 #R> print(sqrt(2)^2)
 
 # %% [markdown]
-# 0.1, 0.2와 같은 소수는 2진법의 부동소수점으로 저장되기 때문에
-# 약간의 오차가 발생할 수 있다.
-# 약간의 오차를 무시하고 두 수의 크기를 비교하고자 한다면,
+# 0.2처럼 간단한 실수조차도 정확하지 않다. 사실 2진수로 소수점 몇 째자리까지 딱 떨어지는 값이 아닌 이상 `float` 타입은 입력한 값과 미세하게 다르다(0.5, 0.25, 0.125, 0.0625) 등은 정확하게 저장할 수 있다).
+
+# %%
+x = 0.2; y = 0.25
+#y = 0.000000476837158203125
+print(f'{x:.24f}')
+print(f'{y:.24f}')
+
+# %% [markdown]
+# 이렇게 `float` 타입에 내재된 오차를 
+# 무시하고 두 수의 크기를 비교하고자 한다면,
 # `math.isclose()`를 사용할 수 있다.
 
 # %%
@@ -818,14 +979,31 @@ print(a, a == 0.3, math.isclose(a, 0.3))
 math.isclose(math.sqrt(2)**2, 2)
 # R> all.equal(sqrt(2)^2, 2)
 
-# %%
-math.isclose(1e-23, 1e-24) # rel_tol = 1e-09
-# R> all.equal(1e-23, 1e-24)
-# R> dplyr::near(1e-23, 1e-24)
-# R> near <- dplyr::near; near(1e-23, 1e-24)
+# %% [markdown]
+# `math.isclose()`는 유한한 정확성의 컴퓨터로 계산을 하면서 나타나는 작은 오차를 의도적으로 무시하여`(math.sqrt(2))**2`($\sqrt{2}^2$의 근삿값)과 `2`을 거의 같다고 판단하다.
 
 # %% [markdown]
-# ### 실수 출력 형식 지정
+# 계산에 의한 오차뿐 아니라 `float` 타입은 내재적으로 정확성의 한계가 존재한다. 그 정확성은 `0` 근처에서 가장 정확하고 수가 커질 수록 낮아진다.
+
+# %%
+0 == 1e-324, 0 == 1e-323 
+# 0과 1e-324는 구분하지 못하고, 0과 1e-323은 구분한다.
+
+# %%
+1e300 == 1e300 + 1e283, 1e+300 == 1e300 + 1e284
+
+# %% [markdown]
+# 그리고 `float` 타입은 `int`과 다르게 한정된 크기만을 저장할 수 있다. `float`타입이 저장할 수 있는 가장 큰 값과 가장 0과 가까운 값은 다음으로 확인할 수 있다.
+
+# %%
+import sys
+sys.float_info.max 
+
+# %%
+sys.float_info.min
+
+# %% [markdown]
+# #### 3.3.2.3 실수 출력 형식 지정
 #
 # 정수형은 항상 정확한 값이 저장되지만 실수형은 근사값이 저장되는 경우가 많다. 예를 들어 `x=0.2`조차도 소수점을 늘려가면서 출력해보면 0.2와 미세하게 차이가 남을 확인할 수 있다.
 #
@@ -862,37 +1040,49 @@ print(f"{v:#.6g}")
 print(f"{w:#.6g}")
 
 # %% [markdown]
-# ## 3.3.2 문자열
+# 실수를 다양한 형식으로 출력하는 방법은 뒤(???)에서 설명된다.
+
+# %% [markdown]
+# ### 3.3.3 문자열
 #
-# 문자열 타입을 출력하기 위해 `print()`와 `repr()`을 사용할 수 있다. `print()`는 문자열의 탈출문자가 적용된 결과를 출력하고 `repr()`은 문자열이 따옴표 사이에 탈출문자가 포함하여 표기된 형태로 출력된다. 
+# 문자열 타입 변수를 출력하기 위해 콘솔에서 변수를 그냥 입력하거나 `print()`를 적용할 수 있다. 그냥 변수를 입력하면 따옴표 안에 문자열 내용을 보여주고, `print()`는 문자열의 탈출문자가 적용된 결과를 출력한다. 그냥 변수를 입력하여 출력된 내용은 복사를 하여 코드로 사용할 수 있다. 
 #
-# R에서의 `print()`와 `cat()`을 파이썬에서는 `repr()`과 `print()`를 쓴다. 파이썬에서 `repr()`은 출력 내용을 복사해서 어떤 변수에 할당할 수 있는 경우가 많다. `repr()` 없이 변수만 써도 콘솔에서 `repr()` 결과가 나온다.
-#
-#
+# R 사용자라면 파이썬에서는 `print(x)`와 `x`는 R의 `cat(x)`와 `print(x)`와 비슷함을 알 수 있을 것이다. 파이썬에서 콘솔에 `x`를 치면 내부적으로 `print(repr(x))`를 수행한다.
 
 # %%
 x = "I \nDo\tLove You\N{INVERTED EXCLAMATION MARK}"
 x
 
 # %%
-repr(x)
-
-# %%
 print(x)
 
 # %%
-repr("\"Hello\", says he.\tI can do!")
+print(repr(x))
 
 # %%
-print("\"Hello\", says he.\tI can do!")
+y = "\"Hello\", says he.\tI can do!"
+print(y)
+
+# %%
+print(repr(y))
+y
 
 # %% [markdown]
-# ### 문자열 함수
+# #### 3.3.3.1 문자열 함수
 #
 # 다음은 몇 가지 대표적인 문자열 연산과 함수를 보여준다.
+#
+# |   문자열 연산 |  기호    |
+# |:---------:|:-------------:|
+# |   `+`    |    문자열 연결   |
+# |   `*`    |    문자열 반복   |
+# |   `len()`    |    문자열의 문자 갯수  |
 
 # %%
 x = "ABC" + "abc" + "123"; print(x)
+
+# %%
+x = '='*20; print(x)
 
 # %%
 len('hello?') # 문자 갯수 R> nchar()
@@ -901,70 +1091,75 @@ len('hello?') # 문자 갯수 R> nchar()
 x[:5] # 처음부터 5번째 글자 R> substring(x, 1, 5)
 
 # %% [markdown]
-# ## 3.3.3 날짜/시간 연산/함수
+# ### 3.3.3 날짜/시간 연산/함수
 #
 # 날짜시간/날짜/시간은 과거, 현재, 미래로 이어지는 시간의 흐름 속에 한 점을 나타낸다. 그래서 날짜 사이에는 차이를 구하는 것은 자연스러운 연산이다.
 #
-# 뒤에서 살펴보겠지만 날짜, 시간은 시간 흐름의 직선 위의 한 점을 다소 복잡한 방식으로 표기한다. 1분은 1초의 60배이고, 1시간은 1분의 60배이다. 1일은 1시간의 24배이고, 1주는 1일의 7배이지만, 달, 년은 일에 일정한 배를 해서 구할 수 없다. 
+# 뒤에서 살펴보겠지만 날짜, 시간은 시간 흐름의 직선 위의 한 점을 다소 복잡한 방식으로 표기한다. 1분은 1초의 60배이고, 1시간은 1분의 60배이다. 1일은 1시간의 24배이고, 1주는 1일의 7배이지만, 달, 년은 일에 일정한 배를 해서 구할 수 없다(달의 길이는 달마다 다르고, 년의 길이도 년마다 다르다!). 따라서 2022년 3월 1일의 400일 후가 몇 월 몇 일, 그리고 요일이 무엇인지 쉽게 확인하기 어렵다. 하지만 파이썬은 이런 계산도 척척 박사다.
 
 # %%
 import datetime
 
 # %%
-# Sys.Date() # 현재 날짜
-print(datetime.date.today())
+print(datetime.date.today()) 
+datetime.date.today() # 현재 날짜
+# R> Sys.Date() 
+
+# %% [markdown]
+# 어떤 변수 `x`를 콘솔에 입력하여 얻은 출력 결과는 흔히 그 결과를 바로 코드로 활용할 수 있다. 예를 들어 위의 `datetime.date.today()` 결과 `datetime.date(2022, 1, 8)`은 바로 변수 `dt`에 다음과 같이 할당할 수 있다.
+#
+# `dt = datetime.date(2022, 1.8)`
+#
+# `print(x)`의 결과는 `x`의 값을 인간이 이해하기 싶게 출력하는 경향이 있다.
 
 # %%
-# Sys.time() # 현재 날짜와 시간(POSIXct 형식)
+# 현재 날짜와 시간
 print(datetime.datetime.now())
+datetime.datetime.now()
+# R> Sys.time() # 현재 날짜와 시간(POSIXct 형식)
 
 # %%
-# as.Date("2018/12/31") # 문자열 "2022/12/31"을 날짜 형식으로
-datetime.datetime.strptime("2022/12/31", "%Y/%m/%d").date()
-
-# %%
-# as.POSIXct("2022/12/31 23:59:59") # 문자열 "2018/12/31 23:59:59"을 날짜시간 형식으로
-datetime.datetime.strptime("2022/12/31 23:59:59", "%Y/%m/%d %H:%M:%S")
-
-# %%
-# Sys.Date() - as.Date("2023-01-01") # 2023년 1월 1일과 현재 날짜의 차이
+# 2023년 1월 1일과 현재 날짜의 차이
 a = datetime.date(2023,1,1)
 b = datetime.date.today()
 print(a-b)  # a-b는 datetime.timedelta 자료형을 가진다.
+a-b
+# Sys.Date() - as.Date("2023-01-01") 
 
 # %%
-# as.POSIXct("2023/01/02 09:00:00")-Sys.time() # 2023년 1월 1일 09시 00분 00초와 현재 시간의 차이
+# 2023년 1월 1일 09시 00분 00초와 현재 시간의 차이
 a = datetime.datetime(2023,1,2,9,0,0)
 # datetime.datetime(2023,01,02,09,00,00)으로 쓸 수 없음을 유의하자.
+# 10진수 수는 첫 글자를 0으로 쓸 수 없다(0.1과 같이 1 미만의 소수 제외)
 b = datetime.datetime.today()
-
 print(a-b) # a-b는 datetime.timedelta 자료형을 가진다.
-
-# %%
-# 현재 날짜 시간과 2022년 12월 31일 23시 59분 59초와의 차이(일)
-# difftime(as.POSIXct("2018/12/31 23:59:59"), Sys.time()
-a = datetime.datetime(2022,12,31,23,59,59)
-b = datetime.datetime.today()
-print((a-b).days, "일") 
-
-# %%
-# 현재 날짜 시간과 2022년 12월 31일 23시 59분 59초와의 차이(분 단위로)
-# difftime(as.POSIXct("2022/12/31 23:59:59"), Sys.time(), units='mins')
-print((a-b).seconds/60, "분")
-print(f"{(a-b).seconds/60:.2f}분") # 소수점 이하 숫자 두 개
+a-b
+# R> as.POSIXct("2023/01/02 09:00:00")-Sys.time() 
 
 # %%
 # 현재 날짜 시간과 2022년 12월 31일 23시 59분 59초와의 차이(초 단위로)
-# difftime(as.POSIXct("2022/12/31 23:59:59"), Sys.time(), units='secs')
-# R : units은 다음 중 하나: 'auto', 'secs', 'mins', 'hours', 'days', 'weeks'
 # 파이썬 : timedelta 값은 날짜, 초, 밀리초를 days, seconds, miliseconds 속성 이용해 접근할 수 있다.
 a = datetime.datetime.today()
 b = datetime.datetime(2022,12,31,23,59,59)
 print((a-b).seconds, "초")
+# R> difftime(as.POSIXct("2022/12/31 23:59:59"), Sys.time(), units='secs')
+#    R에서 units은 다음 중 하나: 'auto', 'secs', 'mins', 'hours', 'days', 'weeks'
+
+# %%
+# 2022년 3월 1의 400일 후
+dt = datetime.date(2022,3,1)
+dt2 = dt + datetime.timedelta(days=400)
+print(dt2) # 2023년 4월 5일
+
+# %%
+dt2.strftime("%Y-%m-%d %A")
 
 
 # %% [markdown]
-# ## 3.3.4 논리형 연산/함수
+# 2022년 3월 1일의 400일 후는 2023년 4월 5일이며 수요일이다.
+
+# %% [markdown]
+# ### 3.3.4 논리형 연산/함수
 
 # %% [markdown]
 # 논리형 연산 AND, OR, NOT 등은 파이썬에서 `and`, `or`, `not`으로 표기한다. 논리형 연산 XOR은 `(x and not y) or (not x and y)`로 쓸 수 있다. 논리형 연산 XOR은 둘 중 하나만 참일 때 참이다.
@@ -990,13 +1185,10 @@ xor2(True, True), xor2(True, False), xor2(False, False)
 # 정수형, 실수형 연산까지 모두 포함하면 논리형 연산 `not`, `and`, `or`은 앞에서 소개한 모든 연산 `**`, `*`, `/`, `//`, `%`, `+`, `-`보다 낮다.
 
 # %%
-
-# %%
-
-# %%
 (7 < 3) and (4 > 3), \
 (7 < 3) or (4 > 3),  \
-not (7 < 3)
+not (7 < 3), \
+7 >= 3
 
 # %%
 # R>
@@ -1007,828 +1199,119 @@ not (7 < 3)
 #x = NA
 #isTRUE(x == 3) # robust to NAs
 
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
+# %% [markdown]
+# 파이썬에는 결측치를 나타낼 수 있는 내장 타입이 없다. 결측값과 비슷해 보이는 `None`이라는 값이 있지만 이는 결측치라기 보다는 아예 없다는 의미가 더 적절해 보인다. (결측값은 있지만 측정을 못한 것이고, 아예 없는 것은 측정이 애초에 불가능하다. 참고로 `None == 3`은 `False`이고 `None > 3`은 타입오류`TypeError`가 발생한다.)
 
 # %% [markdown]
-# 특히 결측치를 나타내는 `np.nan`을 주목하자. 빌트인 모듈 또는 내장 모듈을 사용하여 결측치를 나타낼 방법이 없기 때문에 제3자 패키지인 `numpy`를 사용했다. 계산 결과도 R과 다름을 유의하자.
-#
+# 보통은 결측치를 나타내기 위해 제3자 패키지 `numpy`의 `np.nan`를 활용한다(`import numpy as np`). 이때 계산 결과가 R과 다름을 유의하자.
+
+# %% [markdown]
 # R에서 `NA`를 포함한 거의 모든 계산 결과는 `NA`이다. 왜냐하면 어떤 값인지 모르므로 결과 또한 어떤 값인지 모르게 된다. 예를 들어 `NA==3`의 결과는 `NA`인데, `NA`가 어떤 수인지 모르기 때문이다(3일 수도, 아닐 수도 있다).
 #
-# 파이썬의 `np.nan`이 이와 다소 다르게 작동한다. 다음을 보자. R이라면 모두 `NA`가 나올 논리식이 `FALSE`임을 유의하자.
+# 파이썬의 `np.nan`이 이와 다르게 작동한다. 다음을 보자. R이라면 모두 `NA`가 나올 논리식이 `FALSE`임을 유의하자.
 
 # %%
+import numpy as np
 print(np.nan == np.nan)
 print(3==np.nan)
-print(math.isclose(np.nan, np.nan))
+print(math.isclose(np.nan, np.nan)) # np.isclose(np.nan, np.nan)
 
 # %% [markdown]
-# ## 3.3.5 데이터 타입에 따른 연산과 함수
+# 결정적으로 다음의 결과를 보자. 뭔가 의심쩍지 않은가
 
 # %%
-# 데이터 타입       대표적인 연산과 함수 
-# 숫자(numeric)     ^(**), *, /, +, -, <, ==, >, exp(), log()
-# 문자(str)         nchar(), paste(), substring()
-# 날짜(Date)        Sys.Date(), -, difftime()
-# 날짜시간(POSIXct) Sys.time(), -, difftime()
-# 논리(logical)     &, |, !, xor(), &&, ||
+(7 < np.nan) and (4 > np.nan), \
+(7 < np.nan) or (4 > np.nan),  \
+not (7 < np.nan), \
+7 >= np.nan
+
+# %% [markdown]
+# `not(7 < np.nan)`을 풀어쓰면 `7>=np.nan`이다. 다시 말해 논리적으로 `not(7 < np.nan)`와 `7>=np.nan`의 진릿값은 항상 값다(이해가 되지 않는다면 `np.nan` 대신 어떤 수를 넣어보라. 언제나 `not(7<x)`와 `7>=x`의 진릿값은 같다. 하지만 `not (7 < np.nan)`과 `7 >= np.nan`의 진릿값은 다르다. 이런 차이를 어떻게 설명할 수 있을까? 
+
+# %% [markdown]
+# 필자가 좀더 찾아보니 오히려 실수형 연산에 대한 국제 표준인 IEEE 754에 따르면 오히려 `7 >= np.nan`와 같은 비교 연산 결과가 `False`이다. 해설에 따르면 `np.nan`와 어떤 비교에 대해서도 결과가 `False`(실패) 실패여야 한다는 것이다. 즉 `7 >= x`가 `x = np.nan`일 때 `False`(실패)인 것은 `x`가 `7`보다 작을 때에만 실행되어야 하는 무엇인가가 있을 때, `x=np.nan`이라면 `7`보다 작다는 확신이 없으므로 `False`(실패)가 된다는 의미이다. R 사용자로서, 그리고 논리학, 통계학에 조예가 있는 사람으로서 솔직히 깊이 와닿지는 않는다. 컴퓨터 공학만의 **표준**인 듯 하다(컴퓨터 공학만의 어떤 특수성이 있는지는 잘 모르겠다). 어쨋든 뭔가 성공과 실패를 반드시 결정해야 하는 경우에 `np.nan`를 성공으로 처리할 순 없을 것이다. 
+#
+# https://en.wikipedia.org/wiki/NaN
+
+# %% [markdown]
+# 이런 점에서 파이썬의 `x==3` 또는 `x<3`은 R의 `isTRUE(x==3)` 또는 `isTRUE(x<3)`과 비슷하다고 생각할 수 있다. 
+
+# %% [markdown]
+# 만약 `x`와 `y`를 비교할 때 `np.nan`을 고려하여 R과 비슷한 결론을 얻어 내고 싶다면 다음의 `eq()` 함수를 활용하자. `np.nan`이나 `None`과 같이 결측값을 나타내는 값을 비교하면 결과는 `np.nan`이 된다.
 
 # %%
+import pandas as pd
+def eq(a,b):
+    if isinstance(a, np.ndarray):
+        a = pd.Series(a)
+    if isinstance(b, np.ndarray):
+        b = pd.Series(b)
+    vnan = pd.isna(a) | pd.isna(b) # numpy일 수 있으니 bool이 아닐 수 있다..
+    res = a == b
+    if isinstance(vnan, pd.Series):
+        res[vnan] = np.nan
+        return res
+    elif vnan:
+        return np.nan
+    else:
+        return res
+
+
+# %%
+eq(1,1), eq(1.4, 1.4), eq(1+3j, 1+3j), eq(True,True), eq('equals', 'equals')
+
+# %%
+eq(1,0), eq(1.4, 1.45), eq(1+3j, 1+2.5j), eq(True, False), eq('equals', 'equal')
+
+# %%
+eq(1,np.nan), eq(np.nan, 1.4), eq(1+3j, np.nan), eq(np.nan,True), eq('equals', np.nan)
+
+# %%
+eq(None,0), eq(1.4, None), eq(None, 1+2.5j), eq(True, None), eq(None, 'equal')
+
+# %%
+eq(np.nan, np.nan), eq(None, None)
+
+# %% [markdown]
+# 하지만 `3 > np.nan`과 같은 경우에는 여전히 결괏값이 `False`이다!
+
+# %% [markdown]
+# ### 3.3.5 데이터 타입에 따른 연산과 함수 정리
+
+# %% [markdown]
+# | 연산 기호 | 연산 종류 | 
+# |:--------:|:---------:|
+# |   x`**` y |   거듭제곱  |
+# | `+`x, `-`x, `~`x | **단항** 연산 |
+# |  x`*` y, `/`, `//`, `%` | **산술**연산(곱셈, 나눗셈 등)  |
+# |  x `+` y, `-`          | **산술**연산(덧셈, 뺄셈) |
+# | `<<`, `>>`             | **비트** 연산 SHIFT |
+# | `&`             | **비트** 연산 AND |
+# | `^`             | **비트** 연산 XOR |
+# | `\|`             | **비트** 연산 OR |
+# |  `<`, `<=`, `==`, `>=`, `>`, `!=` | **비교** 연산 |
+# |  `not`          | **논리** 연산 NOT |
+# |   `and`         | **논리** 연산 AND |
+# |   `or`         | **논리** 연산 OR|
+#
+#
+#
+
+# %%
+# !!!
+# 데이터 타입          대표적인 연산과 함수 
+# 숫자(numeric)         ^(**), *, /, +, -, <, ==, >, exp(), log()
+# 문자(character)         nchar(), paste(), substring()
+# 날짜(Date)            Sys.Date(), -, difftime()
+# 날짜시간(POSIXct)      Sys.time(), -, difftime()
+# 논리(logical)          &, |, !, xor(), &&, ||
+
+# %%
+# !!!
 # 데이터 타입                 대표적인 연산과 함수 
 # 실수(float)                 **, *, /, +, -, <, ==, >, math.exp(), math.log()
-# 문자(str)                   len(), count(), find(), index(), join(), upper(), lower(), split()
-# 날짜(datetime.date)          -  !!!
-# 날짜시간(datetime.datetime)  -  !!!
-# 논리(bool)                  &, |, !, &&, ||
-
-# %%
-0b1100 | 0b0011
-
-# %%
-import sys
-sys.float_info.max 
-
-# %% [markdown]
-# ## 3.4 특별한 값
-
-# %%
-1.32e+308  
-1.32e+308*10  # 64bit의 경우, inf
-import sys
-sys.float_info.max 
-1.7976931348623157e+308
-1.7976931348623158e+308
-1.7976931348623159e+308 # inf
-sys.float_info.min
-2.2250738585072014e-308
-2.2250738585072010e-308
-2.2250738585072006e-308
-2.2250738585072006e-310
-2.2250738585072006e-320
-2.2250738585072006e-321
-2.2250738585072006e-322
-2.2250738585072006e-323
-2.2250738585072006e-324 # 0.0
-
-# %% [markdown]
-# ## 3.4.2 몇가지 유의사항
-
-# %%
-# x <- c(2, 5, NA, 3)
-# vec <- c(3, 7, 0, NA, -3)
-
-import pandas as pd
-x = pd.Series([2,5,np.nan,3]) # np.nan은 실수형이다.
-print(x)
-vec = pd.Series([3, 7, 0, np.nan, -3])
-print(vec)
-
-# %%
-import numpy as np
-
-def ifelse(cond, x, y):
-    return np.where(cond, x, y)
-print(ifelse(x > 3, "3+", "below")) 
-# 주의! np.nan이 제대로 반영되지 않았다
-# 왜냐하면 np.nan > 3의 결과는 False이기 때문이다.
-
-
-# %%
-print(np.nan < 3, np.nan <= 3, np.nan == 3, np.nan <= 3, np.nan < 3) # np.nan을 포함한 모든 대소비교가 False!
-
-# %%
-# ifelse(is.na(x), NA, x %in% vec)
-ifelse(np.isnan(x), -99, x.isin(vec))  
-# 왜냐하면 return 값이 array이고,
-# -99가 포함되므로, True/False는 int로 변환
-
-# %%
-ifelse(np.isnan(x), np.nan, x.isin(vec))
-# np.nan은 dtype = 'bool' or 'int*'에서는 지원하지 않는다  
-ifelse(np.isnan(x), 'NA', x.isin(vec))
-
-# %%
-xs = [2,5,np.nan,3]
-[np.nan if np.isnan(x) else x in vec for x in xs]
-
-# %%
-#x <- 1e-16
-#c(log(1+x), log1p(x), exp(x)-1, expm1(x)) 
-# ## log(1+x)의 결과값이 책(0e+00)과 다름
-x = 1e-16
-math.log(1+x), math.log1p(x), math.exp(x)-1, math.expm1(x)
-# math.log(1+x), math.exp(x)-1의 경우 발생하는 UNDERFLOW를 
-# math.log1p(x)와 math.expm1(x)는 방지한다.
-
-# %%
-x = 1e-16
-np.array([np.log(1+x), np.log1p(x), np.exp(x)-1, np.expm1(x)])
-
-# %% [markdown]
-# ## R의 `assign`
-
-# %% [markdown]
-# Python에는 R의 `assign` 함수에 정확히 대응되는 함수가 존재하지 않는다. 
-# 다음은 stackoverflow에서 찾은 몇 가지 대용방법이다. 
-# 첫 번째 방법은 `exec`를 사용하고, 두 번째 방법은 `globals()`를 사용한다.
-# `exec`를 사용하는 경우 외부에서 입력을 받는 경우 몇 가지 보안상 위험 상황이 발생할 수도 있다.
-# 예를 들어 `exec('{}={}'.format(varname, d)`에서 `varname='del a; b'; d=3`이라면 변수 `a`를 지워버릴 수 있다.
-# 만약 varname을 바로 입력하지 않고 varname에 공란이나 `;`가 포함되어 있는지 확인하는 
-# 과정을 거친다면 큰 문제가 없을 것이다.
-
-# %% [markdown]
-# ### 첫 번째 방법 : `exec()`
-# `exec()` 문자열 fommating으로 변수를 선언할 수 있다.
-
-# %%
-varnames = ['a', 'b', 'c']
-ds = [1, 5, 2]
-
-# %%
-# https://stackoverflow.com/questions/36353774/whats-the-analogous-function-for-aasign-of-r-in-python
-varnames = ['a', 'b', 'c']
-ds = [1, 5, 2]
-for varname,d in zip(varnames,ds):
-    exec('{}={}'.format(varname,d))
-a,b,c    
-
-# %% [markdown]
-# ### 두 번째 방법 : `globals()`
-# `globals()`는 전역으로 선언된 변수들에 대한 {'변수명' : 데이터}의 구조로 이루어진 dictionary를 반환하는 함수이다.
-#
-# 변수명 문자를 dictionary에 key로 선언해준다.
-
-# %%
-globals()['데이터'] = 1
-print(데이터)
-
-# %%
-varnames = ['a', 'b', 'c']
-ds = [2, 3, 4]
-for varname,d in zip(varnames, ds):
-    globals()[varname] = d
-a,b,c
-
-def assign(varname, value):
-    globals()[varname] = value
-assign('a', 3)
-a
-assign('a2', np.array([3,2,1]))
-a2
-
-# %%
-# 첫 번째 방법은 `exec()` 함수를 사용한다. 
-# `exec()`함수는 파이썬 코드의 동적 실행을 지원한다. "동적 실행"이란 프로그램 코드가 실행하면서 변할 수 있다는 의미이다.
-# exec의 인자는 코드를 나타내는 문자열이다.
-exec('print(123)')
-
-# 만약 잘못된 구문이 입력되면 에러가 발생한다.
-# exec('give me money!')
-# # SyntaxError: invalid syntax
-
-# 파이썬 변수규칙상 숫자로 시작하는 변수, 특수문자는 변수명으로 선언할 수 없다.
-# 변수 할당에서는 파이썬에서 지원하지 않는 변수명에 대해서는 에러를 발생시킨다.
-# exec('@@=3')
-# SyntaxError: invalid syntax
-
-# exec()함수는 단순히 변수 할당뿐 아니라, 모든 파이썬 구문과 함수를 실행할 수 있다.
-# 만약 exec()로 실행하는 구문의 내용을 외부로부터 입력받는다면 문제가 발생할 수 있다.
-# 다음을 보자. 프로그래머의 의도와 상관없이 `xx`라는 변수가 생성되었다.
-a='c'
-b='3; xx=10'
-exec(f'{a}={b}') # exec('{}={}'.format(a,b))와 동일하다
-
-# 다음과 같은 코드는 프로그램을 먹통으로 만들 것이다.
-a='c'
-b="3; [x for x in range(1000000000000)]"
-exec(f'{a}={b}')
-
-# %%
-
-# %% [markdown]
-# 두 번째 방법은 파이썬이 지원하지 않는 변수명에 대해서도
-# 에러가 발생하지 않는다. 그렇다고 변수가 생성되지도 않지만,
-# globals()에서 찾을 수는 있다.
-#
-# globals()['@@'] = 'symbol at'
-# @@
-# # SyntaxError: invalid syntax
-
-# %%
-globals()['@@']
-# 'symbol at'
-
-# %%
-
-# %% [markdown]
-# # =====
-
-# %%
-from __future__ import print_function
-from sys import getsizeof, stderr
-from itertools import chain
-from collections import deque
-try:
-    from reprlib import repr
-except ImportError:
-    pass
-
-def total_size(o, handlers={}, verbose=False):
-    """ Returns the approximate memory footprint an object and all of its contents.
-
-    Automatically finds the contents of the following builtin containers and
-    their subclasses:  tuple, list, deque, dict, set and frozenset.
-    To search other containers, add handlers to iterate over their contents:
-
-        handlers = {SomeContainerClass: iter,
-                    OtherContainerClass: OtherContainerClass.get_elements}
-
-    """
-    dict_handler = lambda d: chain.from_iterable(d.items())
-    all_handlers = {tuple: iter,
-                    list: iter,
-                    deque: iter,
-                    dict: dict_handler,
-                    set: iter,
-                    frozenset: iter,
-                   }
-    all_handlers.update(handlers)     # user handlers take precedence
-    seen = set()                      # track which object id's have already been seen
-    default_size = getsizeof(0)       # estimate sizeof object without __sizeof__
-
-    def sizeof(o):
-        if id(o) in seen:       # do not double count the same object
-            return 0
-        seen.add(id(o))
-        s = getsizeof(o, default_size)
-
-        if verbose:
-            print(s, type(o), repr(o), file=stderr)
-
-        for typ, handler in all_handlers.items():
-            if isinstance(o, typ):
-                s += sum(map(sizeof, handler(o)))
-                break
-        return s
-
-    return sizeof(o)
-
-
-##### Example call #####
-
-if __name__ == '__main__':
-    d = dict(a=1, b=2, c=3, d=[4,5,6,7], e='a string of chars')
-    print(total_size(d, verbose=True))
-
-# %%
-a = [1]*100
-b = [2]*100
-c = [a,b]
-print(sys.getsizeof(c))
-print(total_size(c))
-
-# %%
-
-# %%
-
-# %% [markdown]
-# # ===== EDITING
-
-# %%
-
-# %% [markdown]
-# ### TO-DOs
-# * 타입 어노테이션?
-# * global(), vars(), locals(), dir() 차이?
-# * https://docs.python.org/3.8/tutorial/classes.html#class-objects
-
-# %%
-globals() is locals() # context 안이 아니라서
-# globals()
-# Return the dictionary containing the **current scope's global variables**.   
-#    NOTE: Updates to this dictionary *will* affect name lookups in the current
-#    global scope and vice-versa.
-
-# locals()
-#    Return a dictionary containing the current scope's local variables.    
-#    NOTE: Whether or not updates to this dictionary will affect name lookups in
-#    the local scope and vice-versa is *implementation dependent* and not
-#    covered by any backwards compatibility guarantees.
-
-
-# %%
-## Local namespace, Global namespace
-## 
-## REPL's global namespace
-## 
-## Python code has always these namespaces!!!
-## eval("   ", locals=, globals=) # DOESNOT WORK
-
-# %%
-
-# %%
-def f():
-    print(globals() is locals())
-    
-f()
-
-# %%
-help("locals")
-
-# %%
-eval("pow(2,4)", {}) # works fine because pow is builtins 
-eval("pow(2,4)", {"__builtins__":{}}) # error!!!
-eval("x+50", {}, {"x":x}) # locals() defined
-
-# %% [markdown]
-# # =====
-
-# %% [markdown]
-#
-
-# %% [markdown]
-# 파이썬의 변수는 동적 타입이다: 변수의 타입이 코드가 실행되는 도중에 바뀔 수 있다.
-#
-# 파이썬은 **객체** 지향(Object-Oriented) 언어이다. 숫자, 문자, 분석 결과 등은 모두 파이썬의 객체(Object)에 담을 수 있다. 
-# 사실 우리가 파이썬에서 다루는 거의 모든 것은 객체이다. 숫자 `3` 역시 객체이다.
-#
-# 다음의 코드를 보자. `type(3)`은 `int`이고, `int`에 대한 설명을 보면 `class int in module builtins`라고 나온다.
-# 숫자 `3`은 모듈 `builtins`에서 정의한 클래스 `int`의 인스턴스이다.[^intclass]
-#
-# [^intclass]: 내장 모듈이 있고 이름이 `builtins`라는 모듈이 따로 있다. 내장 모듈은 Python과 결합되어 따로 파일로 존재하지 않는 모듈을 의미하고 `builtins`라는 모듈은 그 중에서 파이썬을 실행할 때 자동으로 `import` 되는 모듈이다. 파이썬을 실행한 후 아무것도 하지 않고 `imported()`를 해보자. 그리고 `import sys`후 `sys.builtin_module_names`를 해보자.
-
-# %%
-type(3)
-
-# %%
-help("int")
-# Help on class int in module builtins:
-# 
-# class int(object)
-# |  int([x]) -> integer
-# |  int(x, base=10) -> integer
-
-# %% [markdown]
-# 보통 클래스는 대문자로 시작하는데 너무 자주 쓰이기 때문에 (또는 너무 기본적이기 때문에) 소문자로 쓰는 듯하다.
-#
-# 그런데 수 `3`과 같은 **불변(immutable) 객체**은 그냥 어떤 값으로 생각하고, 변수에 그 값이 저장된다고 생각해도 큰 문제가 없기 때문에 이 장에서는 변수가 어떤 값을 저장한다고 설명하겠다(불변 객체가 뭐냐고? 아직 모른다면 추후 설명되니 잠시 그런게 있다는 정도만 알아두자. 간단하게 여러 값과 함수가 모인 덩어리로 생각하자).
-#
-# 여기서는 수, 문자, 범주, 논리, 날짜 값에 대해서만 생각하겠다. 이들은 모두 변수에 담을 수 있다. 그리고 연산을 하거나, 수정/삭제할 수 있다.
-
-# %%
-
-# %% [markdown]
-# 변수는 그 내용이 변할 수 있기 때문에 변수이다. 파이썬에서 변수란 어떤 객체를 가리키는 지시자이다. 예를 들어 변수 `x=3`으로 변수 `x`에 `3`을 담았다고 말할 수 있겠지만, 좀더 엄밀하게 얘기하면 변수 `x`는 객체 `3`을 가리킨다. 하지만 `x=3`의 경우에는 변수 `x`에 `3`이 담겨 있다고 말해도 개념적으로 크게 다르지 않다. 이에 대한 자세한 내용은 **불변객체**와 **가변객체**에 대한 설명이 필요하다. 
-#
-# 일단 객체는 메모리 상의 한 주소에 저장된다. 문제는 (메모리 상의 어떤 위치에 저장되어 있는) 객체가 변할 수 있느냐이다. `x=3`을 하면 변수 `x`에 `3`을 넣는 것처럼 보이지만(이를 구현하는 컴퓨터의 자세한 메커니즘은 메모리의 특정한 장소를 `x`라고 부르고, 그 곳에 `3`을 넣는 것이다), 사실은 객체 `3`을 만들어 메모리에 저장한 후, 변수 `x`가 `3`을 가리키도록 한다. 그리고 이 `3`은 불변 객체이기 때문에 절대로 변하지 않는다. 만약 `x=4` 또는 `x=x+1`을 하면 메모리에 객체 `4`를 만들고, 변수 `x`가 `4`를 가리키도록 한다. 음... 뭐가 차이냐고? 리스트를 설명할 때 다시 불변 객체와 가변 객체에 대한 얘기를 해보겠다. 
-#
-
-# %%
-
-# %% [markdown]
-# 다음의 코드를 보자. 
-# e3는 리스트 `[1,2,3,4]`를 가리키고, `e1=e2=e3`를 통해 `e1`, `e2`는 `e3`와 동일한 객체를 가리키는 별칭이다.
-# `e1[0]=-1`로 리스트의 첫 번째 원소를 바꾸지만, 동일한 객체를 가리키는 `e2`, `e3`의 첫 번째 원소도 바뀐다. 
-
-# %%
-e1 = e2 = e3 = [1,2,3,4]
-e1[0] = -1
-print(e3) 
-
-# %% [markdown]
-# 이를 방지하기 위해서 **mutable**은 복사를 한다. 이때 얕은 복사(shallow copy)와 깊은 복사(deep dopy)의 구분을 유의하자. 얕은 복사는 가장 높은 수준에서만 복사를 한다. 깊은 복사는 가장 낮은 수준까지 복사한다.
-
-# %% [markdown]
-# #### 깊은 복사
-#
-# `copy.deepcopy()`를 사용하여 리스트를 깊게 복사할 경우, 그 결과로 새로운 리스트가 생성된다. 다음의 코드에서 `e1`를 깊게 복사하여 `e2`를 만들면(`e2=copy.deepcopy(e1)`) `e2`와 `e1`는 내용이 같지만 서로 다른 객체이며, 메모리의 다른 곳에 저장된다. `e1`이 가리키는 객체의 메모리 주소는 `id(e1)`으로 확인할 수 있다. 
-
-# %%
-import copy
-
-a = [1,2,3]
-b = ['a', 'b', 'c']
-e1 = [1,2,3, a,b]
-e2 = copy.deepcopy(e1)
-e1[0] = 100
-a[0] = 100
-print(e1)
-print(e2) 
-print(id(e1), id(e2))
-
-# %%
-copy.__file__ # 모듈 copy는 파이썬 표준 모듈의 일원이다.
-
-# %% [markdown]
-# #### 얕은 복사
-#
-# `.copy()` 또는 `copy.copy()`로 복사한 경우는 얕은 복사이다. 가장 높은 수준에서는 복사가 이루어지지만, 그 다음 단계에서는 동일한 객체를 가리킨다.
-#
-# 다음 코드에서 `e2=e1.copy()`를 하면 `e1`의 원소인 `[1,2,3,a,b]`가 복사되어 `e2`가 된다. 이때 `1`,`2`,`3`은 복사가 되고, `a`, `b`는 내용이 아니라 주소만 복사가 된다. `e2=e1`를 하면 `e1`의 주소가 `e2`의 주소가 된다는 것과 비교해보자. (조금 더 정확한 설명은 `[1,2,3,a,b]`를 얕은 복사를 하면 각 원소의 주소가 복사된다. 이때 `1`,`2`,`3`는 immutable(불변객체)이기 때문에 주소를 복사하는 것과 대상을 복사하는 것이 차이가 없다. 좀더 자세한 내용은 후에 설명된다.)
-#
-# 그래서 `e1`과 `e2`가 가리키는 내용의 메모리 주소는 다르지만, `e1[3]`과 `e2[3]`는 동일한 주소에 저장되어 있고, 하나를 바꾸면 다른 것도 바뀐다. (`e1[3]`은 `e1`의 4번째 원소를 가리킨다. 파이썬에서는 `e1[0]`이 `e1`의 첫 번째 원소이다. 하지만 `e1[0]`에서 `0`이기 때문에 0-번째 원소라고도 부른다. 이런 명명법을 사용할 경우(0번째부터 시작할 경우) `e1[3]`은 `e1`의 3-번째 원소이다. 다시 말해, `e1[3]`은 "**파이썬 방식으로**" 또는 "**0-번째부터 시작하면**" 3-번째 원소이다.)
-
-# %%
-a = [1,2,3]
-b = ['a', 'b', 'c']
-e1 = [1,2,3, a,b]
-e2 = e1.copy()
-e1[0] = 100
-a[0] = 100
-print(e1)
-print(e2) 
-print(id(e1), id(e2))
-print(id(e1[3]), id(e2[3]))
-
-# %%
-
-# %% [markdown]
-# 파이썬의 변수는 동적 타입이다: 변수의 타입이 코드가 실행되는 도중에 바뀔 수 있다.
-#
-# 파이썬은 **객체** 지향(Object-Oriented) 언어이다. 숫자, 문자, 분석 결과 등은 모두 파이썬의 객체(Object)에 담을 수 있다. 
-# 사실 우리가 파이썬에서 다루는 거의 모든 것은 객체이다. 숫자 `3` 역시 객체이다.
-#
-# 다음의 코드를 보자. `type(3)`은 `int`이고, `int`에 대한 설명을 보면 `class int in module builtins`라고 나온다.
-# 숫자 `3`은 모듈 `builtins`에서 정의한 클래스 `int`의 인스턴스이다.[^intclass]
-#
-# [^intclass]: 내장 모듈이 있고 이름이 `builtins`라는 모듈이 따로 있다. 내장 모듈은 Python과 결합되어 따로 파일로 존재하지 않는 모듈을 의미하고 `builtins`라는 모듈은 그 중에서 파이썬을 실행할 때 자동으로 `import` 되는 모듈이다. 파이썬을 실행한 후 아무것도 하지 않고 `imported()`를 해보자. 그리고 `import sys`후 `sys.builtin_module_names`를 해보자.
-
-# %%
-type(3)
-
-# %%
-help("int")
-# Help on class int in module builtins:
-# 
-# class int(object)
-# |  int([x]) -> integer
-# |  int(x, base=10) -> integer
-
-# %% [markdown]
-# 보통 클래스는 대문자로 시작하는데 너무 자주 쓰이기 때문에 (또는 너무 기본적이기 때문에) 소문자로 쓰는 듯하다.
-#
-# 그런데 수 `3`과 같은 **불변(immutable) 객체**은 그냥 어떤 값으로 생각하고, 변수에 그 값이 저장된다고 생각해도 큰 문제가 없기 때문에 이 장에서는 변수가 어떤 값을 저장한다고 설명하겠다(불변 객체가 뭐냐고? 아직 모른다면 추후 설명되니 잠시 그런게 있다는 정도만 알아두자. 간단하게 여러 값과 함수가 모인 덩어리로 생각하자).
-#
-# 여기서는 수, 문자, 범주, 논리, 날짜 값에 대해서만 생각하겠다. 이들은 모두 변수에 담을 수 있다. 그리고 연산을 하거나, 수정/삭제할 수 있다.
-
-# %%
-
-
-파이썬에서는 변수 이름에 알파벳, 숫자, _을 활용할 수 있다. 
-R과 달리 .(점)은 사용할 수 없다.
-Python에서 .(점)은 클래스(Class)의 속성(attribute)을 가리키거나 module의 변수, 함수를 지칭하기
-위해 사용된다(클래스, 속성은 후에 설명된다).
-변수 이름의 첫 글자는 숫자가 될 수 없다.
-
-간명한 변수 이름을 짓는 것은 언제나 쉽지 않다.
-파이썬에는 PEP(Python Enhancement Proposal)이라는 것이 있다.
-PEP에는 파이썬에 추가되면 좋을 기능, 파이썬를 사용하여 코드를 작성할 때 활용할 수 있는 표준 등이 제안된다.
-PEP에는 모듈 이름, 패키지 이름, 클래스 이름, 메쏘드 이름, 예외 이름, 함수 이름, 전역 상수 이름
-전역 변수이름, 지역변수 이름, 인스턴스 이름, 인스턴스 변수 이름, 함수 매개변수 이름에 대한
-표준 방식이 제안되기도 한다(예. PEP8의 Naming Convention). 
-
-미국의 메가 인터넷 회사인 구글은 독자적인 스타일 가이드(Google Python Style Guide)가 존재한다. 구체적으로 다음과 같다.
-
-```
-module_name, package_name, ClassName, method_name, ExceptionName,
-function_name, GLOBAL_CONSTANT_NAME, global_var_name, instance_var_name,
-function_parameter_name, local_var_name, CLASS_CONSTANT_NAME
-```
-복잡해 보이지만 크게 3종류가 있다. 
-
-1. 단어는 소문자로 시작하고 단어 사이는 밑줄로 연결하는 snake naming. 
-2. 단어의 첫 글자는 대문자로 시작하고 단어 사이는 그대로 붙여쓰는 Camel case.
-3. 모든 글자를 대문자로 쓰고 단어 사이는 밑줄로 연결하는 방법.
-
-3번은 상수에 쓰이고, 2번은 클래스 또는 예외 이름에 쓰인다. 그리고 1번은 그 밖의 거의 모든 객체(변수, 함수, 함수 매개변수, 모듈 등)에 쓰인다. 
-
-여기에 덧붙여 내부용 변수는 `_`로 시작한다.
-
-# %%
-이때 만약 **mutable**인 대상을 할당할 경우에는
-모든 변수가 모두 같은 내용을 항상 공유하므로 유의할 필요가 있다.
-(**mutable**(가변 객체)에 대해서는 후에 설명된다.)
-
-# %% [markdown]
-# 파이썬의 변수는 동적 타입이다: 변수의 타입이 코드가 실행되는 도중에 바뀔 수 있다.
-#
-# 파이썬은 **객체** 지향(Object-Oriented) 언어이다. 숫자, 문자, 분석 결과 등은 모두 파이썬의 객체(Object)에 담을 수 있다. 
-# 사실 우리가 파이썬에서 다루는 거의 모든 것은 객체이다. 숫자 `3` 역시 객체이다.
-#
-# 다음의 코드를 보자. `type(3)`은 `int`이고, `int`에 대한 설명을 보면 `class int in module builtins`라고 나온다.
-# 숫자 `3`은 모듈 `builtins`에서 정의한 클래스 `int`의 인스턴스이다.[^intclass]
-#
-# [^intclass]: 내장 모듈이 있고 이름이 `builtins`라는 모듈이 따로 있다. 내장 모듈은 Python과 결합되어 따로 파일로 존재하지 않는 모듈을 의미하고 `builtins`라는 모듈은 그 중에서 파이썬을 실행할 때 자동으로 `import` 되는 모듈이다. 파이썬을 실행한 후 아무것도 하지 않고 `imported()`를 해보자. 그리고 `import sys`후 `sys.builtin_module_names`를 해보자.
-
-# %%
-type(3)
-
-# %%
-help("int")
-# Help on class int in module builtins:
-# 
-# class int(object)
-# |  int([x]) -> integer
-# |  int(x, base=10) -> integer
-
-# %% [markdown]
-# 보통 클래스는 대문자로 시작하는데 너무 자주 쓰이기 때문에 (또는 너무 기본적이기 때문에) 소문자로 쓰는 듯하다.
-#
-# 그런데 수 `3`과 같은 **불변(immutable) 객체**은 그냥 어떤 값으로 생각하고, 변수에 그 값이 저장된다고 생각해도 큰 문제가 없기 때문에 이 장에서는 변수가 어떤 값을 저장한다고 설명하겠다(불변 객체가 뭐냐고? 아직 모른다면 추후 설명되니 잠시 그런게 있다는 정도만 알아두자. 간단하게 여러 값과 함수가 모인 덩어리로 생각하자).
-#
-# 여기서는 수, 문자, 범주, 논리, 날짜 값에 대해서만 생각하겠다. 이들은 모두 변수에 담을 수 있다. 그리고 연산을 하거나, 수정/삭제할 수 있다.
-
-# %%
-
-# %% [markdown]
-# 파이썬의 변수는 동적 타입이다: 변수의 타입이 코드가 실행되는 도중에 바뀔 수 있다.
-#
-# 파이썬은 **객체** 지향(Object-Oriented) 언어이다. 숫자, 문자, 분석 결과 등은 모두 파이썬의 객체(Object)에 담을 수 있다. 
-# 사실 우리가 파이썬에서 다루는 거의 모든 것은 객체이다. 숫자 `3` 역시 객체이다.
-#
-# 다음의 코드를 보자. `type(3)`은 `int`이고, `int`에 대한 설명을 보면 `class int in module builtins`라고 나온다.
-# 숫자 `3`은 모듈 `builtins`에서 정의한 클래스 `int`의 인스턴스이다.[^intclass]
-#
-# [^intclass]: 내장 모듈이 있고 이름이 `builtins`라는 모듈이 따로 있다. 내장 모듈은 Python과 결합되어 따로 파일로 존재하지 않는 모듈을 의미하고 `builtins`라는 모듈은 그 중에서 파이썬을 실행할 때 자동으로 `import` 되는 모듈이다. 파이썬을 실행한 후 아무것도 하지 않고 `imported()`를 해보자. 그리고 `import sys`후 `sys.builtin_module_names`를 해보자.
-
-# %%
-type(3)
-
-# %%
-help("int")
-# Help on class int in module builtins:
-# 
-# class int(object)
-# |  int([x]) -> integer
-# |  int(x, base=10) -> integer
-
-# %% [markdown]
-# 보통 클래스는 대문자로 시작하는데 너무 자주 쓰이기 때문에 (또는 너무 기본적이기 때문에) 소문자로 쓰는 듯하다.
-#
-# 그런데 수 `3`과 같은 **불변(immutable) 객체**은 그냥 어떤 값으로 생각하고, 변수에 그 값이 저장된다고 생각해도 큰 문제가 없기 때문에 이 장에서는 변수가 어떤 값을 저장한다고 설명하겠다(불변 객체가 뭐냐고? 아직 모른다면 추후 설명되니 잠시 그런게 있다는 정도만 알아두자. 간단하게 여러 값과 함수가 모인 덩어리로 생각하자).
-#
-# 여기서는 수, 문자, 범주, 논리, 날짜 값에 대해서만 생각하겠다. 이들은 모두 변수에 담을 수 있다. 그리고 연산을 하거나, 수정/삭제할 수 있다.
-
-# %%
-# str(a); str(b); str(c)
-# ls.str()
-def types_list(var):
-    res = []
-    for i,x in enumerate(var):
-        #print(x)
-        if isinstance(x, list) or isinstance(x, tuple):        
-            res.append(types_list(x))
-        else:
-            res.append((type(x), x))
-            # or res.append(type(x))
-    return res
-x = ['a', 3, ['b', 4, ['c', 5], [3,2]]]
-types_list(x)
-
-# %%
-
-# %%
-# rm(list=ls())
-for x in set(dir()) - set(dir(__builtins__)):
-    if not x.startswith('_') and x not in ['In', 'Out', 'quit', 'exit']:  # jupyter notebook
-        print('VARIABLE NAME = '+x)
-        print(eval(x))
-        print('-'*60)
-        
-# rm(list=ls())
-# https://stackoverflow.com/questions/51982189/equivalent-of-rs-ls-function-in-python-to-remove-all-created-objects
-for x in set(dir()) - set(dir(__builtins__)):
-    if not x.startswith('_') and x not in ['In', 'Out', 'quit', 'exit']:
-        print('deleting '+x)
-        exec('del '+x)
-del x
-
-# %%
-globals().keys()
-
-
-# %%
-
-# %%
-# https://stackoverflow.com/questions/15411967/how-can-i-check-if-code-is-executed-in-the-ipython-notebook
-def isnotebook():
-    try:
-        shell = get_ipython().__class__.__name__
-        if shell == 'ZMQInteractiveShell':
-            return True   # Jupyter notebook or qtconsole
-        elif shell == 'TerminalInteractiveShell':
-            return False  # Terminal running IPython
-        else:
-            return False  # Other type (?)
-    except NameError:
-        return False      # Probably standard Python interpreter
-
-
-# %%
-isnotebook()
-
-# %%
-
-# %%
-isinstance(3, (int, float, complex, bool, str))
-
-# %%
-a = 3; b = False;
-var_float = 4.5; var_complex = 3+4j
-s = "This is string"
-
-
-# %%
-def globals_user_type(dict_ = False, type_=(int, float, complex, bool, str)):    
-    varnames = globals().keys()
-    varnames2 = [varname for varname in varnames if not varname.startswith('_') and isinstance(globals()[varname], type_)]     
-    if dict_:
-        return {k:globals()[k] for k in varnames2}
-    else:
-        return varnames2
-globals_user_type()
-
-# %%
-import pickle
-with open('_Data.pkl', 'wb') as f:
-    pickle.dump(globals_user_type(dict_=True), f)
-
-# %%
-import pickle
-with open('_Data.pkl', 'rb') as f:
-    variables = pickle.load(f)
-    for variable in variables:
-        globals()[variable] = variables[variable]
-
-
-# %%
-def globals_user_type(dict_ = False, type_=(int, float, complex, bool, str)):    
-    varnames = globals().keys()
-    varnames2 = [varname for varname in varnames if not varname.startswith('_') and isinstance(globals()[varname], type_)]     
-    if dict_:
-        return {k:globals()[k] for k in varnames2}
-    else:
-        return varnames2
-globals_user_type()
-
-# %%
-help("dill.dumps")
-
-# %%
-
-# %%
-dill.dumps(globals_user(dict_=True), "_data.pkl")
-
-# %%
-import dill
-with open('_data.pkl', 'wb') as file:
-    dill.dumps(globals_user(dict_=True), file)
-
-# %%
-import dill
-
-# %%
-help(dill)
-
-
-# %%
-# 파이썬에서 함수 확인하기
-# 함수 정의 확인하기
-def ifelse(cond, x, y):
-    return np.where(cond, x, y)
-import numpy as np
-
-# %%
-expand_grid
-
-# %%
-from dill.source import getsource
-print(getsource(expand_grid)) # 현재 모듈에서 정의된 함수 : .py를 바로 실행하면 실행되는데, jupyter notebook에서는 안됨?
-
-# %%
-import inspect
-print(inspect.getsourcelines(expand_grid))  # python에서는 안 되는데 jupyter notebook에서 됨
-
-# %%
-print(inspect.getsource(np.sum)) # 다른 모듈에서 정의된 함수
-
-# %%
-
-# %%
-x = 3
-
-# %%
-del(x)
-
-
-# %%
-# #%conda install dill
-
-# %%
-def expand_grid(x):
-    print(x)
-    
-
-
-# %%
-help("dill.dumps")
-
-# %%
-globals_user(dict_=True).keys()
-
-# %%
-import datetime
-x = datetime.datetime.strptime("2021-01-04", "%Y-%m-%d")
-type(x)
-
-# %%
-import numpy as np
-np.array(["2021-01-04", "2022-04-01"], dtype="datetime64")
-
-# %%
-isinstance(x, datetime.datetime)
-
-# %%
-import pandas as pd
-x = pd.Categorical(["Right", "Middle", "Left", "Left", "Middle"])
-isinstance(x, pd.Categorical)
-
-# %%
-
-# %%
-# int, bool, float
-# str
-# pd.Categorical
-# datetime.datetime, datetime.date, datetime.time
-
-# %%
-dir()
-
-# %%
-# x1 = 23L; class(x1)
-# x2 = 22.3; class(x2)
-# x3 = "strings";class(x3)
-# x4 = factor(c("Hi", "Lo", "Lo")); class(x4)
-# x5 = as.Date("2020-01-01"); class(x5)
-# x6 = as.POSIXct("2020-01-01 12:11:11"); class(x6)
-## "POSIXct" %in% class(x6)
-# inherits(x6, "POSIXct")
-
-import datetime
-import pandas as pd
-x1 = 23; print(type(x1))
-x2 = 22.3; print(type(x2))
-x3 = "strings"; print(type(x3))
-x4 = pd.Categorical(['Hi', 'Lo', 'Lo']); print(type(x4))
-x5 = datetime.date(2020, 1, 1); print(type(x5))
-x6 = datetime.datetime(2020, 1, 1, 12, 11, 11); print(type(x6))
-
-# %%
-a = datetime.datetime.strptime('2022-03-01', "%Y-%m-%d") # 년(4자리)-달(2자리)-일(2자리)
-b = datetime.datetime.strptime('22:10:14', "%H:%M:%S")   # 시(2자리):분(2자리):초(2자리)
-c = datetime.datetime.strptime('2022-04-01 22:30:00', "%Y-%m-%d %H:%M:%S") 
-# 년(4자리)-달(2자리)-일(2자리) 시(2자리):분(2자리):초(2자리)
-
-# %% [markdown]
-# 파이썬에서 문자열을 **텍스트 시퀀스**라고 부르는 이유는 문자열을 각 원소가 문자인 배열처럼 취급하기 때문입니다. 
-
-# %%
-len(x3), x3[0], x3[1]
-
-# %% [markdown]
-# ### 타입 어노테이션
-#
-# 타입 어노테이션(Type Annotation)은 처리하는 데이터와 메서드에서 사용하는 데이터에 대한 타입 힌트를 주는 것이다(강제하는 것이 아니므로 주의를 요한다. 타입이 타입 어노테이션과 다르더라도 오류가 발생하진 않는다).
-#
-# 파이썬에서는 3.5버전 이후에 타입 어노테이션을 제공하고 있다. 
-
-# %%
-# 변수 선언 타입힌팅
-n: int = 1
-s: str = "문자선언"
-
-# 함수내 인풋 아웃풋에 대한 타입힌팅
-def function1(data: list) -> int:
-    # function1은 list를 받아 int를 반환
-    return data[0]
-
-# 내장 typing 모듈 사용시, list와 dictionary 등의 자료구조 내 데이터 타입도 힌트를 제공할 수 있다.
-import typing
-_dict: typing.Dict[str, int] = {'a': 1, 'b': 10}
-
-# %% [markdown]
-# 하지만, 단순하게 타입에 대한 힌트를 제공하는 것으로 타입힌트에 어긋나더라도 에러를 발생시키지는 않는다.
-
-# %%
-_dict['c'] = 'abc'
-_dict
-
-# %% [markdown]
-# 엄격하게 타입 어노테이션을 규제하고 싶다면, `mypy` 라이브러리를 통해 검사할 수 있다.
+# 문자(str)                   len(), .count(), .find(), index(), .join(), .upper(), .lower(), .split()
+# 날짜(datetime.date)         datetime.date.today(), -
+# 시간(datetime.time)         -
+# 날짜시간(datetime.datetime)  datetime.datetime.now(), -
+# 논리(bool)                  not, and, or
