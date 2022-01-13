@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
 # %% [markdown]
 # # pd.Series
+
+# %% [markdown]
+# 데이터 분석에서 여러 값을 저장하기 위해 가장 널리 사용되는 패키지는 `pandas`(판다스)이다. 데이터 분석을 위한 패키지에 왜 뜬금없이 판다라는 동물의 이름이 붙었는지는 알 수 없다.[^namepandas] 판다스에서 동일한 타입의 값을 저장하는 용도로 series를 사용한다. 판다스 시리즈(series)는 넘파이 배열을 기반으로 만들어진 객체로 많은 부분이 넘파이 1차원 배열과 비슷하다.
+#
+# [^namepandas]: 위키피디아에 따르면 **PAN**el **DA**ta에서 유래되었다고 한다.
+
+# %% [markdown]
 # ## Create
 
 # %% [markdown]
-# 내용 직접 입력하기
+# 넘파이 배열과 마찬가지로 내용을 적어서 판다스 시리즈를 생성할 수 있다. 이때 넘파이 배열과 다르게 **인덱스**(index)도 설정할 수 있는데, 인덱스는 원소의 **이름**과 같은 역할을 한다. 판다스 시리즈의 원소는 순번으로 지정할 수도 있고, 인덱스로 지정할 수도 있다. 마치 딕(dict)의 키(key)와 같은 역할을 한다. 그리고 키와 마찬가지로 문자열형뿐 아니라 정수형, 실수형 등도 가능하다. 시리즈는 리스트와 같이 **순번**이 있고, 딕와 같이 **키**도 있는 데이터 구조라고 생각할 수 있다. 인덱스를 지정할 때에는 원소와 같은 순서로 `index=`에 인덱스 값을 설정한다.
 
 # %%
 import pandas as pd
@@ -14,22 +21,96 @@ s = pd.Series([-0.4, 2.5, 1.41, 2.69],
               index = ['a', 'b', 'c', 'd'])
 
 # %% [markdown]
-# 판다스 시리즈의 출력 결과
+# 판다스 시리즈의 출력 결과를 확인해 보자. 인덱스와 원소가 나열되고 마지막에 원소의 `dtype`이 출력된다.
 
 # %%
 s
 
 # %% [markdown]
-# 판다스 시리즈의 두 속성(index와 values)
-# - index : 값의 위치를 순번이 아니라 이름으로 결정할 수 있다.
-# - values : 저장된 값
+# 사실 판다스 시리즈(series)는 대부분 넘파이 배열에 인덱스 등의 정보를 덧붙인 것이라 생각할 수 있다. 넘파이 배열은 수치 분석에 특화되었다고 하면, 판다스 시리즈는 데이터 분석을 위한 클래스로 판다스 시리즈는 범주형을 지원하고, 날짜 시간 dtype은 시간대(timezone)를 지원한다(넘파이 배열의 날짜시간형은 시간대를 지원하지 않는다).
 
 # %%
-print(s.index)
-print(s.values)
+import pandas as pd
+
+pd.Series(['a', 'b', 'a', 'c', 'b'], dtype='category')
+
+# %%
+from mypack.utils import ordered
+
+pd.Series(['a', 'b', 'a', 'c', 'b'], dtype=ordered(['a', 'b', 'c']))
 
 # %% [markdown]
-# 판다스 시리즈를 만드는 다른 방법들
+# 날짜시간형의 경우 다음과 같이 형식에 부합하는 문자열로 입력한다. 
+
+# %%
+x =pd.Series(['2021-10-26 00:00', '2022-10-27 12:30'], dtype='datetime64[ns]')
+x
+
+# %% [markdown]
+# 판다스 시리즈의 날짜시간형은 넘파이의 날짜시간형과 다르게 시간대(timezone)을 정해줄 수 있다. `.dt.tz_localize()`는 시간을 주어진 시간대로 변환한다. 이때 시간 자체는 변하지 않는다. 
+
+# %%
+y = x.dt.tz_localize('Asia/Seoul')
+y
+
+# %% [markdown]
+# `y`와 비교할 때 `x`는 시간대 정보가 없다. 이런 날짜시간형을 `timezone naive`, `y`처럼 시간대 정보가 포함된 경우는 `timezone aware`라고도 한다. 
+
+# %%
+x.dt.tz, y.dt.tz
+# ??? LMT+8:28:00???
+#https://inspireworld.tistory.com/61
+
+# %% [markdown]
+# time-aware 날짜시간형은 `dt.tz_convert()`로 시간대를 변경할 수 있다. 
+
+# %%
+z = y.dt.tz_convert('America/New_York')
+
+# %% [markdown]
+# 우리나라 서울 시간으로 2021년 10월 26일 자정은 미국 뉴욕의 10월 25일 오전 11시이다.
+
+# %% [markdown]
+# 마지막으로 `.dt.to_pydatetime()`은 pandas 날짜 시간형을 파이썬의 `datetime.datetime` 시간형으로 변환한다.
+
+# %%
+z.dt.to_pydatetime()
+
+# %% [markdown]
+# 날짜시간형에 대한 좀더 상세한 설명은 뒤 장을 확인하세요.
+
+# %%
+z.values # z의 날짜시간을 UTC로 가지고 있다.
+
+# %%
+z.dt.tz # ???
+
+# %%
+
+# %% [markdown]
+# 판다스 시리즈의 그 밖의 dtype은 다음과 같다.
+#
+# https://pandas.pydata.org/docs/user_guide/basics.html?highlight=dtype#basics-dtypes
+
+# %% [markdown]
+# 판단스 시리즈는 핵심은 두 속성에 담겨 있다. `.index`는 앞에서 설명한 인덱스로 딕의 키와 같은 역할을 한다. 그리고 `.values`는 시리즈의 각 원소 값을 저장하고 있다. 
+
+# %%
+s = pd.Series([-0.4, 2.5, 1.41, 2.69],
+              index = ['a', 'b', 'c', 'd'])
+
+# %%
+s.index
+
+# %%
+s.values
+
+# %% [markdown]
+# `s.values`의 `type()`을 구해보면 넘파이 배열이라는 것을 확인할 수 있다. 시리즈는 넘파이 배열을 기반으로 한다는 것은 넘파이 배열에 여러 가지 부가적인 속성(예. 인덱스)를 덧붙여 판다스 시리즈를 만든다고 이해할 수 있다.
+#
+
+# %% [markdown]
+# ### 판다스 시리즈를 만드는 다른 방법들
 
 # %%
 ## 다른 판다스 시리즈의 내용
@@ -42,7 +123,7 @@ s2p = s[2:4]  # copy
 s3p = s[2:4].view()  # view
 
 ## copy는 동일한 복사본을 만들고, view는 동일한 대상을 가리키는 다른 이름을 만든다.
-## copy의 경우 수정을 해도 원본이 그대로이지만, view는 수정을 하면, 원본에도 반영된다(어짜피 같은 거라 원본이라는 말도 어폐가 있지만)
+## copy의 경우 수정을 해도 원본이 그대로이지만, view는 수정을 하면, 원본에도 반영된다.
 s3p.iloc[0] = -14000 # s도 바뀐다
 s3p[0] = -999 
 s3p.iloc[0] = -99999 # s는 변하지 않는다. 
@@ -68,7 +149,39 @@ pd.concat([s,s2])
 # 위치(순번), 인덱스(이름), 참/거짓
 s[1]
 s['b']
-s[[False, True, False, False]].squeeze()
+s[[False, True, False, False]].squeeze() 
+# 여기서 .squeeze()는 원소가 하나짜리 판다스 시리즈를 
+# 파이썬의 내장 타입으로 변환한다.
+# 예. pd.Series([2.5]).squeeze()
+#     pd.Series([True]).squeeze()
+#     pd.Series([3]).squeeze()
+#     pd.Series(['One']).squeeze()
+#     pd.Series(['2021-01-04'], dtype='datetime').squeeze()
+
+# %% [markdown]
+# #### 참고
+#
+# 다음은 기본적인 dtype에 대해 `.squeeze()` 결과를 보여준다.
+
+# %%
+pd.Series([2.5]).squeeze()
+
+# %%
+pd.Series([True]).squeeze()
+
+# %%
+pd.Series([3]).squeeze()
+
+# %%
+pd.Series(['One']).squeeze()
+
+# %%
+pd.Series(['2021-01-04'], dtype='datetime64[ns]').squeeze()
+
+# %%
+pd.Series(['a'], dtype='category').squeeze()
+
+# %%
 
 # %% [markdown]
 # ### 위치(순번) 사용하기
@@ -103,6 +216,9 @@ s.iat[1] # for single item
 # %%
 x = 3; print(s.iat[x])
 
+# %% [markdown]
+# 만약 하나의 원소가 아니라면 ValueError가 발생한다.
+
 # %%
 x = [1,3]; print(s.iat[x])
 
@@ -129,7 +245,7 @@ s.loc['a':'d':2] # step까지 사용하기
 s.loc[['b', 'd']] # 여러 값(Fancy Indexing)
 
 # %% [markdown]
-# `.at[]`은 `.iloc[]`에서 `.iat[]`의 의미와 비슷하다. 결과는 항상 값이어야 한다.
+# `.at[]`은 `.iloc[]`에서 `.iat[]`의 의미와 비슷하다. 결과는 항상 하나의 값(스칼라)이어야 한다.
 
 # %%
 x = 'b'
@@ -140,10 +256,29 @@ x = ['b', 'c']
 s.at[x]
 
 # %% [markdown]
+# 사실 경우에 따라 시리즈의 인덱스는 중복될 수도 있다.
+
+# %%
+s = pd.Series([1,2,3,4,5], index = ['a', 'b', 'c', 'b', 'a'])
+
+# %%
+s.at['c']
+
+# %%
+s.at['b']
+
+# %% [markdown]
+# 만약 인덱스가 중복되는 경우가 있다면 `.at[]`의 결과는 시리즈가 되므로 주의해야 한다.
+
+# %% [markdown]
 # ### 참/거짓 사용하기
 
 # %% [markdown]
 # 시리즈와 같은 길이의 참/거짓 리스트를 사용하여 원하는 값의 위치를 정해줄 수 있다.
+
+# %%
+s = pd.Series([-0.4, 2.5, -1.41, 2.69],
+              index = ['a', 'b', 'c', 'd'])
 
 # %%
 s[[False, False, False, True]]
@@ -167,6 +302,7 @@ x = [True, True, False, True]
 sum(x) # 참-거짓으로 구성된 리스트에서 참의 갯수는 sum()함수로 구할 수 있다
 
 # %%
+s.loc[x]
 s.loc[[True, True, False, True]]
 
 # %% [markdown]
@@ -189,7 +325,7 @@ s.loc[s > 0]
 # %% [markdown]
 # 여기서 `s>0`의 결과는 판다스 시리즈이다. 따라서 인덱스와 값(참/거짓)을 동시에 가지고 있다.
 # `s.loc[]`은 원래 인덱스를 사용하는 방식이다.
-# 만약 `s.loc[]` 안에 판다스 시리즈가 사용될 경우, 인덱스의 유무로를 참/거짓으로 결정한다.
+# 만약 `s.loc[]` 안에 판다스 시리즈가 사용될 경우, 인덱스와 참/거짓을 모두 활용하여 원소를 뽑아낸다. 다음을 보자.
 
 # %%
 x = pd.Series([False, True, False, True])
@@ -200,11 +336,75 @@ s.loc[x]
 # %% [markdown]
 # **왜 `x`의 값은 `s>0`과 동일함에서도 `s[x]`와 `s[s>0]`의 결과가 다른가?**
 
+# %%
+x
+
+# %%
+s
+
+# %% [markdown]
+# `x`의 인덱스와 `s`의 인덱스가 다르다는 점을 주목하자. `x`의 인덱스를 `s`의 인덱스와 비슷하게 만들어보자.
+
+# %%
+x = pd.Series([True, False, False, False], 
+              index = ['a', 'b', 'c', 'd'])
+s.loc[x]
+
+# %%
+x = pd.Series([True, False, False, False], 
+              index = ['b', 'c', 'd', 'a'])
+s.loc[x]
+
+# %% [markdown]
+# 진리값(`True`)은 해당 원소를 포함해야 함을 나타낸다. 그런데 어떤 원소가 포함될 것인가? 인덱스가 없는 넘파이 배열의 경우에는 `True`의 순번으로 원소를 지정하지만 논리형의 판다스 시리즈를 사용할 경우에는 인덱스와 참/거짓을 모두 고려하여 포함된 원소를 선택한다. 만약 논리형 시리즈의 인덱스가 원소를 선택하려면 시리즈의 인덱스와 일치하지 않는다면 IndexingError가 발생한다.
+
+# %%
+x = pd.Series([False, False, False], 
+              index = ['b', 'c', 'd'])
+s.loc[x]
+
+# %% [markdown]
+# 만약 원소를 선택하려는 판다스 시리즈에 중복되는 인덱스가 있다면 해당 인덱스의 모든 원소가 선택된다.
+
+# %%
+s = pd.Series([-0.4, 2.5, -1.41, 2.69],
+              index = ['a', 'b', 'c', 'b'])
+x = pd.Series([False, True, False], 
+             index = ['a', 'b', 'c'])
+
+# %%
+s.loc[x]
+
+# %% [markdown]
+# 만약 `.iloc[]`을 사용한다면 순번으로 사용되는 시리즈의 인덱스는 무시된다.
+
+# %%
+x = pd.Series([0,2],
+              index = ['a', 'b'])
+
+# %%
+s.iloc[x] 
+
+# %%
+그래서 참거짓을 사용
+
+# %%
+s
+
+# %%
+s.isin(['a', 'b'])
+
+# %%
+s[~s.index.isin(['a', 'b'])]
+
+# %%
+s = pd.Series()
+
 # %% [markdown]
 # #### 참/거짓을 사용하는 예 : 특정 인덱스 제외하기
 
 # %%
-s[~s.isin(['a', 'b'])] # 인덱스가 'a', 'b'인 경우를 제외한 나머지
+s[~s.index.isin(['a', 'b'])] # 인덱스가 'a', 'b'인 경우를 제외한 나머지
 
 # %% [markdown]
 # ### `.loc` 또는 `.iloc` 없이 참조하는 방식은 읽기 어려울 수 있다.
@@ -468,6 +668,16 @@ s.drop(s.index[[True,False,False, True]])
 # ### 추가될 내용
 
 # %% [markdown]
+# 판다스 시리즈에서 CREAD 표로 정리하기
+
+# %%
+
+# %%
+
+# %% [markdown]
+# ### 추가될 내용 2
+
+# %% [markdown]
 # `np.nan`, `pd.NA` 등 결측치 관련 내용이 추가되어야 할 듯
 # `np.nan`은 float에서 NA, `pd.NA`은 dtype='Int64'(여기서 I는 대문자이다. pd.__version__ >= 1.0.0)
 
@@ -531,7 +741,29 @@ import numpy as np
 np.array([10000], dtype='float16') == np.array([10001], dtype='float16')
 
 # %% [markdown]
-# 판다스에서 `pd.NA`와 같이 int 전용의 결측값(missing value)를 만든 이유도 비슷하다(ref?)
+# ### `pd.NA`
+#
+# 판다스가 기반인 넘파이에는 정수형에 결측값이 없었다. 그래서 결측값(`np.nan`)이 포함된 경우에 dtype은 실수형으로 자동 변환된다.
+# 문제는 위에서 보듯이 `float`의 정밀도(precision)가 수의 크기가 커짐에 따라 낮아지므로 서로 다른 정수를 같다고 판단하는 문제가 생긴다는 것이다. 
+#
+# 그래서 판다스에서는 `pd.NA`라는 정수형 전용의 결측값(missing value)를 만든다. 하지만 기존의 `int64`에 이 값을 포함시키려면 하위 버전의 판다스와 호환성에 문제가 생기기 때문에 새로운 dtype으로 `Int64`을 만든 것이다. 다음을 보자.
+
+# %%
+import pandas as pd
+ser = pd.Series([1,2,3,pd.NA], dtype='Int16')
+
+# %%
+ser
+
+# %%
+ser.isna()
+
+# %% [markdown]
+# 그리고 다음과 같이 `dtype=`을 생략했을 때의 dtype은 `dtype('O')`가 되는데 이 역시 하위 호환성 때문이라고 한다. 
+
+# %%
+ser = pd.Series([1,2,3,pd.NA])
+ser.dtype
 
 # %% [markdown]
 # `int`의 경우, 파이썬은 메모리가 허용하는 한 **모든 수를 정확하게 저장한다**. 이런 이유로 파이썬에서 `int`의 연산은 느리고, 넘파이 배열은 저장가능한 크기가 한정되어 있지만 빠르다.
@@ -541,5 +773,11 @@ np.array([10000], dtype='float16') == np.array([10001], dtype='float16')
 
 # %% [markdown]
 # 이런 **예외적인 상황**(?)이 문제가 됐던 경우를 알아보자. 인스타그램의 post id를 다룰 때였다. 인스타그램의 post id는 정수형이었던 것으로 기억한다. 정수형이지만 매우 큰 값이었기 때문에, 그리고 NA가 포함되어 있었기 때문에, 판다스는 `float`로 변환을 하였고, 원래는 서로 다른 post id가 같은 값으로 인식되는 문제가 발생되었다. 그래서 문자형으로 바꿔 보았는데, 문자형은 처리 속도가 매우 느렸다. 그때에는 결국 R의 데이터 테이블(`data.table`)을 사용하여 해결하였다. 만약 파이썬에서 해결을 한다면, post id를 두 개의 정수로 쪼개서 사용하는 방법을 시도해 볼 것 같다. 하나의 문자열을 두 개로 나눈 과정에서 어느 정도 시간이 걸리겠지만, 그 다음부터 정수를 사용하여 post id를 비교하므로 시간이 많이 걸리지 않을 것이다.
+
+# %%
+
+# %%
+
+# %%
 
 # %%
