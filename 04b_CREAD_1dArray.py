@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+# %%
+## TO-DOs
+
+* duck-typing
+* 
+
 # %% [markdown]
 # # 1차원 넘파이 배열
 
@@ -378,7 +384,7 @@ np.linspace(1,10,5,endpoint=False, retstep=True)
 # | 원소                |     Python    |     R      |
 # |:-----------------|:-----------------|:-----------------
 # |1부터 5까지(간격 2)        |  `np.arange(0,(5-1)//2+1)*2+1`  | `seq(from=1,to=5,by=2)`  |
-# |1부터 7까지(갯수 3)        |  `np.linspace(1,7,3,endpoints=True)`  | `seq(from=1,to=7,length.out=3)`  |
+# |1부터 7까지(갯수 3)        |  `np.linspace(1,7,3,endpoint=True)`  | `seq(from=1,to=7,length.out=3)`  |
 # |2을 3번 반복        |  `np.ones(3)*2`  | `rep(2,3)`  |
 # |1,2을 3번 반복        |  * rep_times | `rep(1:2,times=3)`  |
 # |1,2를 길이 5까지 계속 반복 |  * rep_length_out  | `rep(1:2, length.out=5)` |
