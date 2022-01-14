@@ -579,6 +579,7 @@ pd.DataFrame({'v':v}).describe()
 # %%
 import matplotlib.pyplot as plt
 plt.hist(v);
+# plt.show() # jupyter notebook이 아니라면 plt.show()로 플롯을 출력한다
 
 # %% [markdown]
 # 다음은 무작위 문자열 배열의 경우이다.
