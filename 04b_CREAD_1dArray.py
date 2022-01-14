@@ -99,6 +99,29 @@ isinstance(arr, np.ndarray)
 # * [types](https://numpy.org/doc/stable/user/basics.types.html)
 # * [sized-aliases](https://numpy.org/doc/stable/reference/arrays.scalars.html#sized-aliases)
 
+# %% [markdown]
+# |Type	|Name	|Bytes	|Description|
+# |:-----|:-----|:-----|:-----|
+# |`bool`	|`"b"`	|1	|논리값(`True`/`False`; 바이트로 저장됨) 
+# |`int`	|`"l"`	|4-8	| 운영체제 기본 정수형(보통 `int32` 또는 `int64`)
+# |`intp`	|`"p"`	|4-8	| 색인용 정수형
+# |`int8`	|`"i1"`	|1	| 1 바이트 정수형(-128 ~ 127)
+# |`int16`	|`"i2"`	|2	| 2 바이트 정수형 (-32768 ~ 32767)
+# |`int32`	|`"i4"`	|4	| 4 바이트 정수형 (-2147483648 ~ 2147483647)
+# |`int64`	|`"i8"`	|8	| 8 바이트 정수형 (-9223372036854775808 ~ 9223372036854775807)
+# |`uint8`	|`"u1"`	|1	| 1 바이트 양정수형 (0 ~ 255)
+# |`uint16`	|`"u2"`	|2	| 2 바이트 양정수형 (0 ~ 65535)
+# |`uint32`	|`"u4"`	|4	| 4 바이트 양정수형 (0 ~ 4294967295)
+# |`uint64`	|`"u8"`	|8	| 8 바이트 양정수형 (0 ~ 18446744073709551615)
+# |`float`	|`"f8"`	|8	| 8 바이트 실수형
+# |`float16`	|`"f2"`	|2	| 반정밀도 실수형[총 16 비트: 부호(1), 지수부(5), 가수부(10)]
+# |`float32`	|`"f"`	|4	| 단정밀도 실수형[총 32 비트: 부호(1), 지수부(8), 가수부(23)]
+# |`float64`	|`"d"`	|8	| 배정밀도 실수형[총 64 비트: 부호(1), 지수부(11), 가수부(52)]
+# |`float128`	|
+# |`complex`	|`"c16"`	|16	|16바이트 복소수형
+# |`complex64`	|`"c8"`	|8	|8바이트 복소수형(실수부4, 허수부4)
+# |`complex128`	|`"c16"`	|16	|16바이트 복소수형(실수부8, 허수부8)
+
 # %%
 arr = np.array([1,2,3], dtype=np.int64)
 arr[0] = np.iinfo(np.int32).max + 1
@@ -624,7 +647,7 @@ print(arr2)
 #
 # 예를 들어 `arr5 = arr1.view()`를 하면 내용이 그대로인 배열이고, `arr5=arr1.view(dtype='f')`를 하면 `arr1`이 저장되어 있는 메모리의 이진수들을 float(실수형)으로 해석한다. 
 #
-# `arr6 = arr1[:]`은 `arr6=arr1`과 비슷하지만 
+# `arr6 = arr1[:]`은 `arr6=arr1`과 거의 비슷하다. 둘 다 동일한 원소를 가지고 있으니까. 하지만 `arr6`는 `arr1`의 뷰라는 점에서 다르다. 
 #    
 
 # %%
@@ -635,135 +658,37 @@ arr5
 arr6 = arr1[:]
 
 # %%
-arr6 is arr1
+arr1 == arr6 
 
-# %%
-arr6
-
-# %%
-arr6.base
-
-# %%
-a = arr1[:]
-b = arr1
-
-# %%
-a.base
-
-# %%
-b.base
-
-# %%
-np.info(b)
-
-
-# %%
-np.info(a)
+# %% [markdown]
+# 여기서 `==`는 벡터화된 비교 연산으로 각 원소의 같고 다름을 판단한다. 원소가 모두 `True`라는 것은 `arr1`과 `arr6`의 대응하는 원소가 모두 같음을 나타낸다. 그렇지만 완전히 같지는 않은데, 다음에서 `arr2 = arr1`의 `arr2`와 `arr6 = arr1[:]`의 `arr6`을 비교해 보면 다음과 같다.
 
 # %%
 arr2 = arr1
+arr6 = arr1[:]
 
 # %%
-arr5 = arr1.view()
-
-# %%
-id(arr5)
-
-# %%
-id(arr1)
-
-# %%
-arr1
-
-# %%
-arr1.base
-
-# %%
-arr5.base
-
-# %%
-np.info(arr2)
-
-# %%
-np.info(arr5)
-
-# %%
-arr2.info()
-
-# %%
-help(arr1.view)
-
-# %%
+arr2 is arr1, arr6 is arr1
 
 # %% [markdown]
-# 이미 존재하는 배열에서 원소의 위치를 지정하여 새로운 배열을 생성하는 방법에 대해 알아본다. 
-# 이때 내용을 완전히 복사할 수도 있고, 그냥 내용을 확인할 수 있는 변수를 만들 수도 있다. 
+# `arr6`은 `arr1`과 같은 객체는 아니지만 내용은 같다. 일반적으로 넘파이 배열의 뷰란 메모리에 저장된 내용을 다른 방식으로 해석하는 객체를 의미한다. 뷰를 생성하는 방식은 다음의 두 가지 방식이 있다.
 #
-#
+# ```
+# arr6 = arr1[:]
+# arr6 = arr1.view()
+# ```
 
 # %% [markdown]
-#
+# 넘파이 배열에서 어떤 객체가 뷰(view)인지 아닌지는 `.base`로 확인할 수 있다. `.base`는 해당 뷰의 기초 배열을 가리킨다. 다음을 보자.
+
+# %%
+arr2.base is None, arr6.base is None
 
 # %% [markdown]
-#
+# `arr6 = arr2[:]` 또는 `arr6 = arr2.view()`를 하면 `arr6`는 `arr2`의 내용을 기초로 한 뷰가 되고, `arr6.base`는 `arr2`을 가리키게 된다. `arr2`는 뷰가 아니기 때문에 `arr2.base`는 `None`이다.
 
 # %% [markdown]
-# #### 다른 배열에서
-#
-# * copy
-# * view
-
-# %%
-# # copy
-b = a[:]
-a is b
-
-# %%
-b = a.copy()
-a is b
-
-# %%
-# view
-b = a
-a is b
-
-# %% [markdown]
-# #### 다른배열의 일부
-
-# %%
-# view
-a = np.array([0,1,2,3,4,5,6,7,8])
-b = a[2:5]
-print(a)
-print(b)
-
-# %%
-b[0] = 0
-print(a)
-print(b)
-
-# %%
-# copy1
-b = a[2:5].copy()
-print(a)
-print(b)
-
-# %%
-b[0] = 10
-print(a)
-print(b)
-
-# %%
-# copy2
-b = a[[0,1,4]]
-b
-
-# %%
-b[0] = -1
-print(a)
-print(b)
-
-# %%
+# 뷰는 어떤 용도가 있을까? 이에 대해서는 후에 설명하겠다.
 
 # %% [markdown]
 # ### Read
@@ -771,38 +696,90 @@ print(b)
 # 1차원 넘파이 배열의 원소는 순번(위치)을 정해서 읽는다.
 
 # %%
+a = np.array([0,1,2,3,4,5,6,7])
 a[3]        # 원소 하나 : a의 3-번째 원소
 a[:5:2]     # 연속된 원소 slice 
 a[[3,4,-1]] # 임의의 원소 Fancy-index : a의 3,4-번째와 마지막 원소
+
+# %% [markdown]
+# 원소 하나를 읽거나 slice를 사용하는 방법과 의미는 리스트의 경우와 거의 동일하다. 넘파이 배열은 Fancy-indexing이라는 방법도 지원한다. 이는 여러 원소를 참조하는 방법으로 원소의 순번을 리스트로 적어주기만 하면 된다. 순번은 중복을 해도 된다.
+
+# %%
+a[[0,0,1,4]]
+
+# %% [markdown]
+# Fancy-indexing으로 원소를 지정하는 방법은 참, 거짓을 사용할 수도 있다. 예를 들어 `[True, False, False]`는 총 3개의 원소 중 첫 번째 원소를, `[False, True, False, True]`는 총 4개의 원소 중 2번째와 4번째 원소를 가리킨다.
+
+# %%
+# 총 8개의 원소 중 0, 1, 4번째 원소
+a[[True, True, False, False, True, False, False, False]]
+
+# %% [markdown]
+# `np.nozero()`는 주어진 배열에서 원소가 `True`인 순번을 반환한다(컴퓨터는 내부적으로 `True`는 1, `False`는 0으로 저장한다). `np.nozero()`를 통해 위의 진리값 리스트에서 참의 위치를 확인하면 다음과 같다.
+
+# %%
+np.nonzero([True, True, False, False, True, False, False, False])
+
+# %% [markdown]
+# #### slice vs fancy-index
+
+# %% [markdown]
+# `a[1:4]`와 `a[[1,2,3]]`은 그 내용에서 차이가 없어 보인다.
+
+# %%
+a[1:4], a[[1,2,3]]
+
+# %% [markdown]
+# 하지만 이 차이에 대한 고려없이 다른 변수에 할당하면 큰 차이가 생긴다. 다음을 보자.
+
+# %%
+b1 = a[1:4]
+b2 = a[[1,2,3]]
+
+# %%
+b1[0] = 10
+a, b1, b2
+
+# %%
+b2[0] = 100
+a, b1, b2
+
+# %% [markdown]
+# 위의 결과를 보면 `b1[0]=10`의 결과는 변수 `a`까지 수정한다. 반면 `b2[0]=100`의 결과를 보면 `b2`는 다른 변수와 구분된다.
+
+# %% [markdown]
+# 이런 결과는 slice를 사용한 할당과 fancy-index를 할당한 모든 변수에 적용된다. 앞에서 설명한 복사와 뷰의 차이를 봤었다. `a[1:4]`는 뷰를 생성하고, `a[[1,2,3]]`은 내용을 복사한다. 
 
 # %% [markdown]
 # ### Edit
 #
 # 원소를 수정하는 방법은 원소를 읽는 방법과 비슷하다.
 # 원소를 읽은 후 그 원소들을 등호의 오른쪽 값으로 바꾼다고 생각할 수 있다.
-# 여러 원소가 모두 같은 값이라면, 값을 하나만 써도 된다.
+# 여러 원소가 모두 같은 값이라면, 값을 하나만 써도 된다. 
 
 # %%
 a = np.array([0,1,2,3,4,5,6])
 
 a[1] = 99
 a[:5:2] = [0,0,0]  # 0,2,4-번째
-a[[3,4,-1]] = [-10,-10,-10] # 3,4,마지막-번째
+# a[:5:2] = 0으로 써도 된다.
+a[[3,-2]] = [-10,-10] # 3, (len(a)-2) - 번째
+# a[[3,-2]] = -10로 써도 된다.
 print(a)
 
 # %%
 a[1] = -1
-a[:5:2] = -1  # 0,2,4-번째
-a[[3,4,-1]] = -1 # 3,4,마지막-번째
+a[:5:2] = -2  # 0,2,4-번째
+a[[3,4,-1]] = -3 # 3,4,마지막-번째
 print(a)
 
-# %%
-만약 원소의 순서를 거꾸로 바꾸고 싶다면, 
+# %% [markdown]
+# 만약 원소의 순서를 거꾸로 바꾸고 싶다면, slice의 step을 음수로 할 수 있다.
 
 # %%
-a[::-1]
-
-# %%
+a[:2:-1] = [100,101,102,103]
+a[[2,1,0]] = [104,105,106]
+print(a)
 
 # %% [markdown]
 # ### Add
@@ -824,9 +801,64 @@ a2 = np.array([10,9,8,7,6])
 a3 = np.array([-1,-2,-3,-4,-5])
 np.concatenate([a1, a2, a3])
 
+# %% [markdown]
+# `np.insert()`를 이용하면 주어진 배열의 중간에 다른 배열을 끼어 넣을 수 있다. 원소 하나를 끼어 넣으려면 원소 하나짜리 배열 또는 리스트를 만들면 된다.
+
 # %%
 np.insert(a2, 1, [0,0]) # 1번째 원소 앞에
 
+
+# %% [markdown]
+# 이때 기존의 배열과 추가하려는 배열의 `dtype`에 유의하자.
+
+# %%
+a1 = np.array([0,1,2,3,4], dtype="int8")
+a2 = np.array([5,6,7], dtype="int16")
+np.append(a1, a2)
+
+# %%
+a1 = np.array([0,1,2,3,4], dtype="int8")
+a2 = np.array([5,6,7], dtype="float64")
+np.append(a1, a2)
+
+# %%
+a1 = np.array([0,1,2,3,4], dtype="float64")
+a2 = np.array(["f", "g", "h"], dtype="<U3")
+np.append(a1, a2)
+
+# %%
+a1 = np.array([0,1,2,3,4], dtype="int8")
+a2 = np.array([5,6,7], dtype="int16")
+np.concatenate([a1, a2])
+
+# %%
+a1 = np.array([0,1,2,3,4], dtype="int8")
+a2 = np.array([5,6,7], dtype="float64")
+np.concatenate([a1, a2])
+
+# %%
+a1 = np.array([0,1,2,3,4], dtype="float64")
+a2 = np.array(["f", "g", "h"], dtype="<U3")
+np.concatenate([a1, a2])
+
+# %% [markdown]
+# 좀 더 표현력이 큰 `dtype`으로 변환이 된다.
+
+# %% [markdown]
+# 하지만 모든 함수가 항상 이런 방식을 따르는 것은 아니므로 유의할 필요가 있다. `np.insert()`의 경우를 확인해보자.
+
+# %%
+a1 = np.array([0,1,2,3,4], dtype="int8")
+a2 = np.array([5,6,7], dtype="float64")
+#a2 = np.array(['a', 'b', 'c'])
+np.insert(a1, 1, a2) 
+
+# %%
+a1 = np.array([0,1,2,3,4], dtype="float64")
+a2 = np.array(["f", "g", "h"], dtype="<U3")
+np.insert(a1, 1, a2) 
+
+# %%
 
 # %% [markdown]
 # ### Delete
@@ -870,8 +902,11 @@ x = np.arange(1, 101)
 y = x[20:31].copy()
 y[::2] = 0
 y[[5, 7]] = 50
-np.concatenate([x, np.delete(y, [0, 2, 4, 6, 8, 10])])
+np.concatenate([x, np.delete(y, np.nonzero(y==0)[0])])
 np.concatenate([x, y[1::2]])
+
+# %% [markdown]
+# `np.nonzero(y==0)[0]`는 넘파이 1차원 배열 `y`에서 원소가 `0`인 위치를 반환한다.
 
 # %% [markdown]
 # ## _READ(원소의 내용)
@@ -1268,3 +1303,391 @@ len(utils.lsf(numpy.tests)), len(utils.lsf(numpy.typing)) # tests는 유닛 테�
 
 # %%
 from mypack import utils
+
+# %%
+
+# %%
+
+# %%
+
+# %% [markdown]
+# `arr2`는 `arr1`의 별칭(alias)이고, `arr6`는 `arr1`의 뷰(view)이다. 별칭이란 완전히 동일한 객체이고 이름만 다르다는 의미이다. 넘파이 뷰는 동일한 객체를 가르키지만 몇 가지 다른 방식으로 일부 또는 전체의 데이터를 해석한다는 의미이다. 예를 들어 이진수 `0b0010001100000001`를 예로 들어보자. 이를 8비트 정수형으로 인식하면 `35`와 `1`이 된다. 하지만 16비트 정수형으로 해석하면 `8961`로 전혀 다르게 해석된다(`0b00100011`과 `0b00000001`을 콘솔에 입력해보자).
+#
+# 다른 예를 들어 보자. 메모리에 8비트씩 끊어서 `0b00000001`, `0b00000010`,`0b00000100`,`0b000010000`가 저장되어 있을 때 
+
+# %%
+0b0010001100000001
+
+
+# %%
+np.int64(3)
+
+# %%
+
+# %%
+arr7 = arr1.view()
+
+# %%
+arr8 = arr1.view()
+
+# %%
+arr9 = arr1[::2]
+
+# %%
+arr9
+
+# %%
+np.info(arr9)
+
+# %%
+dir(arr7)
+
+# %%
+np.info(arr7)
+
+# %%
+np.info(arr8)
+
+# %%
+arr8 = arr7
+
+# %%
+arr7 is arr8
+
+# %%
+arr2 is arr1
+
+# %%
+arr6.base
+
+# %%
+a = arr1[:]
+b = arr1
+
+# %%
+a.base
+
+# %%
+b.base
+
+# %%
+np.info(b)
+
+
+# %%
+np.info(a)
+
+# %%
+arr2 = arr1
+
+# %%
+arr5 = arr1.view()
+
+# %%
+id(arr5)
+
+# %%
+id(arr1)
+
+# %%
+arr1
+
+# %%
+arr1.base
+
+# %%
+arr5.base
+
+# %%
+np.info(arr2)
+
+# %%
+np.info(arr5)
+
+# %%
+arr2.info()
+
+# %%
+help(arr1.view)
+
+# %%
+
+# %% [markdown]
+# 이미 존재하는 배열에서 원소의 위치를 지정하여 새로운 배열을 생성하는 방법에 대해 알아본다. 
+# 이때 내용을 완전히 복사할 수도 있고, 그냥 내용을 확인할 수 있는 변수를 만들 수도 있다. 
+#
+#
+
+# %% [markdown]
+#
+
+# %% [markdown]
+#
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %% [markdown]
+# #### 다른 배열에서
+#
+# * copy
+# * view
+
+# %%
+import numpy as np
+a = np.array([1,2,3,4])
+
+# %%
+a
+
+# %%
+# view
+b = a[:]
+a is b
+
+# a[:] 표현은 헷갈릴 수 있다.
+# 리스트에서 lstB = lstA[:]를 하면 리스트가 복사된다. (lstB = lstA는 동일한 리스트를 가리킨다.)
+# numpy 배열에서 arrB = arrA[:]를 하면 arrA의 view가 생성된다. numpy 배열에서 slicing은 기본적으로 view를 생성한다.
+# pandas 시리즈에서도 serB = serA[:]를 하면 serB의 view가 생성된다.
+
+# %%
+import pandas as pd
+serA = pd.Series(['a', 'b', 'c', 'd'])
+serB = serA[:]
+
+# %%
+serA is serB
+
+# %%
+serB[0] = 'A'
+
+# %%
+serA
+
+# %%
+serB._is_view
+
+# %%
+serA.values.base
+
+# %%
+serB.values.base
+
+# %%
+dir(serA)
+
+
+# %%
+type((3,))
+
+# %%
+type((3))
+
+# %%
+serB.values
+
+# %%
+serB = serA.copy() 
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+a.base, b.base
+
+# %%
+b = a.copy()
+a is b
+
+# %%
+a.base, b.base
+
+# %%
+# view
+b = a
+a is b
+
+# %%
+a.base, b.base
+
+# %% [markdown]
+# #### 다른배열의 일부
+
+# %%
+# view
+a = np.array([0,1,2,3,4,5,6,7,8])
+b = a[2:5]
+print(a)
+print(b)
+
+# %%
+b[0] = 0
+print(a)
+print(b)
+
+# %%
+# copy1
+b = a[2:5].copy()
+print(a)
+print(b)
+
+# %%
+b[0] = 10
+print(a)
+print(b)
+
+# %%
+# copy2
+b = a[[0,1,4]]
+b
+
+# %%
+b[0] = -1
+print(a)
+print(b)
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %% [markdown]
+# #### 다른 배열에서
+#
+# * copy
+# * view
+
+# %%
+import numpy as np
+a = np.array([1,2,3,4])
+
+# %%
+a
+
+# %%
+# view
+b = a[:]
+a is b
+
+# a[:] 표현은 헷갈릴 수 있다.
+# 리스트에서 lstB = lstA[:]를 하면 리스트가 복사된다. (lstB = lstA는 동일한 리스트를 가리킨다.)
+# numpy 배열에서 arrB = arrA[:]를 하면 arrA의 view가 생성된다. numpy 배열에서 slicing은 기본적으로 view를 생성한다.
+# pandas 시리즈에서도 serB = serA[:]를 하면 serB의 view가 생성된다.
+
+# %%
+import pandas as pd
+serA = pd.Series(['a', 'b', 'c', 'd'])
+serB = serA[:]
+
+# %%
+serA is serB
+
+# %%
+serB[0] = 'A'
+
+# %%
+serA
+
+# %%
+serB._is_view
+
+# %%
+serA.values.base
+
+# %%
+serB.values.base
+
+# %%
+dir(serA)
+
+
+# %%
+type((3,))
+
+# %%
+type((3))
+
+# %%
+serB.values
+
+# %%
+serB = serA.copy() 
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+a.base, b.base
+
+# %%
+b = a.copy()
+a is b
+
+# %%
+a.base, b.base
+
+# %%
+# view
+b = a
+a is b
+
+# %%
+a.base, b.base
+
+# %% [markdown]
+# #### 다른배열의 일부
+
+# %%
+# view
+a = np.array([0,1,2,3,4,5,6,7,8])
+b = a[2:5]
+print(a)
+print(b)
+
+# %%
+b[0] = 0
+print(a)
+print(b)
+
+# %%
+# copy1
+b = a[2:5].copy()
+print(a)
+print(b)
+
+# %%
+b[0] = 10
+print(a)
+print(b)
+
+# %%
+# copy2
+b = a[[0,1,4]]
+b
+
+# %%
+b[0] = -1
+print(a)
+print(b)
+
+# %%
