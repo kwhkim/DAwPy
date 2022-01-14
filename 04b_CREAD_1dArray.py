@@ -390,6 +390,12 @@ np.linspace(1,10,5,endpoint=False, retstep=True)
 # |1,2를 길이 5까지 계속 반복 |  * rep_length_out  | `rep(1:2, length.out=5)` |
 # |1,2,3을 각각 2번 반복 |  * rep_each  | `rep(1:3, each=2)` |
 #
+# 위의 표는 R의 벡터 생성 함수와 파이썬의 넘파이 배열 함수를 비교하여 보여준다. R 사용자가 파이썬을 사용하면 헷갈릴 수 있다. R에서 범위은 거의 항상 양쪽 끝을 포함하지만 파이썬에서 범위는 대부분 한쪽 끝을 포함하지 않는다. 여기서는 R 사용자를 위해 R 벡터 생성 함수를 파이썬에 사용할 수 있는 방법을 소개한다.
+#
+
+# %% [markdown]
+# ### To-Dos
+# R에서도 python의 함수를 그대로 사용할 수 있도록 `np_arange()` 또는 `np_linspace()` 정의??
 
 # %%
 def xor(a,b):
@@ -496,7 +502,7 @@ print(rep(['a', 'b', 'c'], each=2))
 # ### 넘파이 배열의 내용 출력
 
 # %%
-vInt = seq(1,35)
+vInt = np.arange(1,36)
 vFloat1 = np.random.uniform(-10,10,10)
 vFloat2 = np.array([1.2475842, 1.43, 10240333211])
 vStr = np.array(['안녕?\n또 보다니!', "Hi,\tWait a moment",
