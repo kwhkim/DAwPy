@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 # # 6
 
 # + active=""
@@ -318,10 +317,11 @@ print(datetime.datetime.utcfromtimestamp(ts))
 locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
 datetime.datetime.strptime('Mars 01 2020', '%B %d %Y')
 
-# 참고 : https://stackoverflow.com/questions/55532672/python-how-to-set-french-locale
-# https://stackoverflow.com/questions/955986/what-is-the-correct-way-to-set-pythons-locale-on-windows/956084#956084
-# https://docs.microsoft.com/en-us/cpp/c-runtime-library/locale-names-languages-and-country-region-strings?view=msvc-160&viewFallbackFrom=vs-2019
-# https://www.rfc-editor.org/info/bcp47
+# ### 참고  
+# * https://stackoverflow.com/questions/55532672/python-how-to-set-french-locale
+# * https://stackoverflow.com/questions/955986/what-is-the-correct-way-to-set-pythons-locale-on-windows/956084#956084
+# * https://docs.microsoft.com/en-us/cpp/c-runtime-library/locale-names-languages-and-country-region-strings?view=msvc-160&viewFallbackFrom=vs-2019
+# * https://www.rfc-editor.org/info/bcp47
 
 # install.packages("lubridate")
 # ??? import Babel
@@ -332,11 +332,14 @@ datetime.datetime.strptime('Mars 01 2020', '%B %d %Y')
 # 날짜 문자열을 변환하는 함수는 없나?
 #
 
+# + active=""
 # library(lubridate)
 
+# + active=""
 # mdy('March 01 2020')
 # mdy('Mars 01 2020', locale='French') # locale을 설정하지 않고도! 
 # Sys.setlocale("LC_ALL", "French") %>% strsplit(";")
+# -
 
 import dateparser # $ pip install dateparser
 dateparser.parse('March 01 2022').date()
@@ -364,10 +367,12 @@ for date_string in [u"Aujourd'hui", "3 juillet", u"4 Août", u"Hier"]:
 for date_string in [u"Aujourd'hui", "3 juillet", u"4 Août", u"Hier"]:
     print(dateparser.parse(date_string).date())
 
+# + active=""
 # as.Date('Mars 01 2020', format='%B %d %Y')
 # as.Date('March 01 2020', format='%B %d %Y')
 # mdy('March 01 2020')
 # mdy('Mars 01 2020')
+# -
 
 locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
 #locale.setlocale(locale.LC_ALL, "")
@@ -392,22 +397,27 @@ datetime.datetime.strptime('3월 01 2022', '%B %d %Y')
 dateparser.parse('2020년 3월 01일') # None!
 dateparser.parse('2020 3월 01')
 
+# + active=""
 # Sys.setlocale("LC_ALL", "Korean") %>% strsplit(";")
 # mdy('Mars 01 2020', locale='French_France.1252')
 
-#wday(today(), label = TRUE, abbr = FALSE, locale = "German")
-#wday(today(), label = TRUE, abbr = FALSE, locale = "French")
-#month(today(), label = TRUE, abbr = FALSE, locale = "German")
-#month(today(), label = TRUE, abbr = FALSE, locale = "French")
-locale.setlocale(locale.LC_ALL, "") # default
-locale.getlocale()
-today = datetime.datetime.today()
-today.weekday() # 1
+# + active=""
+# #wday(today(), label = TRUE, abbr = FALSE, locale = "German")
+# #wday(today(), label = TRUE, abbr = FALSE, locale = "French")
+# #month(today(), label = TRUE, abbr = FALSE, locale = "German")
+# #month(today(), label = TRUE, abbr = FALSE, locale = "French")
+# locale.setlocale(locale.LC_ALL, "") # default
+# locale.getlocale()
+# today = datetime.datetime.today()
+# today.weekday() # 1
 # %U : Week number of the year(Sunday as the first day, w00 for the days before the first Sunday)
 # %W : Week number(Monday as the first day)
 # %w : Week day(0-6, 0=Sunday)
 # %u : Week day(1-7, 1=Monday)
 # %w와 %u는 일요일이 0이냐, 7이냐만 다르다.
+# -
+
+import pandas as pd
 
 for x in pd.date_range('2021-12-25', '2022-01-05'):
     #print(x)
@@ -467,6 +477,8 @@ format_date(today, format = 'LLL LLLL LLLLL', locale='es')
 format_date(today, format = 'LLL LLLL LLLLL', locale='fr')
 format_date(today, format = 'LLL LLLL LLLLL', locale='de')
 
+import pytz
+
 #Sys.setlocale("LC_ALL", "English") %>% strsplit(";")
 #as.POSIXct('March 01 2020 11:13:22', format='%B %d %Y %H:%M:%S')
 #strptime('March 01 2020 11:13:22', format='%B %d %Y %H:%M:%S')
@@ -477,21 +489,26 @@ datetime.datetime.strptime('March 01 2022 11:14:44', '%B %d %Y %H:%M:%S')
 pytz.timezone('Asia/Seoul').localize(
     datetime.datetime.strptime('March 01 2022 11:14:44', '%B %d %Y %H:%M:%S'))
 
+# + active=""
 # Sys.setlocale("LC_ALL", "French") %>% strsplit(";")
 # as.POSIXct('Mars 01 2020 11:13:22', format='%B %d %Y %H:%M:%S')
 # strptime('Mars 01 2020 11:13:22', format='%B %d %Y %H:%M:%S')
 # mdy_hms('Mars 01 2020 11:13:22')
 # mdy_hms('Mars 01 2020 11:13:22', tz='Asia/Seoul')
 
+# + active=""
 # Sys.setlocale("LC_ALL", "Korean") %>% strsplit(";")
+# -
 
 # # 6.4
 
+# + active=""
 # t0 <- Sys.time()
 # t1 <- as.POSIXct("2030-01-01 00:00:00")
 # t1-t0
 # difftime(t1, t0, units='weeks')
 # difftime(t1, t0, units='hours')
+# -
 
 t0 = datetime.datetime.now()
 t1 = datetime.datetime(2030,1,1)
@@ -499,16 +516,19 @@ t1-t0
 (t1-t0).days % 7
 (t1-t0).total_seconds() / (60*60)  # 60*60 seconds = 1 hour
 
+# + active=""
 # ???
 # t0s <- format(t0, format="%Y-%m-%d %H:%S:%M")
 # t1s <- format(t1, format="%Y-%m-%d %H:%S:%M")
 # t1s-t0s
 # difftime(t1s, t0s, units='weeks')
 # difftime(t1s, t0s, units='hours')
+# -
 
 
-# #6.5
+# # 6.5
 
+# + active=""
 # # 함수                       의미                              지역설정
 # # julian(x)                1970년 1월 1일 이후 몇번째의 일     "Korean"
 # # julian(x, origin = )     origin 이후 몇번째 일               "Korean"
@@ -521,10 +541,12 @@ t1-t0
 # # weekdays(x)              요일(Monday, Tuesday, Wednesday, ...)"English"
 # # weekdays(x, abbr =TRUE)  요일(월, 화, 수, ...)               "Korean"
 # # weekdays(x, abbr =TRUE)  요일(Mon, Tue, Wed,...)             "English"
+# -
 
 
 # # 6.6
 
+# + active=""
 # # 함수     의미              
 # # year()   년
 # # month()  월
@@ -539,17 +561,21 @@ t1-t0
 # # tz()     타임존
 # # dst()    써머타임(Daylight Saving Time)의 여부
 
+# + active=""
 # # Daylight-Saving Time?
 # # https://stackoverflow.com/questions/12203676/daylight-savings-time-in-python
+# -
 
 
 
+# + active=""
 # t <- Sys.time()
 # t
 # year(t); year(t) <- 2030; t
 # month(t); month(t) <- 1; t
 # week(t); week(t) <- 2; t
 # day(t); day(t) <- 2; t
+# -
 
 import datetime
 t = datetime.datetime.now()
@@ -564,21 +590,24 @@ t.isocalendar()[1] # weeknumber
 t.strftime('%W') 
 t.strftime('%U') 
 t.strftime('%V')
-# %U : Week number of the year (Sunday as the first day of the week) as a zero padded decimal number. All days in a new year preceding the first Sunday are considered to be in week 0.
-# %W : Week number of the year (Monday as the first day of the week) as a decimal number. All days in a new year preceding the first Monday are considered to be in week 0.
-# %V : ISO 8601 week as a decimal number with Monday as the first day of the week. Week 01 is the week containing Jan 4.
+# # %U : Week number of the year (Sunday as the first day of the week) as a zero padded decimal number. All days in a new year preceding the first Sunday are considered to be in week 0.
+# # %W : Week number of the year (Monday as the first day of the week) as a decimal number. All days in a new year preceding the first Monday are considered to be in week 0.
+# # %V : ISO 8601 week as a decimal number with Monday as the first day of the week. Week 01 is the week containing Jan 4.
 t.day
 t = t.replace(day=2)
 
+# + active=""
 # yday(t); yday(t) <- 1; t
 # yday(t); yday(t) <- 366; t
 # mday(t); mday(t) <- 2; t # same as day(t)
 # wday(t); wday(t) <- 3; t
 # wday(t, label=TRUE); wday(t); 
 # wday(t) <- 1; t 
+# -
 
 t.strftime('%j')
 
+# + active=""
 # hour(t); hour(t) <- 12; t
 # minute(t); minute(t) <- 41; t
 # second(t); second(t) <- 12; t
@@ -586,6 +615,7 @@ t.strftime('%j')
 # dst(t)
 # dst(t) <- TRUE
 # t
+# -
 
 t = t.astimezone(pytz.timezone('Asia/Seoul'))
 t.hour; t2 = t.replace(hour=12); t2
@@ -595,6 +625,7 @@ t.tzinfo; t2 = t.replace(tzinfo=None).astimezone(pytz.timezone('GMT')); t2
 #pytz.timezone('GMT').localize(t.replace(tzinfo=None))
 t.dst() # ??? dst는 시간과 timezone에 의해 결정되므로 바꿀 수 없을 듯??? 
 
+# + active=""
 # format(as.Date(parse_iso_8601('2020-W53-6')), "%A")
 # options('lubridate.week.start'=1) 
 # wday(as.Date(parse_iso_8601('2020-W53-6'))) 
@@ -602,11 +633,13 @@ t.dst() # ??? dst는 시간과 timezone에 의해 결정되므로 바꿀 수 없
 # wday(as.Date(parse_iso_8601('2020-W53-6')))
 
 
+# + active=""
 # t <- Sys.time()
 # t
 # tz(t) <- "GMT" # 또는 force_tz(t, tzone="GMT")
 # t
 # with_tz(t, "Asia/Seoul")
+# -
 
 import datetime
 t = datetime.datetime.now()
@@ -632,8 +665,8 @@ t.replace(tzinfo = tzKST) == \
 # !!! False 
 # !!! Bug?  LMT+8:28:00
 
-# https://stackoverflow.com/questions/11473721/weird-timezone-issue-with-pytz?noredirect=1&lq=1
-# https://en.wikipedia.org/wiki/Tz_database#Example_zone_and_rule_lines
+# * https://stackoverflow.com/questions/11473721/weird-timezone-issue-with-pytz?noredirect=1&lq=1
+# * https://en.wikipedia.org/wiki/Tz_database#Example_zone_and_rule_lines
 
 t.astimezone(tzKST)
 t.astimezone(datetime.timezone(datetime.timedelta(hours=9)))
