@@ -1,4 +1,32 @@
 # -*- coding: utf-8 -*-
+# +
+## 사전 지식
+## 정규표현식 re
+## 
+# +
+## 날짜 시간 데이터에 대한 개괄
+
+## 사전 지식 
+## 1. 날짜를 표기하는 방법은 나라마다 다르다
+## 2. 시간은 시간대(timezone)과 DST(Daylight Saving Time; 서머타임 실시 여부)에 따라 다르다.
+
+## 주요 내용(자료형)
+## 1. 표기 방법이 다른 날짜(/시간) 문자열과 날짜(시간) 타입의 상호 변환
+## 2. 주요 성분을 구하거나, 수정하기(예. 년,월,일,시,분,초,시간대,dst?)
+## 3. 시간 차이를 구하거나, 시간에 시간 차이를 더하거나 빼기
+
+## 파이썬/Computer
+## 1. class 구조
+## 2. naive/aware
+## 3. locale : 시스템 로케일에 대한 설명?
+## 4. platform-independent?
+## 5. standard modules(time, datetime, calendar), numpy & pandas dtype
+
+# +
+# 음력
+# https://pypi.org/project/korean-lunar-calendar/
+# https://pypi.org/project/LunarCalendar/
+# -
 
 # # 6
 
@@ -10,10 +38,16 @@
 
 import datetime
 import sys
+# sys — System-specific parameters and functions
 
 dateNow = datetime.date.today()
 print(dateNow)
 type(dateNow)
+
+import time
+time.localtime()
+
+help(dateNow.timetuple)
 
 # + active=""
 # timeNow <- Sys.time()
@@ -28,6 +62,7 @@ timeNow = datetime.datetime.now()
 #  datetime.datetime.utcnow()
 print(timeNow)
 type(timeNow)
+timeNow
 
 # + active=""
 # unclass(dateNow); print.default(dateNow)
@@ -38,11 +73,45 @@ print(timeNow.timestamp()) # POSIX timestamp
 import time
 time.time() #  timestamp of current time
 
+### Testing
+import pytz
+### ??? pytz dependency???
+
+# +
+### aware vs naive(꼭 timezone일 필요는 없으므로... offset-aware?)
+.tzinfo attribute
+tzinfo class(abstract class)
+    -> only one concrete class : timezone class
+        
+### class에 대한 설명이 선행되어야 할 듯
+### abstract class vs. concrete class
+### 상속 개념
+object
+    timedelta
+    tzinfo
+        timezone
+    time
+    date
+        datetime
+
+# -
+
+
+
 # # 6.1
 
 # ## 6.1.1
 
 # ### ISO 8601
+
+# +
+# !!! 역사적인 날을 여러 가지 형식으로 바꿔 본다면?
+# 대통령 탄핵일?
+# spring 대선
+# 아파트 붕괴
+# 경주 지진(시간)
+# 일본 대지진
+# 
 
 # + active=""
 # # 스타일   표기            의미                     예
@@ -76,8 +145,8 @@ time.time() #  timestamp of current time
 # -
 
 x = datetime.datetime.now()
-x.strftime('%Y-%m-%d %H:%M:%S')
-x.strftime('%Y-%jT%H:%M:%S')
+print(x.strftime('%Y-%m-%d %H:%M:%S'))
+print(x.strftime('%Y-%jT%H:%M:%S'))
 x.strftime('%G-W%V-%u %H:%M:%S')
 
 
@@ -97,11 +166,13 @@ x.strftime('%G-W%V-%u %H:%M:%S')
 # %G     4자리 ISO 8601 년 
 # %V     2자리 (년 중) ISO 8601 주(01-53)
 # %u     1자리 (주 중) ISO 8601 일(1-7, 1=월요일)
-# -
 
+# +
 #for (y in 2020:2023) 
 #  print(format(as.Date(paste0(y, '-01-01', sep='')), '%Y/%m/%d, V=%V U=%U u=%u w=%w A=%A a=%a'))
-from Ax_rutils import lc, lseq
+#from Ax_rutils import lc, lseq
+from mypack.utils import lc, lseq
+
 seq = lseq
 from datetime import date
 for im, y in enumerate(seq(2022,2025)):
@@ -113,6 +184,7 @@ for im, y in enumerate(seq(2022,2025)):
     # strftime('%Y/%m/%d, V=%V U=%U u=%u w=%w A=%A a=%a'))
     print(datetime.datetime.strptime(f'{y:04d}-{im+1:02d}-01', '%Y-%m-%d').
     strftime('%Y/%m/%d, V=%V U=%U u=%u w=%w A=%A a=%a B=%B b=%b'))
+# -
 
 # https://docs.python.org/3/library/locale.html#background-details-hints-tips-and-caveats
 import locale
@@ -122,6 +194,11 @@ for im, y in enumerate(seq(2022,2025)):
     strftime('%Y/%m/%d, V=%V U=%U u=%u w=%w A=%A a=%a B=%B b=%b'))
 ## locale은 pip install에서 문제를 일으키기도 한다.
 ## https://m.blog.naver.com/chandong83/221298511028
+## 다음과 같은 에러
+## locale.setlocale(locale.LC_ALL, '')
+##   File "/usr/lib/python2.7/locale.py", line 581, in setlocale
+##     return _setlocale(category, locale)
+## locale.Error: unsupported locale setting
 
 # + active=""
 # # docker 설정에서 문제가 발생할 수도 있다
@@ -139,6 +216,9 @@ for im, y in enumerate(seq(2022,2025)):
 
 
 # #### ISO 8601 
+
+# +
+# !!! 실제 이런 형식이 어디서 사용되고 있는지 확인 또는 예시가 있으면 좋을 듯.
 
 # + active=""
 # #   표기            의미                     예           날짜로 변환
@@ -159,9 +239,20 @@ for im, y in enumerate(seq(2022,2025)):
 #??? https://stackoverflow.com/questions/969285/how-do-i-translate-an-iso-8601-datetime-string-into-a-python-datetime-object
 from dateutil import parser
 datetime.datetime.strptime('20220102', '%Y%m%d')
-parser.parse('20220102')
+parser.parse('20220102') # subpackage parser
 datetime.datetime.strptime('2022-01-02', '%Y-%m-%d')
 parser.parse('2022-01-02')
+
+from mypack.utils import lsf, lsf_doc
+### ??? package의 모든 subpackage와 module 나열하기???
+### https://www.google.com/search?q=python+listing+all+subpackages&client=safari&rls=en&sxsrf=AOaemvKWU59ayc3ntrOhR9iEJmJ3Ef02Mg%3A1642213240292&ei=eC_iYYKdEYaEr7wPufWO2Ak&ved=0ahUKEwiCudSG2bL1AhUGwosBHbm6A5sQ4dUDCA0&uact=5&oq=python+listing+all+subpackages&gs_lcp=Cgdnd3Mtd2l6EAM6BwgAEEcQsAM6BwgjELACECdKBAhBGABKBAhGGABQ-BNYhhpgtBtoAXACeACAAZ0BiAHpB5IBAzAuN5gBAKABAcgBCsABAQ&sclient=gws-wiz
+
+
+import dateutil
+
+lsf(dateutil) # 굳이 dateutil 아래 parser에 함수를 넣은 이유가?
+
+lsf_doc(dateutil)
 
 datetime.datetime.fromisoformat('2022-01-02')
 # ISO 8601 형식 중 YYYY-MM-DD만 지원. 
@@ -180,6 +271,7 @@ aniso8601.parse_date('2022-144')   # ISO 8601 ordinal date
 # -
 
 parser.parse('2022002') # ParseError: year 2022002 is out of range
+# 2022년 00월은 존재하지 않으니까?
 
 datetime.datetime.strptime('2022002', '%Y%j')
 datetime.datetime.strptime('2022-002', '%Y-%j')
@@ -203,6 +295,7 @@ patt = regex.compile('(W|(?<=W\\d)(?=\\d{2}\\b))')
 patt = regex.compile('W')
 patt = regex.compile(r'(?<=\b\d{4})W(?=\d{3}\b)|(?<=\b\d{4}W\d{2})(?=\d{1}\b)')
 patt = regex.compile(r'(?<=\D{0,1}\d{4})W(?=\d{3}\D{0,1})|(?<=\D{0,1}\d{4}W\d{2})(?=\d{1}\D{0,1})')
+#                       ??? 이렇게 만들어 놓으니 읽기 엄청 불편...
 [int(x) for x in patt.split('2020W536')]
 lst = ['2020W536', ' 2020W536', '2020W536 ', '그 날은 2020W536', '2020W536에',
           '12020W555', '2020W5366', '2020W536-', '#2020W536@']
@@ -210,6 +303,8 @@ for y in lst:
     print([int(x) for x in patt.split(y)])
 
 patt1 = regex.compile(r'(?<=^|\D)\d{4}W\d{3}(?=\D|$)')
+#                        앞쪽이 처음이거나 숫자
+#                        
 #patt1.findall('12020W555')
 patt2 = regex.compile(r'(?<=\d{4})W(?=\d{3})|(?<=\d{4}W\d{2})(?=\d{1})')
 for x in lst:
@@ -263,17 +358,20 @@ locale.getlocale(locale.LC_ALL)
 # Sys.setlocale("LC_ALL", "English") %>% strsplit(";")
 # as.Date('Jan 01 2020', format='%b %d %Y')
 # as.Date('January 01 2020', format='%B %d %Y')
-# -
 
-locale.setlocale(locale.LC_ALL, 'English') # mac: unsupported locale setting
+# +
+#locale.setlocale(locale.LC_ALL, 'English') # mac: unsupported locale setting
 # for windows?
-locale.setlocale(locale.LC_ALL, 'EN') # mac: unsupported locale setting
+#locale.setlocale(locale.LC_ALL, 'EN') # mac: unsupported locale setting
+# -
 
 # locale -a 로 나오는 code
 # ex. fr_FR.UTF-8
 locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 datetime.datetime.strptime('Jan 01 2020', '%b %d %Y')
 datetime.datetime.strptime('January 01 2020', '%B %d %Y')
+
+datetime.date(2020,3,1).strftime("%Y %b %d")
 
 # +
 #Sys.setlocale("LC_ALL", "Korean") %>% strsplit(";")
@@ -282,8 +380,14 @@ datetime.datetime.strptime('January 01 2020', '%B %d %Y')
 
 locale.setlocale(locale.LC_ALL, 'ko_KR.UTF-8')
 
+
+
 datetime.datetime.strptime('2020년 3월 1일', '%Y년 %B %d일')
-datetime.datetime.strptime('2020년 3월 1일', '%Y년 %b월 %d일')
+#datetime.datetime.strptime('2020년 3월 1일', '%Y년 %b월 %d일')
+# ValueError: time data '2020년 3월 1일' does not match format '%Y년 %b 월 %d일'
+
+# # %B = 3월
+# # %b = 3
 # !!!주의 : 아래와 같이 쓰면 안된다 
 # datetime.datetime.strptime('2020년 3월 1일', '%Y년 %b월 %d일')
 # parser.parse('2020년 3월 1일')
@@ -305,6 +409,29 @@ locale.setlocale(locale.LC_ALL, '') # back to default
 
 import icu  # PyICU
 
+# + active=""
+# # icu 설치 방법(mac)
+# arch -arm64 brew install icu4c
+#
+# echo 'export PATH="/opt/homebrew/opt/icu4c/bin:$PATH"' >> ~/.zshrc
+# echo 'export PATH="/opt/homebrew/opt/icu4c/sbin:$PATH"' >> ~/.zshrc
+# # or compilers to find icu4c you may need to set:
+# export LDFLAGS="-L/opt/homebrew/opt/icu4c/lib"
+# export CPPFLAGS="-I/opt/homebrew/opt/icu4c/include"
+#
+# # https://pypi.org/project/PyICU/
+# arch -arm64 brew install icu4c
+# arch -arm64 brew install pkg-config
+# export PATH="/usr/local/opt/icu4c/bin:/usr/local/opt/icu4c/sbin:$PATH"
+# #export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/usr/local/opt/icu4c/lib/pkgconfig"
+# export PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c/lib/pkgconfig"
+#
+# export CC="$(which gcc)" CXX="$(which g++)"
+#
+# export PYICU_CFLAGS=-std=c++11
+# pip install --no-binary=:pyicu: pyicu # Success
+# -
+
 df = icu.SimpleDateFormat(
                'MMM dd yyyy', icu.Locale('fr_FR'))
 ts = df.parse(u'Mars 01 2020')
@@ -318,29 +445,36 @@ print(datetime.datetime.utcfromtimestamp(ts))
 locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
 datetime.datetime.strptime('Mars 01 2020', '%B %d %Y')
 
-# 참고 : https://stackoverflow.com/questions/55532672/python-how-to-set-french-locale
-# https://stackoverflow.com/questions/955986/what-is-the-correct-way-to-set-pythons-locale-on-windows/956084#956084
-# https://docs.microsoft.com/en-us/cpp/c-runtime-library/locale-names-languages-and-country-region-strings?view=msvc-160&viewFallbackFrom=vs-2019
-# https://www.rfc-editor.org/info/bcp47
+# ### 참고 
+#
+# * https://stackoverflow.com/questions/55532672/python-how-to-set-french-locale
+# * https://stackoverflow.com/questions/955986/what-is-the-correct-way-to-set-pythons-locale-on-windows/956084#956084
+# * https://docs.microsoft.com/en-us/cpp/c-runtime-library/locale-names-languages-and-country-region-strings?view=msvc-160&viewFallbackFrom=vs-2019
+# * https://www.rfc-editor.org/info/bcp47
 
+# + active=""
 # install.packages("lubridate")
 # ??? import Babel
 #
-# # %conda install Babel
+# %conda install Babel
 # Babel is an integrated collection of utilities that assist in internationalizing and localizing Python applications, with an emphasis on web-based applications.
 # #http://babel.pocoo.org/en/latest/dates.html
 # 날짜 문자열을 변환하는 함수는 없나?
 #
 
+# + active=""
 # library(lubridate)
 
+# + active=""
 # mdy('March 01 2020')
 # mdy('Mars 01 2020', locale='French') # locale을 설정하지 않고도! 
 # Sys.setlocale("LC_ALL", "French") %>% strsplit(";")
+# -
 
 import dateparser # $ pip install dateparser
 dateparser.parse('March 01 2022').date()
 dateparser.parse('Mars 01 2022').date()
+
 dateparser.parse('2022년 3월 1일').date() # ERROR
 # https://github.com/scrapinghub/dateparser/blob/8e91eb1a6d161a50b1869408c559dc605ef3583f/data/languages.yaml#L207
 
@@ -364,10 +498,12 @@ for date_string in [u"Aujourd'hui", "3 juillet", u"4 Août", u"Hier"]:
 for date_string in [u"Aujourd'hui", "3 juillet", u"4 Août", u"Hier"]:
     print(dateparser.parse(date_string).date())
 
+# + active=""
 # as.Date('Mars 01 2020', format='%B %d %Y')
 # as.Date('March 01 2020', format='%B %d %Y')
 # mdy('March 01 2020')
 # mdy('Mars 01 2020')
+# -
 
 locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
 #locale.setlocale(locale.LC_ALL, "")
@@ -392,8 +528,10 @@ datetime.datetime.strptime('3월 01 2022', '%B %d %Y')
 dateparser.parse('2020년 3월 01일') # None!
 dateparser.parse('2020 3월 01')
 
+# + active=""
 # Sys.setlocale("LC_ALL", "Korean") %>% strsplit(";")
 # mdy('Mars 01 2020', locale='French_France.1252')
+# -
 
 #wday(today(), label = TRUE, abbr = FALSE, locale = "German")
 #wday(today(), label = TRUE, abbr = FALSE, locale = "French")
@@ -403,11 +541,16 @@ locale.setlocale(locale.LC_ALL, "") # default
 locale.getlocale()
 today = datetime.datetime.today()
 today.weekday() # 1
+
+# + active=""
 # %U : Week number of the year(Sunday as the first day, w00 for the days before the first Sunday)
 # %W : Week number(Monday as the first day)
 # %w : Week day(0-6, 0=Sunday)
 # %u : Week day(1-7, 1=Monday)
 # %w와 %u는 일요일이 0이냐, 7이냐만 다르다.
+# -
+
+import pandas as pd
 
 for x in pd.date_range('2021-12-25', '2022-01-05'):
     #print(x)
@@ -416,7 +559,9 @@ for x in pd.date_range('2021-12-25', '2022-01-05'):
     x2 = x.to_pydatetime()
     print(x2.strftime('%Y-%m-%d %Y %B %d(%A) %Y-%U-%w %Y-%W-%u %G-W%V-%u(ISO 8601)'))
 
+# + active=""
 # today.strftime('%Y-%U-%w %Y-%W-%u %G-W%V-%u(ISO 8601)')
+# -
 
 today.strftime('%A')
 today.month
@@ -477,21 +622,26 @@ datetime.datetime.strptime('March 01 2022 11:14:44', '%B %d %Y %H:%M:%S')
 pytz.timezone('Asia/Seoul').localize(
     datetime.datetime.strptime('March 01 2022 11:14:44', '%B %d %Y %H:%M:%S'))
 
+# + active=""
 # Sys.setlocale("LC_ALL", "French") %>% strsplit(";")
 # as.POSIXct('Mars 01 2020 11:13:22', format='%B %d %Y %H:%M:%S')
 # strptime('Mars 01 2020 11:13:22', format='%B %d %Y %H:%M:%S')
 # mdy_hms('Mars 01 2020 11:13:22')
 # mdy_hms('Mars 01 2020 11:13:22', tz='Asia/Seoul')
 
+# + active=""
 # Sys.setlocale("LC_ALL", "Korean") %>% strsplit(";")
+# -
 
 # # 6.4
 
+# + active=""
 # t0 <- Sys.time()
 # t1 <- as.POSIXct("2030-01-01 00:00:00")
 # t1-t0
 # difftime(t1, t0, units='weeks')
 # difftime(t1, t0, units='hours')
+# -
 
 t0 = datetime.datetime.now()
 t1 = datetime.datetime(2030,1,1)
@@ -499,16 +649,19 @@ t1-t0
 (t1-t0).days % 7
 (t1-t0).total_seconds() / (60*60)  # 60*60 seconds = 1 hour
 
+# + active=""
 # ???
 # t0s <- format(t0, format="%Y-%m-%d %H:%S:%M")
 # t1s <- format(t1, format="%Y-%m-%d %H:%S:%M")
 # t1s-t0s
 # difftime(t1s, t0s, units='weeks')
 # difftime(t1s, t0s, units='hours')
+# -
 
 
 # #6.5
 
+# + active=""
 # # 함수                       의미                              지역설정
 # # julian(x)                1970년 1월 1일 이후 몇번째의 일     "Korean"
 # # julian(x, origin = )     origin 이후 몇번째 일               "Korean"
@@ -521,10 +674,12 @@ t1-t0
 # # weekdays(x)              요일(Monday, Tuesday, Wednesday, ...)"English"
 # # weekdays(x, abbr =TRUE)  요일(월, 화, 수, ...)               "Korean"
 # # weekdays(x, abbr =TRUE)  요일(Mon, Tue, Wed,...)             "English"
+# -
 
 
 # # 6.6
 
+# + active=""
 # # 함수     의미              
 # # year()   년
 # # month()  월
@@ -538,18 +693,21 @@ t1-t0
 # # second() 초
 # # tz()     타임존
 # # dst()    써머타임(Daylight Saving Time)의 여부
+# -
 
 # # Daylight-Saving Time?
-# # https://stackoverflow.com/questions/12203676/daylight-savings-time-in-python
+# * https://stackoverflow.com/questions/12203676/daylight-savings-time-in-python
 
 
 
+# + active=""
 # t <- Sys.time()
 # t
 # year(t); year(t) <- 2030; t
 # month(t); month(t) <- 1; t
 # week(t); week(t) <- 2; t
 # day(t); day(t) <- 2; t
+# -
 
 import datetime
 t = datetime.datetime.now()
@@ -564,21 +722,28 @@ t.isocalendar()[1] # weeknumber
 t.strftime('%W') 
 t.strftime('%U') 
 t.strftime('%V')
+
+# + active=""
 # %U : Week number of the year (Sunday as the first day of the week) as a zero padded decimal number. All days in a new year preceding the first Sunday are considered to be in week 0.
 # %W : Week number of the year (Monday as the first day of the week) as a decimal number. All days in a new year preceding the first Monday are considered to be in week 0.
 # %V : ISO 8601 week as a decimal number with Monday as the first day of the week. Week 01 is the week containing Jan 4.
-t.day
-t = t.replace(day=2)
 
+# + active=""
+# t.day
+# t = t.replace(day=2)
+
+# + active=""
 # yday(t); yday(t) <- 1; t
 # yday(t); yday(t) <- 366; t
 # mday(t); mday(t) <- 2; t # same as day(t)
 # wday(t); wday(t) <- 3; t
 # wday(t, label=TRUE); wday(t); 
 # wday(t) <- 1; t 
+# -
 
 t.strftime('%j')
 
+# + active=""
 # hour(t); hour(t) <- 12; t
 # minute(t); minute(t) <- 41; t
 # second(t); second(t) <- 12; t
@@ -586,6 +751,7 @@ t.strftime('%j')
 # dst(t)
 # dst(t) <- TRUE
 # t
+# -
 
 t = t.astimezone(pytz.timezone('Asia/Seoul'))
 t.hour; t2 = t.replace(hour=12); t2
@@ -595,6 +761,7 @@ t.tzinfo; t2 = t.replace(tzinfo=None).astimezone(pytz.timezone('GMT')); t2
 #pytz.timezone('GMT').localize(t.replace(tzinfo=None))
 t.dst() # ??? dst는 시간과 timezone에 의해 결정되므로 바꿀 수 없을 듯??? 
 
+# + active=""
 # format(as.Date(parse_iso_8601('2020-W53-6')), "%A")
 # options('lubridate.week.start'=1) 
 # wday(as.Date(parse_iso_8601('2020-W53-6'))) 
@@ -602,11 +769,13 @@ t.dst() # ??? dst는 시간과 timezone에 의해 결정되므로 바꿀 수 없
 # wday(as.Date(parse_iso_8601('2020-W53-6')))
 
 
+# + active=""
 # t <- Sys.time()
 # t
 # tz(t) <- "GMT" # 또는 force_tz(t, tzone="GMT")
 # t
 # with_tz(t, "Asia/Seoul")
+# -
 
 import datetime
 t = datetime.datetime.now()
@@ -632,8 +801,8 @@ t.replace(tzinfo = tzKST) == \
 # !!! False 
 # !!! Bug?  LMT+8:28:00
 
-# https://stackoverflow.com/questions/11473721/weird-timezone-issue-with-pytz?noredirect=1&lq=1
-# https://en.wikipedia.org/wiki/Tz_database#Example_zone_and_rule_lines
+# * https://stackoverflow.com/questions/11473721/weird-timezone-issue-with-pytz?noredirect=1&lq=1
+# * https://en.wikipedia.org/wiki/Tz_database#Example_zone_and_rule_lines
 
 t.astimezone(tzKST)
 t.astimezone(datetime.timezone(datetime.timedelta(hours=9)))
@@ -648,14 +817,18 @@ t2b.astimezone(datetime.timezone(datetime.timedelta(hours=0)))
 t2b.astimezone(datetime.timezone.utc)
 # 참고 : https://brownbears.tistory.com/356
 
+# + active=""
 # strftime.org 
+# -
 
 # source의 확장성
 datetime.datetime.now() # 그 지역의 날짜로 표시
 datetime.datetime.utcnow().astimezone(tzKST) # 어디에서도 한국 시간
 
+# + active=""
 # last friday?
 # iso format에서 다시 iso format으로???
+# -
 
 #t0 <- as.POSIXct("2021-01-01 13:00:00", tz='Europe/Paris'); t0
 #t1 <- t0; tz(t1) <- "Asia/Seoul"; t1
@@ -672,8 +845,9 @@ t2 = t1.astimezone(pytz.timezone('Europe/Paris'))
 t2
 t3 = t2; 
 t3
-t3.hour = t3.hour + 7 # ERROR
-t3.replace(hour = t3.hour + 7) # possibly ERROR
+#t3.hour = t3.hour + 7 # ERROR
+#t3.replace(hour = t3.hour + 7) # possibly ERROR
+# hour must be in 0..23
 t3 = t3 + datetime.timedelta(hours = 7)
 t3
 t4 = t3.astimezone(pytz.timezone('Asia/Seoul'))
@@ -716,30 +890,33 @@ ser.dt.dayofweek   # ser.dt.day_of_week
 ser.dt.day         # day of month
 
 
+# + active=""
 # tz_localize('KST')가 아니라 tz_localize('Asia/Seoul')로 써야 함
 # holiday 확인하기?
 # gregorian and julian calendar : https://keisan.casio.com/exec/system/1227757509
 #
+# -
 
 def without_underbar(s):
     return [x for x in s if not x.startswith('_')]
 
 # # Reference
-# Reference
-# https://stackoverflow.com/questions/17976063/how-to-create-tzinfo-when-i-have-utc-offset
-# https://www.kite.com/python/docs/pytz.FixedOffset
-# https://www.programcreek.com/python/example/50095/pytz.FixedOffset
-# https://stackoverflow.com/questions/3305413/python-strptime-and-timezones
-# https://stackoverflow.com/questions/1703546/parsing-date-time-string-with-timezone-abbreviated-name-in-python
-# https://stackoverflow.com/questions/13707545/linux-convert-timefor-different-timezones-to-utc/13713813#13713813
+# * https://stackoverflow.com/questions/17976063/how-to-create-tzinfo-when-i-have-utc-offset
+# * https://www.kite.com/python/docs/pytz.FixedOffset
+# * https://www.programcreek.com/python/example/50095/pytz.FixedOffset
+# * https://stackoverflow.com/questions/3305413/python-strptime-and-timezones
+# * https://stackoverflow.com/questions/1703546/parsing-date-time-string-with-timezone-abbreviated-name-in-python
+# * https://stackoverflow.com/questions/13707545/linux-convert-timefor-different-timezones-to-utc/13713813#13713813
 
 
 
 
 
 
-# # timedelta에서 왜 days, seconds, microseconds밖에 없는가?
-# # 분, 시간은 항상 60seconds, 60*60seconds가 아니다?
+# ## Questions?
+#
+# timedelta에서 왜 days, seconds, microseconds밖에 없는가?
+# 분, 시간은 항상 60seconds, 60*60seconds가 아니다?
 
 for iyear in range(1990, 2030):
     delT = datetime.datetime(iyear+1, 1, 4, 14, 2,2, 142) - \
@@ -780,8 +957,12 @@ d >= pd.to_datetime('2022-01-01')
 # datetime이 index일 때도 비슷하게 사용 가능...
 # slicing도 가능
 
+# + active=""
 # .resample
 # .groupby 를 datetime에 특수한 방법으로 사용
 #
 # ex) df.resample('D').agg({'Close':'mean', 'High':'max', 'Low':'min', 'Volume':'sum'})
+# -
+
+
 
