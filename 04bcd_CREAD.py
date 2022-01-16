@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.13.6
+#       jupytext_version: 1.13.5
 #   kernelspec:
 #     display_name: rtopython3-pip
 #     language: python
@@ -201,25 +201,38 @@ df1.loc[['b', 'e', 'f'], df1.columns.str.contains('[35]')]
 
 # %%
 
-# %%
+# %% [markdown]
+# ## Add & Delete
+
+# %% [markdown]
+# ### 넘파이 행렬
 
 # %%
+a = np.array([1,2,3,4,5], dtype='int8')
 
 # %%
+np.concatenate([a, np.array([6,7,8])])
 
 # %%
-#df1[['b']] # column을 먼저 찾음!
+np.delete(a,[1,4])
 
-df1.loc['b',:]
-df1['b':'b']
-#df1[:, 's3']
-df1['b':'f']
-#df1[['b', 'e', 'g']]
-#df1[['b', 'e', 'g'], :]
-
-    
+# %% [markdown]
+# ### 판다스 시리즈
 
 # %%
-df1.loc[['b','d'],['s1','s5']]
+s = pd.Series([1,2,3,4,5], 
+              index = list('bcdef'),
+              dtype='int8',)
+
+# %%
+s.append(pd.Series([6,7,8]))
+
+# %%
+s2.drop(['b', 'c'])
+
+# %%
+# np.delete -> pd.drop
+# np.concatenate -> pd.concat
+
 
 # %%
