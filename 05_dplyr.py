@@ -19,6 +19,8 @@ from codecs import xmlcharrefreplace_errors # !!!???
 #diamonds.to_csv('pydataset_diamonds.csv')
 # -
 
+import numpy as np
+import pandas as pd
 diamonds = pd.read_csv('pydataset_diamonds.csv', index_col=0)
 
 #dim(head(diamonds , n=4)) 
@@ -82,16 +84,27 @@ type(df)
 
 # # 5.2.1
 
-#library(dplyr)
-#data(mtcars) 
-mtcars = data('mtcars')
-df = mtcars
+# + active=""
+# #library(dplyr)
+# #data(mtcars) 
+# mtcars = data('mtcars')
+# df = mtcars
 
 # + active=""
 # tb = as_tibble(mtcars) 
+
+# + active=""
+# #from pydataset import data
+# #mtcars = data('mtcars')
+# #mtcars.to_csv('pydataset_mtcars.csv')
 # -
 
+mtcars = pd.read_csv('pydataset_mtcars.csv', index_col=0)
+df = mtcars
+
 # # 5.2.2
+
+
 
 #tb[2:5, ]
 #slice(tb, 2:5)
@@ -226,15 +239,23 @@ df.filter(regex = '^(.s|.{4})')
 # + active=""
 # tb %>% select(starts_with('c'))
 # tb[, grep('^c', colnames(tb))]
+# -
+
+df.loc[:, df.columns.str.contains('^c')]
 
 # + active=""
 # tb %>% select(ends_with('p'))
 # tb[, grep('p$', colnames(tb))]
+# -
+
+df.loc[:, df.columns.str.contains('p$')]
 
 # + active=""
 # tb %>% select(contains('c'))
 # tb[, grep('c', colnames(tb))]
 # -
+
+df.loc[:, df.columns.str.contains('c')]
 
 # # 5.2.5
 
@@ -257,10 +278,12 @@ df.filter(items = df.columns.difference(['m', 'cyl', 'qse']))
 # 컴럼 내용은 같지만 순서가 다르다?
 # df.filter(regex = '^(?!(m$|cyl$|qse$))').sort_values() #
 # TypeError: sort_values() missing 1 required positional argument: 'by'
-df.filter(items = df.columns.difference(['m', 'cyl', 'qse'])).sort_values()
+df.filter(items = df.columns.difference(['m', 'cyl', 'qse'])).sort_values('qsec')
 
 
-df.filter(regex = '^(?<!(m|cyl|qsec))$')  
+#df.filter(regex = '^(?<!(m|cyl|qsec))$')  
+df.filter(regex = '^(?<!m)(?<!cyl)(?<!qsec)$')  
+# when regex = '^(?<!(m|cyl|qsec))$'
 # re.error: look-behind requires fixed-width pattern
 df.filter(regex = '^.{3}(?<!(cyl|qse))') # seems impossible
 # cyl, qse로 시작하지 않는...
@@ -333,10 +356,11 @@ df.groupby([0]*len(df)).\
 df.pipe(lambda x: 
       pd.Series([np.mean(x.hp), np.median(x.qsec)],
                 index = ['hpMean', 'qsecMedian']))
+
 df.pipe(lambda x: 
       pd.DataFrame(
           {'hpMean': [np.mean(x.hp)], 
-           'qsecMedian' : [np.median(x.qsec)]})
+           'qsecMedian' : [np.median(x.qsec)]}))
 
 #tb %>% summarise(newVar1 = mean(hp) + median(qsec))
 #tb %>% summarise(newVar1 = mean(hp), newVar2 = median(qsec))
@@ -354,7 +378,7 @@ df2['v3'] = df2.v1 + df2.v2
 df2.agg('mean', axis=0)
 
 
-# #5.3.4
+# ### 5.3.4
 
 #tb3 %>% group_by(cyl) 
 #tb3_grp <- tb3 %>% group_by(cyl) 
@@ -368,8 +392,6 @@ df.groupby('am').apply(lambda x:
   pd.Series({'mQsec':np.mean(x.qsec)}))
 
 # # 5.3.6
-
-# # 책과 다른 부분 3 : summarise 에 벡터가 아니라 range 를 넣은 경우 오류가 나온다고 적혀있지만 실제로 결과값이 나옴
 
 #tb %>% summarise(range(hp))
 def peak_to_peak(x):
@@ -388,9 +410,11 @@ df.groupby('am').apply(lambda x: pd.DataFrame(x.describe())).iloc[:3, :]
 
 # # 5.3.7
 
+# + active=""
 # # 선별 및 가공 절차
 # #tb %>% select() %>% filter() %>% group_by() %>%
 # #summarise(), do(), arrange(, .by_group=T)
+# -
 
 
 
@@ -414,9 +438,10 @@ mtcars.assign(expMpg = np.exp(mtcars.mpg),
 #mtcars %>% mutate_all(exp) %>% head(n=3) 
 mtcars.transform(np.exp) 
 
-# #5.4.2
+# ### 5.4.2
 
 
+# + active=""
 # #                  _all         _at      _if
 # # select       select_all  select_at   select_if
 # # mutate       mutate_all  mutate_at   mutate_if
@@ -424,10 +449,13 @@ mtcars.transform(np.exp)
 # # group_by     group_by_all  group_by_at group_by_if
 # # summarise    summarise_all summarise_at summarise_if 
 
+# + active=""
 # options(digits=4)
 
+# + active=""
 # coln = c('cyl', 'disp', 'drat', 'carb') 
 # mtcars %>% mutate_at(coln, exp) %>% head(n=3) 
+# -
 
 colmn = ['cyl', 'disp', 'drat', 'carb']
 mtcars.loc[:, colmn].transform(np.exp).head(3)
@@ -438,10 +466,12 @@ mtcars.loc[:, colmn].transform(np.exp).head(3)
 #  head(n=3)
 mtcars.filter(regex=('(^c|^d)')).transform(np.exp).head(3)
 
+# + active=""
 # mtcars %>% 
 #  mutate_at(vars(starts_with('c'), starts_with('d')), 
 #            exp) %>% 
 #  head(n=3)
+# -
 
 #mtcars %>% 
 #  mutate_if(function(x) { sum(x)<100 }, exp ) %>% 
@@ -450,8 +480,10 @@ colmn = mtcars.apply(lambda x: x.sum() < 100, axis=0) # axis=0을 모두 모아.
 mtcars.loc[:, colmn].transform(np.exp).head(3)
 
 
+# + active=""
 # mtcars %>% 
 #  transmute(expCarb = exp(carb)) %>% head(n=3) 
+# -
 
 mtcars.assign(expCarb = np.exp(mtcars.carb)).head(3)
 mtcars.pipe(lambda x:
@@ -459,15 +491,18 @@ mtcars.pipe(lambda x:
         np.exp(mtcars.carb)})).head(3)
 pd.DataFrame({'expCarb': np.exp(mtcars.carb)}).head(3)
 
+# + active=""
 # mtcars %>% transmute_if(function(x) sum(x)<100, exp) %>% head(n=3)
 # #`funs()` is deprecated as of dplyr 0.8.0
 # mtcars %>% transmute_if(funs(sum(.) <100), exp) %>% head(n=3)
 
 
+# + active=""
 # mtcars %>% 
 #  mutate_if(funs(sum(.) >= 100), 
 #            funs(paste(.,"+",sep=""))) %>% head(n=3)
 # mtcars %>% transmute_at(vars(starts_with('d')), exp) %>% head(n=3)
+# -
 
 # Ref : https://towardsdatascience.com/python-pandas-vs-r-dplyr-5b5081945ccb
 # To add
@@ -505,3 +540,5 @@ df.drop("mpg", axis=1, inplace=True)
 
 # Reordering columns
 df.reindex(df.columns.sort_values(), axis=1).head()
+
+
