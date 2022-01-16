@@ -1,25 +1,38 @@
-#install.packages("ggplot2")
-#install.packages("dplyr")
+# -*- coding: utf-8 -*-
+# + active=""
+# install.packages("ggplot2")
+# install.packages("dplyr")
+# -
 
-##5.1
+# # 5.1
 
-##5.1.1
+# # 5.1.1
 
 #data(diamonds , package='ggplot2')
 from codecs import xmlcharrefreplace_errors # !!!???
 # https://www.cmi.ac.in/~madhavan/courses/prog2-2015/docs/python-3.4.2-docs-html/library/codecs.html
-from pydataset import data
-diamonds = data('diamonds')
+#from pydataset import data
+#diamonds = data('diamonds')
+
+# +
+#import pandas as pd
+#diamonds.to_csv('pydataset_diamonds.csv')
+# -
+
+diamonds = pd.read_csv('pydataset_diamonds.csv', index_col=0)
 
 #dim(head(diamonds , n=4)) 
 diamonds.head(n=4)
 diamonds.head(n=4).shape
 
-#library(magrittr) 
-#diamonds %>% head(., n=4) %>% dim(.) 
-#diamonds %>% head(n=4) %>% dim() 
+# + active=""
+# library(magrittr) 
+# diamonds %>% head(., n=4) %>% dim(.) 
+# diamonds %>% head(n=4) %>% dim() 
 
-#diamonds %>% head(n=4) %>% dim 
+# + active=""
+# diamonds %>% head(n=4) %>% dim 
+# -
 
 #diamonds %>% .$price %>% .[1:10]
 diamonds.price[1:10]
@@ -27,65 +40,79 @@ diamonds.price[1:10]
 #diamonds %>% .[["price"]] %>% .[1:10]
 diamonds['price'][1:10]
 
-#options(tibble.print_max = 5, tibble.print_min = 5)
+# + active=""
+# options(tibble.print_max = 5, tibble.print_min = 5)
 # ???
+# -
 
 #class(diamonds) 
 type(diamonds)
 
-#library(dplyr) 
-#diamonds 
+# + active=""
+# library(dplyr) 
+# diamonds 
+# -
 
 #diaTB <- as_tibble(diamonds[1:10, ]) 
 #diaDF <- as.data.frame(diamonds[1:10, ])
 diaDF = diamonds.iloc[:10, :]
 
-#diaDF$pri      # partial matching
-diaDF.pri      #AttributeError: 'DataFrame' object has no attribute 'pri'
-#diaDF[, 'pri'] # ERROR
-diaDF.loc[:, 'pri'] # KeyError: 'pri'
-#diaTB$pri      # NULL
-#diaTB[, 'pri'] # ERROR
+# + active=""
+# #diaDF$pri      # partial matching
+# diaDF.pri      #AttributeError: 'DataFrame' object has no attribute 'pri'
+# #diaDF[, 'pri'] # ERROR
+# diaDF.loc[:, 'pri'] # KeyError: 'pri'
+# #diaTB$pri      # NULL
+# #diaTB[, 'pri'] # ERROR
 
 
-### 책과 다른 부분 1: data.frame() 의 stringAsFactors 옵션이 원래는 true였는데 지금은 false로 바뀐것 같음
-#df <- data.frame(a = c('Kim','Lee','Park'))
-#tb <- tibble(a = c('Kim','Lee','Park'))
-### 그래서 여기서 df의 클래스가 factor 가 아닌 character 로 뜬다.
-#class(df$a)
-#class(tb$a)
+# + active=""
+# ## 책과 다른 부분 1: data.frame() 의 stringAsFactors 옵션이 원래는 true였는데 지금은 false로 바뀐것 같음
+# df <- data.frame(a = c('Kim','Lee','Park'))
+# tb <- tibble(a = c('Kim','Lee','Park'))
+# ## 그래서 여기서 df의 클래스가 factor 가 아닌 character 로 뜬다.
+# class(df$a)
+# class(tb$a)
+# -
 
 df = pd.DataFrame({'a':['Kim', 'Lee', 'Park']})
 type(df)
 
-## 5.2
+# # 5.2
 
-## 5.2.1
+# # 5.2.1
 
 #library(dplyr)
 #data(mtcars) 
 mtcars = data('mtcars')
 df = mtcars
 
-#tb = as_tibble(mtcars) 
+# + active=""
+# tb = as_tibble(mtcars) 
+# -
 
-## 5.2.2
+# # 5.2.2
 
 #tb[2:5, ]
 #slice(tb, 2:5)
 df.iloc[1:5]  # 2-1 = 1, 5 = 5
 
-#tb %>% .[2:5, ]
-#tb %>% slice(., 2:5)
+# + active=""
+# tb %>% .[2:5, ]
+# tb %>% slice(., 2:5)
+# -
 
 
 #tb %>% slice(2:5)
 #tb %>% slice(c(2:3, 4, 5))
-from Ax_rutils import ac, aseq, lc, lseq
+#from Ax_rutils import ac, aseq, lc, lseq
+from mypack.utils import ac, aseq, lc, lseq
 
-import Ax_rutils
-from Ax_rutils import ac as c
-from Ax_rutils import aseq as seq
+# + active=""
+# import Ax_rutils
+# from Ax_rutils import ac as c
+# from Ax_rutils import aseq as seq
+# -
 
 # 결과를 lseq, aseq로 구분하는게 나을 듯?(list or array)
 df.iloc[lc(lseq(1,2),3,4), :]
@@ -108,32 +135,39 @@ df['horse power'] = df.hp
 df[df['horse power'] > 250]
 df.query('`horse power` > 250')
 
-## 5.2.4
+# # 5.2.4
 
 #tb <- tb %>% slice(3:5)
 df = df.iloc[2:5]
 
-#tb[, c(1,3)]
-#select(tb, c(1,3))
-#tb %>% select(c(1,3))
+# + active=""
+# tb[, c(1,3)]
+# select(tb, c(1,3))
+# tb %>% select(c(1,3))
+# -
 
 #tb <- tb %>% slice(3:5)
 #tb[, c(1,3)]
 df.iloc[:, [1,3]]
 df.filter(items = df.columns[[0,2]])
 
-#tb[, c("cyl", "hp")]
-#select(tb, c("cyl", "hp"))
-#select(tb, c(cyl, hp))
+# + active=""
+# tb[, c("cyl", "hp")]
+# select(tb, c("cyl", "hp"))
+# select(tb, c(cyl, hp))
 
-#tb %>% select(c("cyl", "hp"))
-#tb %>% select(c(cyl, hp))
+# + active=""
+# tb %>% select(c("cyl", "hp"))
+# tb %>% select(c(cyl, hp))
+# -
 
 #tb %>% select("cyl", "hp")
 #tb %>% select(cyl, hp)
 df.loc[:, ['cyl', 'hp']]
 df.filter(['cyl', 'hp'])
 #df.filter(items = ['cyl', 'hp'])
+
+import numpy as np
 
 #which(colnames(tb)=='hp')
 np.where(df.columns == 'hp')[0]
@@ -149,18 +183,22 @@ df.iloc[:, lseq(np.where(df.columns == 'hp')[0],
 df.loc[:, 'hp':'qsec'] # Slice는 가능하지만
 #df.loc[:, lseq('hp', 'qsec')]
 
-#slice(tb, c(1, 2))
-##책과 다른 부분 2 : slice 가 벡터를 받지 않아도 실행이 된다.
-#slice(tb, 1, 2)
+# + active=""
+# slice(tb, c(1, 2))
+# #책과 다른 부분 2 : slice 가 벡터를 받지 않아도 실행이 된다.
+# slice(tb, 1, 2)
+# -
 
-##5.2.4.1
+# # 5.2.4.1
 
-##  구문                  의미
-## starts_with('ab')   ab로 시작하는
-## ends_with('yz')     yz로 끝나는
-## contains_with('ef)  ef를 포함하는
-## one_of(coln)        문자열 벡터 coln의 각 원소와 일치하는
-## matches('..[cd]')   정규표현식 ..[cd]와 대응하는
+# + active=""
+# #  구문                  의미
+# # starts_with('ab')   ab로 시작하는
+# # ends_with('yz')     yz로 끝나는
+# # contains_with('ef)  ef를 포함하는
+# # one_of(coln)        문자열 벡터 coln의 각 원소와 일치하는
+# # matches('..[cd]')   정규표현식 ..[cd]와 대응하는
+# -
 
 #tb3 <- tb %>% slice(1:3) 
 #tb3 
@@ -183,17 +221,22 @@ df.filter(items = colmn)
 #tb3 %>% select(matches('^(.s|.{4})')) 
 df.filter(regex = '^(.s|.{4})')
 
-## 위아래 한쌍으로 dplyr 함수와 동일한 정규 표현식
-#tb %>% select(starts_with('c'))
-#tb[, grep('^c', colnames(tb))]
+# # 위아래 한쌍으로 dplyr 함수와 동일한 정규 표현식
 
-#tb %>% select(ends_with('p'))
-#tb[, grep('p$', colnames(tb))]
+# + active=""
+# tb %>% select(starts_with('c'))
+# tb[, grep('^c', colnames(tb))]
 
-#tb %>% select(contains('c'))
-#tb[, grep('c', colnames(tb))]
+# + active=""
+# tb %>% select(ends_with('p'))
+# tb[, grep('p$', colnames(tb))]
 
-## 5.2.5
+# + active=""
+# tb %>% select(contains('c'))
+# tb[, grep('c', colnames(tb))]
+# -
+
+# # 5.2.5
 
 #tb %>% select(-cyl, -qsec)
 #tb %>% select(-c(cyl, qsec))
@@ -212,7 +255,8 @@ df.filter(regex = '^(?!m$)')
 df.filter(regex = '^(?!(m$|cyl$|qse$))')  # m, cyl, qse를 제외
 df.filter(items = df.columns.difference(['m', 'cyl', 'qse']))
 # 컴럼 내용은 같지만 순서가 다르다?
-df.filter(regex = '^(?!(m$|cyl$|qse$))').sort_values()
+# df.filter(regex = '^(?!(m$|cyl$|qse$))').sort_values() #
+# TypeError: sort_values() missing 1 required positional argument: 'by'
 df.filter(items = df.columns.difference(['m', 'cyl', 'qse'])).sort_values()
 
 
@@ -226,9 +270,9 @@ df.filter(regex = '^.{3}(?<!(cyl|qse))') # seems impossible
 df.filter(regex = '^(?!c)')
 df.filter(regex = '^((?!c).)*$')
 
-## 5.3
+# # 5.3
 
-##5.3.1
+# # 5.3.1
 
 #library(dplyr)
 #data(mtcars) 
@@ -243,16 +287,19 @@ df2 = df.loc[:, ['hp', 'cyl', 'qsec']].iloc[:3, :]
 df2.assign(hpPerCyl = df2.hp/df2.cyl)
 df3 = df2.assign(hpPerCyl = df2.hp/df2.cyl, V2=df2.hp*df2.qsec)
 
-#tb2$`hp/cyl` 
-#tb3 <- tb2 %>% mutate(hp/cyl) 
-#tb3$`hp/cyl` 
+# + active=""
+# tb2$`hp/cyl` 
+# tb3 <- tb2 %>% mutate(hp/cyl) 
+# tb3$`hp/cyl` 
 
-#tb$V2 = with(tb, hp*qsec)
-#tb[c('V1', 'V2')] = data.frame(tb$hp/tb$cyl, tb$hp*tb$qsec)
+# + active=""
+# tb$V2 = with(tb, hp*qsec)
+# tb[c('V1', 'V2')] = data.frame(tb$hp/tb$cyl, tb$hp*tb$qsec)
+# -
 
-##5.3.2
+# # 5.3.2
 
-## dplyr 함수와 기존의 방법 비교
+# # dplyr 함수와 기존의 방법 비교
 
 #tb %>% arrange(cyl)
 #tb[order(tb$cyl), ]
@@ -265,7 +312,7 @@ df.sort_values('cyl', ascending = False)
 #tb3 %>% arrange(cyl, desc(qsec))
 df.sort_values(['cyl', 'qsec'], ascending = [True, False])
 
-## 5.3.3
+# # 5.3.3
 
 #tb %>% summarise(mean(hp)) 
 #tb %>% summarize(V1 = mean(hp))
@@ -307,7 +354,7 @@ df2['v3'] = df2.v1 + df2.v2
 df2.agg('mean', axis=0)
 
 
-##5.3.4
+# #5.3.4
 
 #tb3 %>% group_by(cyl) 
 #tb3_grp <- tb3 %>% group_by(cyl) 
@@ -320,9 +367,9 @@ df.groupby('am').agg({'qsec':'mean'})
 df.groupby('am').apply(lambda x: 
   pd.Series({'mQsec':np.mean(x.qsec)}))
 
-## 5.3.6
+# # 5.3.6
 
-## 책과 다른 부분 3 : summarise 에 벡터가 아니라 range 를 넣은 경우 오류가 나온다고 적혀있지만 실제로 결과값이 나옴
+# # 책과 다른 부분 3 : summarise 에 벡터가 아니라 range 를 넣은 경우 오류가 나온다고 적혀있지만 실제로 결과값이 나옴
 
 #tb %>% summarise(range(hp))
 def peak_to_peak(x):
@@ -339,16 +386,16 @@ df.groupby('am').apply(lambda x: x.describe())
 #  slice(1:3)
 df.groupby('am').apply(lambda x: pd.DataFrame(x.describe())).iloc[:3, :]
 
-## 5.3.7
+# # 5.3.7
 
-## 선별 및 가공 절차
-##tb %>% select() %>% filter() %>% group_by() %>%
-##summarise(), do(), arrange(, .by_group=T)
+# # 선별 및 가공 절차
+# #tb %>% select() %>% filter() %>% group_by() %>%
+# #summarise(), do(), arrange(, .by_group=T)
 
 
 
-## 5.4
-## 5.4.1
+# # 5.4
+# # 5.4.1
 
 
 #library(dplyr)
@@ -367,20 +414,20 @@ mtcars.assign(expMpg = np.exp(mtcars.mpg),
 #mtcars %>% mutate_all(exp) %>% head(n=3) 
 mtcars.transform(np.exp) 
 
-##5.4.2
+# #5.4.2
 
 
-##                  _all         _at      _if
-## select       select_all  select_at   select_if
-## mutate       mutate_all  mutate_at   mutate_if
-## transmute    transmute_all transmute_at  transmute_if
-## group_by     group_by_all  group_by_at group_by_if
-## summarise    summarise_all summarise_at summarise_if 
+# #                  _all         _at      _if
+# # select       select_all  select_at   select_if
+# # mutate       mutate_all  mutate_at   mutate_if
+# # transmute    transmute_all transmute_at  transmute_if
+# # group_by     group_by_all  group_by_at group_by_if
+# # summarise    summarise_all summarise_at summarise_if 
 
-#options(digits=4)
+# options(digits=4)
 
-#coln = c('cyl', 'disp', 'drat', 'carb') 
-#mtcars %>% mutate_at(coln, exp) %>% head(n=3) 
+# coln = c('cyl', 'disp', 'drat', 'carb') 
+# mtcars %>% mutate_at(coln, exp) %>% head(n=3) 
 
 colmn = ['cyl', 'disp', 'drat', 'carb']
 mtcars.loc[:, colmn].transform(np.exp).head(3)
@@ -391,7 +438,7 @@ mtcars.loc[:, colmn].transform(np.exp).head(3)
 #  head(n=3)
 mtcars.filter(regex=('(^c|^d)')).transform(np.exp).head(3)
 
-#mtcars %>% 
+# mtcars %>% 
 #  mutate_at(vars(starts_with('c'), starts_with('d')), 
 #            exp) %>% 
 #  head(n=3)
@@ -403,7 +450,7 @@ colmn = mtcars.apply(lambda x: x.sum() < 100, axis=0) # axis=0을 모두 모아.
 mtcars.loc[:, colmn].transform(np.exp).head(3)
 
 
-#mtcars %>% 
+# mtcars %>% 
 #  transmute(expCarb = exp(carb)) %>% head(n=3) 
 
 mtcars.assign(expCarb = np.exp(mtcars.carb)).head(3)
@@ -412,15 +459,15 @@ mtcars.pipe(lambda x:
         np.exp(mtcars.carb)})).head(3)
 pd.DataFrame({'expCarb': np.exp(mtcars.carb)}).head(3)
 
-#mtcars %>% transmute_if(function(x) sum(x)<100, exp) %>% head(n=3)
-##`funs()` is deprecated as of dplyr 0.8.0
-#mtcars %>% transmute_if(funs(sum(.) <100), exp) %>% head(n=3)
+# mtcars %>% transmute_if(function(x) sum(x)<100, exp) %>% head(n=3)
+# #`funs()` is deprecated as of dplyr 0.8.0
+# mtcars %>% transmute_if(funs(sum(.) <100), exp) %>% head(n=3)
 
 
-#mtcars %>% 
+# mtcars %>% 
 #  mutate_if(funs(sum(.) >= 100), 
 #            funs(paste(.,"+",sep=""))) %>% head(n=3)
-#mtcars %>% transmute_at(vars(starts_with('d')), exp) %>% head(n=3)
+# mtcars %>% transmute_at(vars(starts_with('d')), exp) %>% head(n=3)
 
 # Ref : https://towardsdatascience.com/python-pandas-vs-r-dplyr-5b5081945ccb
 # To add
