@@ -23,8 +23,11 @@ import numpy as np
 import pandas as pd
 diamonds = pd.read_csv('pydataset_diamonds.csv', index_col=0)
 
+# `.head(n=)`과 `.tail(n=)`는 데이터 프레임의 처음 `n` 행 또는 마지막 `n` 행을 반환한다. `.shape`은 행과 열의 갯수를 튜플로 반환한다.
+
 #dim(head(diamonds , n=4)) 
 diamonds.head(n=4)
+diamonds.tail(n=4)
 diamonds.head(n=4).shape
 
 # + active=""
@@ -35,6 +38,20 @@ diamonds.head(n=4).shape
 # + active=""
 # diamonds %>% head(n=4) %>% dim 
 # -
+
+# 데이터프레임 `diamonds`의 `price` 열은 `['price']`(또는 `.loc[:, 'price']`) 또는 `.price`로도 참조 가능하다. `.price`와 같이 속성으로 참조할 때에는 `.shape` 처럼 데이터프레임에 이미 존재하는 속성은 열을 참조하기 위해 사용할 수 없으므로 유의하자. (만약 `diamonds`에 `shape` 열이 존재한다면 `diamonds.shape`으로 쓸 수 없고, `diamonds['shape']`으로 써야 한다.)
+
+from mypack.utils import lsf
+
+diamonds.shape
+
+diamonds['shape'] = 3
+
+diamonds.shape # 위에서 새롭게 생성한 shape 열이 아니다!
+
+del diamonds['shape']  # shape 열을 삭제한다.
+
+diamonds.head()
 
 #diamonds %>% .$price %>% .[1:10]
 diamonds.price[1:10]
@@ -69,7 +86,7 @@ diaDF = diamonds.iloc[:10, :]
 
 
 # + active=""
-# ## 책과 다른 부분 1: data.frame() 의 stringAsFactors 옵션이 원래는 true였는데 지금은 false로 바뀐것 같음
+# ## 책과 다른 부분 1: data.frame() 의 stringAsFactors 옵션이 원래는 TRUE였는데 4.0+에서 FALSE로 바뀜.
 # df <- data.frame(a = c('Kim','Lee','Park'))
 # tb <- tibble(a = c('Kim','Lee','Park'))
 # ## 그래서 여기서 df의 클래스가 factor 가 아닌 character 로 뜬다.
@@ -102,19 +119,42 @@ type(df)
 mtcars = pd.read_csv('pydataset_mtcars.csv', index_col=0)
 df = mtcars
 
-# # 5.2.2
+# # 5.2.2 `slice`
+
+# df[2] # 수 하나를 입력할 경우 인덱스로
+df[2:5] # slice를 하면 행번호롤
+# df[[2,3,4,5]] # 리스트로 여러 값을 입력하면 다시 인덱스로 인식한다!
+
+df[5:2:-1] # 리스트의 슬라이스와 비슷하게 작동한다.
+df[27:50:3]
+
+df[3:4]
+
+df[3:3]
+
+# +
+# df[3:3] = df[:10] # 리스트와 다르게 끼어넣기는 안됨
+# -
 
 
+
+# 하지만 `.iloc[]`을 사용하는 게 읽기 편하다. 리스트의 슬라이스와 마찬가지로 마자막 순번은 제외된다. 순번 하나 또는 임의의 리스트도 리스트 안에 묶어 쓸 수 있다는 장점이 있다. 만약 `df.iloc[2]`으로 하면 결과는 판다스 데이터프레임이 아니라 판다스 시리즈이다. 만약 데이터프레임을 원한다면 `df.iloc[[2]]`으로 한다.  
+
+df.iloc[2]
 
 #tb[2:5, ]
 #slice(tb, 2:5)
 df.iloc[1:5]  # 2-1 = 1, 5 = 5
+
+df.iloc[[2,3,5]]
 
 # + active=""
 # tb %>% .[2:5, ]
 # tb %>% slice(., 2:5)
 # -
 
+
+# R의 `c()`, `seq()`와 비슷한 역할을 함수 `lc()`, `lseq()`(결과 리스트)와 `ac()`, `aseq()`(결과 넘파이 배열)을 정의하면 순번을 편하게 지정할 수 있다.
 
 #tb %>% slice(2:5)
 #tb %>% slice(c(2:3, 4, 5))
@@ -130,13 +170,32 @@ from mypack.utils import ac, aseq, lc, lseq
 # 결과를 lseq, aseq로 구분하는게 나을 듯?(list or array)
 df.iloc[lc(lseq(1,2),3,4), :]
 
-##5.2.3
+df.iloc[ac(aseq(1,2),3,4), :] # 넘파이 1차 배열을 써도 마찬가지
+
+# ## 5.2.3 `filter`
+
+# 데이터프레임의 행을 선택하는 방법을 소개한다. 예를 들어 `mpg` 값이 30 이상인 행만을 골라내고 싶다면 다음과 같이 할 수 있다. `df['mpg']>30`는 참거짓의 데이터 시리즈이며 인덱스는 `df`가 같다. 
+
 #tb[tb$mpg>30, ]
 df[df.mpg > 30]
+df[df['mpg'] > 30] # 위의 방법은 실수할 가능성이 있다.
+
+# 데이터 프레임은 `.query()`라는 메쏘드를 지원한다. 행이 만족해야하는 조건을 문자열로 적는데, 열이름을 바로 적을 수 있다는 장점이 있다. 예를 들어 `df[df["mpg"] >30]`는 데이터프레임 `df`에서 `mpg` 변수 값이 30보다 큰 행을 선택한다. 이를 `.query()`를 사용하여 적으면 다음과 같다.
+
 #filter(tb, mpg>30)
 #tb %>% filter(., mpg>30)
 #tb %>% filter(mpg>30)
 df.query("mpg > 30")
+
+# 이때 `query("")` 안의 변수는 모두 데이터프레임의 열을 의미하게 된다는 점을 주의하자. 다른 외부 변수를 가리키려면 다음과 같이 활용할 수 있다.
+
+x = 30
+
+df.query("mpg >" + str(x))
+
+df.query(f"mpg > {x}")
+
+`.query()` 안에서 NOT, AND, OR 등은 `~`, `&`, `|`이며, 
 
 # 만약 &가 필요하다면,
 df[(df.mpg > 30) & (df.cyl == 4)] # &의 연산 순서가 <,>,==보다 낮기 때문에!
@@ -148,7 +207,11 @@ df['horse power'] = df.hp
 df[df['horse power'] > 250]
 df.query('`horse power` > 250')
 
+
+
 # # 5.2.4
+
+
 
 #tb <- tb %>% slice(3:5)
 df = df.iloc[2:5]
@@ -301,7 +364,8 @@ df.filter(regex = '^((?!c).)*$')
 #data(mtcars) 
 #tb = as_tibble(mtcars) 
 #tb2 <- tb %>% select(hp, cyl, qsec) %>% slice(1:3)
-df = data('mtcars')
+#df = data('mtcars')
+df = pd.read_csv('pydataset_mtcars.csv', index_col=0)
 df2 = df.loc[:, ['hp', 'cyl', 'qsec']].iloc[:3, :]
 
 #tb2 %>% mutate(hp/cyl)

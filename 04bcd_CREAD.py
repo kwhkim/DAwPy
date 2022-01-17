@@ -259,6 +259,24 @@ df1.iloc[:,[0, 2, 3]]
 # 참거짓
 df1.loc[:,df1.columns.str.endswith('5')]
 
+# %%
+df1
+
+# %%
+df1_index = df1.index.tolist()
+
+# %%
+df1_index[4] = 'c'
+
+# %%
+df1.index = df1_index 
+
+# %%
+df1
+
+# %%
+df1.at['c', 's1']
+
 # %% [markdown]
 # ### 기타 : `.loc[]` 또는 `.iloc[]`이 없는 경우
 
