@@ -176,13 +176,38 @@ df.iloc[ac(aseq(1,2),3,4), :] # 넘파이 1차 배열을 써도 마찬가지
 
 # 데이터프레임의 행을 선택하는 방법을 소개한다. 예를 들어 `mpg` 값이 30 이상인 행만을 골라내고 싶다면 다음과 같이 할 수 있다. `df['mpg']>30`는 참거짓의 데이터 시리즈이며 인덱스는 `df`가 같다. 
 
+df['mpg'] > 30
+
 #tb[tb$mpg>30, ]
 df[df.mpg > 30]
 df[df['mpg'] > 30] # 위의 방법은 실수할 가능성이 있다.
 
 # 만약 `mpg` 값이 30 이상**이고**, `carb` 값이 1인 행을 골라내고자 한다면, 다음과 같이 `( > ) & ( == )`형태로 쓴다. 이때 `&`는 원래 비트수준(bitwise) AND인데, 판다스 시리즈나 넘파이 배열에 사용하는 경우 벡터화된 AND로 쓰인다. 이때 의미는 벡터화된 AND이지만, 우선 순위는 원래 그대로라서 `>` 나 `==`와 같은 비교 연산자보다 높기 때문에 괄호로 비교연산자의 우선순위를 높여 주었다.
 
-df[(df['mpg'] > 30) & (df['carb'] == 1)]
+# `not`, `and`, `or`은 논리값(True/False)에 사용하는 연산
+# `~`, `&`, `|`은 비트(bitwise) 연산
+#
+# 우선순위 : `~` > `&`> `|` > not > and > or
+#
+# 비트 연산이 더 높다!
+# 비트 연산 `~`, `&`, `|`를 넘파이 배열이나 데이터프레임 시리즈에 적용하면
+# **벡터화**된 논리연산으로 작동한다.
+#
+
+x = 0b011010
+y = 0b110011
+print(f"{x:08b}")
+print(f"{y:08b}")
+print(f"{x & y:08b}")
+
+np.array([1,2,3]) + np.array([2,4,3])
+
+np.array([True,False,False]) & np.array([True,True,False]) # 벡터화된 AND
+# &, |, ~ # 벡터화된 논리 연산
+
+df[df['mpg'] > (30 & df['carb']) == 1] 
+
+df[(df['mpg'] > 30) & (df['carb'] == 1)] # &, |, ~ 
 
 # 데이터 프레임은 `.query()`라는 메쏘드를 지원한다. 행이 만족해야하는 조건을 문자열로 적는데, 열이름을 바로 적을 수 있다는 장점이 있다. 예를 들어 `df[df["mpg"] >30]`는 데이터프레임 `df`에서 `mpg` 변수 값이 30보다 큰 행을 선택한다. 이를 `.query()`를 사용하여 적으면 다음과 같다.
 
@@ -293,7 +318,7 @@ np.where(df.columns.isin(['mpg', 'hp', 'vs', 'gear']))
 
 from mypack.utils import lc, lseq
 
-lseq(7,0)
+lseq(7,0) # !!! 문제 case
 
 df.iloc[:, lc(lseq(0,3), lseq(7,9))]
 
@@ -319,10 +344,13 @@ df.filter(regex = '^c')
 df.filter(regex = '^ca')
 df.filter(regex = 'p$')
 df.filter(like = 'c') # c를 포함하는
-df.filter(regex = '.*c.*') # c를 포함하는 
+#df.filter(regex = '.*c.*') # c를 포함하는 
+df.filter(regex = 'c') # c를 포함하는 
+
+df.filter(regex='c', axis=0).filter(regex='c', axis=1)
 
 # %timeit df.filter(like='c')
-# %timeit df.filter(regex = '.*c.*')
+# %timeit df.filter(regex = 'c')
 # 위의 like='c'가 좀 더 빠르지만 큰 차이는 없었다.
 # 125 µs ± 2.95 µs per loop (mean ± std. dev. of 7 runs, 10000 loops each)
 # 129 µs ± 2.92 µs per loop (mean ± std. dev. of 7 runs, 10000 loops each)
@@ -414,11 +442,23 @@ df.filter(regex = '^((?!c).)*$')
 #df = data('mtcars')
 df = pd.read_csv('pydataset_mtcars.csv', index_col=0)
 df2 = df.loc[:, ['hp', 'cyl', 'qsec']].iloc[:3, :]
+df2['shape'] = True
+
+df2
+
+#df2['hp']
+df2.hp
+
+#df2.shape
+df2['shape']
 
 #tb2 %>% mutate(hp/cyl)
 #tb2 %>% mutate(hpPerCyl = hp/cyl)
 #tb2 %>% mutate(hpPerCyl = hp/cyl, V2 = hp*qsec)
 df2.assign(hpPerCyl = df2.hp/df2.cyl)
+
+
+
 df3 = df2.assign(hpPerCyl = df2.hp/df2.cyl, V2=df2.hp*df2.qsec)
 
 # + active=""
@@ -451,19 +491,27 @@ df.sort_values(['cyl', 'qsec'], ascending = [True, False])
 #tb %>% summarise(mean(hp)) 
 #tb %>% summarize(V1 = mean(hp))
 #tb %>% summarise(hpMean = mean(hp), qsecMedian =median(qsec))
-df[['hp']].agg('mean')
-df[['hp']].agg(np.mean)
+df[['hp']].agg('mean') # aggregate
+df[['hp','qsec']].agg(np.mean)
+
 df.agg(V1 = ('hp', np.mean)) # V1은 'hp' 컬럼에 np.mean을 적용하라
 df.agg(hpMean = ('hp', np.mean), qsecMedian = ('qsec', 'median'))
+
+# +
+# df.agg(hpMean = np.mean, qsecMedian = np.median) # TypeError
+# -
+
 df.groupby([0]*len(df)).\
     apply(lambda x: 
       pd.Series([np.mean(x.hp), np.median(x.qsec)],
                 index = ['hpMean', 'qsecMedian']))
+
 df.groupby([0]*len(df)).\
     apply(lambda x: 
       pd.Series(
           {'hpMean':np.mean(x.hp), 
            'qsecMedian':np.median(x.qsec)}))
+
 df.pipe(lambda x: 
       pd.Series([np.mean(x.hp), np.median(x.qsec)],
                 index = ['hpMean', 'qsecMedian']))
@@ -498,9 +546,13 @@ df3.groupby('cyl') # pandas.core.groupby.generic.DataFrameGroupBy
 
 ##5.3.5
 #tb %>% group_by(am) %>% summarise(mean(qsec))
-df.groupby('am').agg({'qsec':'mean'})
+df.groupby('am').agg({'qsec':'mean', 'drat':'median'})
+
+df.groupby('am').agg(np.mean)
+
 df.groupby('am').apply(lambda x: 
   pd.Series({'mQsec':np.mean(x.qsec)}))
+
 
 # # 5.3.6
 
@@ -509,7 +561,33 @@ def peak_to_peak(x):
     return x.max() - x.min()
 df.groupby([0]*len(df)).apply(lambda x: peak_to_peak(x.hp))
 #tb %>% group_by(am) %>% do(head(., n=2))
+
+peak_to_peak(df)
+
+(lambda x: x.head(n=2))(df)
+# np.mean(df)
+
+df.head(n=10)
+
+df.groupby('am').apply(lambda x: x.head(n=len(x))) # ??? 모르겠음???
+
 df.groupby('am').apply(lambda x: x.head(n=2))
+# df.groupby('am').agg(np.mean)
+
+np.mean(df)
+
+df.groupby('am').agg(np.mean)
+
+df['am'][0]
+
+
+def myfunc(x):
+    print('am=',x['am'][0])
+    #print('mpg=', x['mpg'])
+    print(x.head(3))
+
+
+df.groupby('am').apply(myfunc)
 
 #tb %>% group_by(am) %>% do(summary(.))
 df.groupby('am').apply(lambda x: x.describe())
@@ -651,5 +729,7 @@ df.drop("mpg", axis=1, inplace=True)
 
 # Reordering columns
 df.reindex(df.columns.sort_values(), axis=1).head()
+
+
 
 
