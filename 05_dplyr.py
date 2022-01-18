@@ -180,6 +180,10 @@ df.iloc[ac(aseq(1,2),3,4), :] # 넘파이 1차 배열을 써도 마찬가지
 df[df.mpg > 30]
 df[df['mpg'] > 30] # 위의 방법은 실수할 가능성이 있다.
 
+# 만약 `mpg` 값이 30 이상**이고**, `carb` 값이 1인 행을 골라내고자 한다면, 다음과 같이 `( > ) & ( == )`형태로 쓴다. 이때 `&`는 원래 비트수준(bitwise) AND인데, 판다스 시리즈나 넘파이 배열에 사용하는 경우 벡터화된 AND로 쓰인다. 이때 의미는 벡터화된 AND이지만, 우선 순위는 원래 그대로라서 `>` 나 `==`와 같은 비교 연산자보다 높기 때문에 괄호로 비교연산자의 우선순위를 높여 주었다.
+
+df[(df['mpg'] > 30) & (df['carb'] == 1)]
+
 # 데이터 프레임은 `.query()`라는 메쏘드를 지원한다. 행이 만족해야하는 조건을 문자열로 적는데, 열이름을 바로 적을 수 있다는 장점이 있다. 예를 들어 `df[df["mpg"] >30]`는 데이터프레임 `df`에서 `mpg` 변수 값이 30보다 큰 행을 선택한다. 이를 `.query()`를 사용하여 적으면 다음과 같다.
 
 #filter(tb, mpg>30)
@@ -195,7 +199,7 @@ df.query("mpg >" + str(x))
 
 df.query(f"mpg > {x}")
 
-`.query()` 안에서 NOT, AND, OR 등은 `~`, `&`, `|`이며, 
+# `.query()` 안에서 NOT, AND, OR 등은 `~`, `&`, `|`이며, 
 
 # 만약 &가 필요하다면,
 df[(df.mpg > 30) & (df.cyl == 4)] # &의 연산 순서가 <,>,==보다 낮기 때문에!
@@ -209,9 +213,9 @@ df.query('`horse power` > 250')
 
 
 
-# # 5.2.4
+# # 5.2.4 `select`
 
-
+# 열을 선택할 때에는 앞에서 봤듯이 `.iloc[:, ...]`을 통해 순번으로, `.loc[:,...]`을 통해 열이름으로 할 수 있다.
 
 #tb <- tb %>% slice(3:5)
 df = df.iloc[2:5]
@@ -224,8 +228,22 @@ df = df.iloc[2:5]
 
 #tb <- tb %>% slice(3:5)
 #tb[, c(1,3)]
-df.iloc[:, [1,3]]
-df.filter(items = df.columns[[0,2]])
+df.iloc[:, [1,3]] # df의 1,3-번째 열
+
+# `.filter()`의 경우 R과 다르게 행이름이나 열이름을 기준으로 데이터를 선택한다. `.filter()`를 사용하는 몇 가지 방법은 다음과 같다.
+#
+# 1. `df.filter(items=lst_colname, axis=1)` : `df.loc[:, lst_colname]`과 같다(`lst_colname`은 열이름을 담고 있는 리스트).
+#
+# 2. `df.filter(like=substr, axis=1)` : `substr`이 열이름 속에 포함되는 열 선택
+#
+# 3. `df.filter(regex=regex, axis=1)` : 정규표현식 `rexgex`에 해당하는 패턴을 열이름 속에서 찾을 수 있는 열 선택
+#
+#
+#
+#
+
+df.filter(items = df.columns[[0,2]]) # df의 0,2-번째 열
+#df.loc[:, df.columns[[0,2]]]
 
 # + active=""
 # tb[, c("cyl", "hp")]
@@ -239,21 +257,23 @@ df.filter(items = df.columns[[0,2]])
 
 #tb %>% select("cyl", "hp")
 #tb %>% select(cyl, hp)
-df.loc[:, ['cyl', 'hp']]
-df.filter(['cyl', 'hp'])
-#df.filter(items = ['cyl', 'hp'])
+df.loc[:, ['cyl', 'hp']] # 열이름 cyl, hp 열 선택
+df.filter(items = ['cyl', 'hp']) # 열이름 cyl, hp 열 선택
+
 
 import numpy as np
 
 #which(colnames(tb)=='hp')
-np.where(df.columns == 'hp')[0]
+np.where(df.columns == 'hp')[0]  # 열이름이 'hp'인 열의 순번 확인
 
 #which(colnames(tb)=='qsec') 
-np.where(df.columns == 'qsec')[0]
+np.where(df.columns == 'qsec')[0] # 열이름이 'qsec'인 열의 순번 확인
 
 #tb[, which(colnames(tb)=='hp'):which(colnames(tb)=='qsec')] 
 df.iloc[:, lseq(np.where(df.columns == 'hp')[0],
                 np.where(df.columns == 'qsec')[0])]
+
+df.iloc[:, np.where(df.columns == 'hp')[0].item():np.where(df.columns == 'qsec')[0].item()]
 
 #tb %>% select(hp:qsec)
 df.loc[:, 'hp':'qsec'] # Slice는 가능하지만
@@ -265,7 +285,19 @@ df.loc[:, 'hp':'qsec'] # Slice는 가능하지만
 # slice(tb, 1, 2)
 # -
 
-# # 5.2.4.1
+df.columns
+
+# 연속된 열의 경우에는 `df.loc[:, 'hp':'qsec']`로 쓸 수 있지만, `mpg`에서 `hp`까지 모든 열 **그리고** `vs`에서 `gear`까지의 모든 열을 선택해야 하는 경우에는 Slice를 사용할 수 없게 되므로 모든 열이름 또는 열순번을 알아내야 한다. 
+
+np.where(df.columns.isin(['mpg', 'hp', 'vs', 'gear']))
+
+from mypack.utils import lc, lseq
+
+lseq(7,0)
+
+df.iloc[:, lc(lseq(0,3), lseq(7,9))]
+
+# # 5.2.4.1 특정한 조건을 만족하는 열이름
 
 # + active=""
 # #  구문                  의미
@@ -286,13 +318,20 @@ df.filter(regex = '^c', axis=1)
 df.filter(regex = '^c')
 df.filter(regex = '^ca')
 df.filter(regex = 'p$')
-df.filter(like = 'c')
-df.filter(regex = '.*c.*')
+df.filter(like = 'c') # c를 포함하는
+df.filter(regex = '.*c.*') # c를 포함하는 
+
+# %timeit df.filter(like='c')
+# %timeit df.filter(regex = '.*c.*')
+# 위의 like='c'가 좀 더 빠르지만 큰 차이는 없었다.
+# 125 µs ± 2.95 µs per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+# 129 µs ± 2.92 µs per loop (mean ± std. dev. of 7 runs, 10000 loops each)
 
 #coln <- c('drat', 'qsec') 
 #tb3 %>% select(one_of(coln)) 
 colmn = ['drat', 'qsec']
 df.filter(items = colmn)
+
 
 #tb3 %>% select(matches('^(.s|.{4})')) 
 df.filter(regex = '^(.s|.{4})')
@@ -306,12 +345,16 @@ df.filter(regex = '^(.s|.{4})')
 
 df.loc[:, df.columns.str.contains('^c')]
 
+df.filter(regex = '^c', axis=1)
+
 # + active=""
 # tb %>% select(ends_with('p'))
 # tb[, grep('p$', colnames(tb))]
 # -
 
 df.loc[:, df.columns.str.contains('p$')]
+
+df.filter(regex = 'p$', axis=1)
 
 # + active=""
 # tb %>% select(contains('c'))
@@ -320,7 +363,11 @@ df.loc[:, df.columns.str.contains('p$')]
 
 df.loc[:, df.columns.str.contains('c')]
 
-# # 5.2.5
+df.filter(like='c')
+# df.filter(like='c', axis=1)
+# df.filter(like='c', axis='columns')
+
+# # 5.2.5 특정한 열이름 제외
 
 #tb %>% select(-cyl, -qsec)
 #tb %>% select(-c(cyl, qsec))
