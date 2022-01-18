@@ -208,7 +208,17 @@ df1.loc[['b', 'e', 'f'], df1.columns.str.contains('[35]')]
 # ### 넘파이 행렬
 
 # %%
+import numpy as np
+import pandas as pd
+
+# %%
 a = np.array([1,2,3,4,5], dtype='int8')
+
+# %%
+dir
+
+# %%
+a.append(np.array([6,7,8]))
 
 # %%
 np.concatenate([a, np.array([6,7,8])])
