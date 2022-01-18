@@ -3,24 +3,48 @@
 ## 사전 지식
 ## 정규표현식 re
 ## 
-# +
-## 날짜 시간 데이터에 대한 개괄
-
-## 사전 지식 
-## 1. 날짜를 표기하는 방법은 나라마다 다르다
-## 2. 시간은 시간대(timezone)과 DST(Daylight Saving Time; 서머타임 실시 여부)에 따라 다르다.
-
-## 주요 내용(자료형)
-## 1. 표기 방법이 다른 날짜(/시간) 문자열과 날짜(시간) 타입의 상호 변환
-## 2. 주요 성분을 구하거나, 수정하기(예. 년,월,일,시,분,초,시간대,dst?)
-## 3. 시간 차이를 구하거나, 시간에 시간 차이를 더하거나 빼기
-
-## 파이썬/Computer
-## 1. class 구조
-## 2. naive/aware
-## 3. locale : 시스템 로케일에 대한 설명?
-## 4. platform-independent?
-## 5. standard modules(time, datetime, calendar), numpy & pandas dtype
+# -
+# ## 날짜 시간 데이터에 대한 개괄
+#
+# ###  사전 지식 
+#
+# 1. 날짜를 표기하는 방법은 나라마다 다르다.
+#     - 예. 2022-04-10(한국) vs. 04-10-2022(미국) vs. 10-04-2022(유럽)
+# 2. 시간은 시간대(timezone)과 DST(Daylight Saving Time; 서머타임 실시 여부)에 따라 다르게 표기된다.
+#     - 시간대는 생각보다 자주 변한다(예. 평양시간)
+#     - 역사적으로도 역법이 바뀌었다.
+#     - 미래에는 어떻게 바뀔지 예상할 수 없다.
+# 3. 우리가 사용하는 날짜와 시간은 불규칙적으로 흐른다.
+#     - 하루는 항상 $86400 = 60 \times 60 \times 24$ 초인가? -> 윤초(leap second)
+#     - 1달은 항상 동일한 날로 구성되는가? -> 윤달(2번째 달은 28일 또는 29일)
+#
+# ## 참고 동영상 
+#
+# * [The Complexity of Time Data Programming](https://www.mojotech.com/blog/the-complexity-of-time-data-programming/)
+# * [North Korea changes its time zone to match South](https://www.bbc.com/news/world-asia-44010705)
+# 
+#     
+# ###  주요 내용(자료형)
+#
+# 1. 표기 방법이 다른 날짜(/시간) 문자열과 날짜(시간) 타입의 상호 변환
+# 2. 주요 성분을 구하거나, 수정하기(예. 년,월,일,시,분,초,시간대,dst?)
+# 3. 시간 차이를 구하거나, 시간에 시간 차이를 더하거나 빼기
+# 4. 객체 타입에 따라 저장 가능한 날짜의 최소/최대값과 정밀도가 다르다.
+#
+# ### 파이썬/Computer
+#
+# 1. class 구조
+# 2. naive/aware
+# 3. unix timestamp : seconds since unix epoch(1970-01-01 00:00:00)
+# 3. locale : 시스템 로케일에 대한 설명?
+# 4. platform-independent?
+# 5. standard modules(time, datetime, calendar), numpy & pandas dtype
+#
+# ### 최상의 전략과 이유?
+#
+# 1. 과거 시간은 UTC를 사용한다.
+# 2. 미래 시간은 날짜시간과 시간대를 함께 저장한다.
+#
 
 # +
 # 음력
@@ -28,7 +52,92 @@
 # https://pypi.org/project/LunarCalendar/
 # -
 
-# # 6
+# # 날짜시간
+
+# 파이썬에서 날짜시간을 다루는 모듈은 `datetime`, `time`, 그리고 `calendar`가 있다. 날짜시간을 다루는 경우 대부분은 `datetime`을 활용하여 처리할 수 있다. 여기서는 `datetime` 모듈을 활용하는 방법을 설명하고, 추가로 `time`, `calendar`을 사용하는 법을 소개하여 `time`, `calendar`를 사용하는 예전 코드들도 읽고, 수정할 수도 있도록 하였다.
+
+# `datetime` 모듈에서 정의하는 클래스의 상속 관계는 다음과 같다.
+#
+# ```
+# object
+#     time
+#     date
+#         datetime
+#     timedelta
+#     tzinfo
+#         timezone
+# ```
+
+# `time`은 시간, `date`는 날짜, `datetime`은 날짜시간 자료(값 1개, 스칼라)를 저장한다. `timedelta`는 시간 차이, `timezone`은 시간대(timezone)을 저장하고, 관련 연산을 수행할 수 있다.
+
+# 2023년 한글날(10.9) 오후 2시 20분을 생각해보자. 이 시각은 날짜와 시간으로 구성된다. 
+
+import datetime
+date1 = datetime.date(2023,10,9)
+time1 = datetime.time(14,20)
+date1, time1
+
+datetime1 = datetime.datetime(2023, 7, 17, 14, 20)
+# datetime1 = datetime.datetime.combine(date1, time1)
+
+# 파이썬의 표준 모듈 `datetime`의 날짜형(`date`), 시간형(`time`), 날짜시간형(`datetime`) 객체를 생성하는 방법은 위와 같다. `date`, `time`, `datetime`은 모두 클래스 이름이다. 변수 `date1`, `time1`을 합쳐 날짜시간형 객체를 만들어내고 싶다면 `datetime.datetime` 클래스의 클래스 메쏘드는 `.combine()`을 사용할 수 있다.
+
+# 이렇게 날짜형, 시간형, 날짜시간형 객체를 만들면 날짜시간이 명확히 정의되고, 날짜시간과 관련된 여러 가지 연산을 쉽게 할 수 있다는 장점이 있다. 만약 문자열 `"2023-10-09"` 또는 `"14:20"`을 사용한다면 어떨까? 날짜가 10월 9일인지, 9월 10일인지 헷갈릴 수 있다. 그리고 날짜시간 사이의 차이를 구하기도 힘들다.
+
+# 예를 들어 2023년 한글날에서 2024년 한글날까지 몇 일이 지나야 하는가?
+
+date2 = datetime.date(2024, 10, 9)
+date2 - date1
+
+# 결과는 366일이다. 2024년은 윤년이라고 추측할 수 있다(윤년은 2월 29일로 구성된다).
+
+# 이를 문자열에서 실행하려고 하면 오류가 발생한다.
+
+"2024-10-09" - "2023-10-09"
+
+# 시간의 차이를 나타내는 `datetime.timedelta` 클래스는 직접 생성하기 보다는 주어진 날짜, 시간, 날짜시간에서 얻는 경우가 더 많을 것이다. 그래도 생성하는 방법을 보인다면 다음과 같다.
+
+datetime.timedelta(days=2, seconds = 70, microseconds = 100.50, milliseconds = -20.5, minutes = -70.43, hours=1, weeks=3)
+
+
+# 일, 초, 밀리초(1/1000초), 마이크로초(1/1000밀리초), 분, 시간, 주를 입력하면 알아서 계산해준다. 이때 음수도 가능하고, 실수도 가능하다. 하지만 달(month)과 년(year)은 사용할 수 없다. 왜냐하면 달과 년의 길이는 고정되어 있지 않기 때문이다. (달의 길이는 28,29,30,31일 중 하나이고, 년의 길이는 365일, 366일 중의 하나이다.)
+
+# `timedelta` 클래스는 전체 시간을 **일**, **초**, **마이크로초**로 저장하기 때문에 시간, 분을 확인하기 어렵다. 다음의 함수 `d_h_m_s()`는 `timedelta` 인스턴스에서 **시간**, **분**을 계산해준다.
+
+def d_h_m_s(td):
+    
+    if not isinstance(td, (datetime.timedelta)):
+        raise ValueError('td should be datetime.timedelta class')
+    tot_sec = td.total_seconds()
+    if tot_sec > 0:
+        sign = +1
+    else:
+        sign = -1
+        tot_sec = - tot_sec
+        
+    days, remainder = divmod(tot_sec, 86400)
+    hours, remainder = divmod(remainder, 3600)
+    minutes, secs = divmod(remainder, 60)
+    
+    return sign*days, sign*hours, sign*minutes, sign*secs
+
+
+d_h_m_s(datetime.timedelta(1,83200, 10))
+
+d_h_m_s(datetime.timedelta(0,-90*60-1,-10))
+
+# 2024년 1월 1일에서 2024년 12월 25일까지 시간(일수)을 구해보자. 
+
+datetime.date(2024, 12, 25) - datetime.date(2024, 1, 1)
+
+# 오전 9시에서 오후 6시까지의 시간(근무시간?)을 구하려면 어떻게 해야 할까? `datetime.time(16,0)-datetime.time(9,0)`은 TypeError를 발생시킨다. 일단 날짜 없이 정확한 시간 차이를 구할 수 없다(왜냐하면 드물게 윤초가 존재하기 때문이다.)
+#
+# 만약 이런 차이를 무시하고 시간 차이를 구하고 싶다면, 임의의 날짜를 지정해서 시간 차이를 구하면 된다. 
+#
+
+datetime.datetime.combine(datetime.date(2024,1,1), datetime.time(18,0)) - \
+  datetime.datetime.combine(datetime.date(2024,1,1), datetime.time(9,0)) # 임의의 날짜 입력
+# 이때 0을 00으로 쓰지 않도록 유의하자.
 
 # + active=""
 # dateNow <- Sys.Date()
@@ -40,61 +149,105 @@ import datetime
 import sys
 # sys — System-specific parameters and functions
 
+# 현재 날짜와 시간을 얻는 방법은 다음과 같다. 
+
 dateNow = datetime.date.today()
 print(dateNow)
 type(dateNow)
 
-import time
-time.localtime()
+datetimeNow = datetime.datetime.now()
+print(datetimeNow)
+type(datetimeNow)
 
-help(dateNow.timetuple)
+# ### 클래스 `date`, `time`, `datetime` 사이 변환
+#
+# 클래스 `date`, 클래스 `time`, 클래스 `datetime` 사이의 변환은 다음과 같다.
 
-# + active=""
-# timeNow <- Sys.time()
-# print(timeNow)
-# class(timeNow)
-# -
+datetimeNow.date()
 
-import datetime
-timeNow = datetime.datetime.now()
-# almost the same result
-#  datetime.datetime.today()
-#  datetime.datetime.utcnow()
-print(timeNow)
-type(timeNow)
+datetimeNow.time()
+
+dateNow = datetimeNow.date()
+dateNow
+
+timeNow = datetimeNow.time()
 timeNow
 
-# + active=""
-# unclass(dateNow); print.default(dateNow)
-# unclass(timeNow); print.default(timeNow)
-# -
+datetimeNow = datetime.datetime.combine(dateNow, timeNow)
+datetimeNow
 
-print(timeNow.timestamp()) # POSIX timestamp
-import time
-time.time() #  timestamp of current time
+# ### 문자열과 `datetime` 사이 변환
 
-### Testing
+datetimeNow.strftime('%Y-%m-%d %H:%M:%S')
+dateNow.strftime('%Y-%m-%d')
+timeNow.strftime('%H:%M:%S')
+
+print(datetime.datetime.strptime('2022-10-09 11:30:00', '%Y-%m-%d %H:%M:%S'))
+print(datetime.datetime.strptime('2022-10-09', '%Y-%m-%d')) # %H:%M:%S의 기본값은 00:00:00
+print(datetime.datetime.strptime('11:30:00', '%H:%M:%S'))   # %Y-%m-%d의 기본값은 1900-01-01
+
+# ### 시간대
+
+# `datetime` 인스턴스의 속성 `.tzinfo`는 날짜시간의 시간대를 저장한다. `datetimeNow.tzinfo`는 `None`이다.
+
+datetimeNow.tzinfo
+
+# 우리가 `datetime.datetime.now()`로 얻은 날짜시간은 시간대에 대한 정보가 없다. 이렇게 시간대 정보가 얻는 날짜시간형을 naive(offset)라고 하고 시간대 정보가 있는 날짜시간형을 aware(offset)라고 한다. naive 날짜시간형은 본인의 컴퓨터가 다른 시간대로 옮겨간다던지 다른 시간대의 컴퓨터로 정보를 옮기면 그 정확한 의미를 확인할 수 없기 때문에 시간대 정보를 추가해주는 것이 좋다.
+
+# `datetime` 모듈에는 지역시간과 UTC와의 차이를 나타내기 위해 `timezone` 클래스가 있습니다만, 이는 **고정된 시간차이**만 나타낼 수 있습니다. 시간대는 역사적으로 UTC와의 시간차이가 변해왔습니다.
+
+from datetime import timezone
+tzSeoul = timezone(offset = datetime.timedelta(hours = 9), name = 'Seoul')
+# UTC와 시간차이를 datetime.timedelta로 나타냅니다.
+
+tzSeoul
+
+# 이렇게 정의된 `tzSeoul`은 UTC와 9시간 앞서는 시간대를 나타냅니다. 
+
+datetimeNow
+
+# naive한 날짜시간형 `datetimeNow`에 시간대 정보를 추가하려면 다음과 같이 `.astimezone()` 메쏘드와 시간대 정보 `tzSeoul`을 활용합니다.
+
+dt1 = datetimeNow.astimezone(tzSeoul)
+dt1
+
+# 그런데 1988년 5월 10일 오전 9시라면 어떨까? 위와 마찬가지로 다음과 같이 써도 될까?
+
+dt1 = datetime.datetime(1988,5,10,9).astimezone(tzSeoul)
+dt1
+
+# 우리나라는 1988년 5월 8일부터 써머타임을 실시했다. 그래서 1988년 5월 10일에는 UTC와 시간차이가 10시간이었다! `datetime.timezone()`으로 생성된 시간대 정보는 고정된 시간차이를 저장하기 때문에 역사적으로 변해간 시간차이를 나타내기에는 적절하지 않다. 이럴 경우 보통 `pytz`라는 패키지를 사용한다.
+#
+#
+
 import pytz
-### ??? pytz dependency???
+pytzSeoul = pytz.timezone('Asia/Seoul')
+pytzSeoul
 
-# +
-### aware vs naive(꼭 timezone일 필요는 없으므로... offset-aware?)
-.tzinfo attribute
-tzinfo class(abstract class)
-    -> only one concrete class : timezone class
-        
-### class에 대한 설명이 선행되어야 할 듯
-### abstract class vs. concrete class
-### 상속 개념
-object
-    timedelta
-    tzinfo
-        timezone
-    time
-    date
-        datetime
+# 위의 출력 결과를 보면 `LMT+8:28:00 STD`로 다소 생소한 수가 나타난다. 이는 `datetime.datetime.strptime('11:30:00', '%H:%M:%S')`에서 나타난 기본 날짜 1900년 1월 1일의 시간차이를 나타낸다. `pytzSeoul`은 서울의 시간대를 나타내고 날짜에 따라 UTC와의 시간차이가 달라진다. `pytzSeoul.localize()`로 naive 날짜 시간을 aware하게 만들 수 있다.
 
-# -
+datetimeNow =datetime.datetime.now()
+dtNowSeoul = pytzSeoul.localize(datetimeNow)
+dtNowSeoul
+
+# `tzinfo=` 이하의 정보를 보면 `KST+9:00:00`로 현재 시간차이를 정확하게 나타내고 있다. 이번에 1988년 5월 10일 시간을 aware하게 만들어 보자.
+
+dt2 = pytzSeoul.localize(datetime.datetime(1988,5,10,9,0)) 
+# 이때 datetime.datetime(1988,5,10,10, tzinfo=pytzSeoul)는 부정확하다.
+dt2
+
+# `tzinfo=` 이후의 `KDT+10:00:00`을 주목하자. K**D**T는 Korea **D**aylight-saving Time, KST는 Korea **S**tandard Time을 의미한다. DST는 Daylight Saving Time, STD는 STAndard의 약자인 듯 하다.
+#
+#
+
+dt1 - dt2
+
+dt1, dt2, dt1.utcoffset(), dt2.utcoffset()
+
+# `dt1`과 `dt2`를 살펴보면 둘 다 1988년 5월 10일 9시로 되어 있지만, 시간대(`tzinfo=`)가 다르다. 특히 `.utcoffset()`으로 UTC와의 시간차이를 확인해보면 `dt1`은 UTC보다 9시간(32400초) 빠르고, `dt2`는 UTC보다 10시간(36000초) 빠르다는 것을 알 수 있다.
+
+# 이처럼 시간대를 잘못 설정하면 시간이 부정확하게 입력되므로 유의해야 한다.
+
 
 
 
@@ -106,11 +259,9 @@ object
 
 # +
 # !!! 역사적인 날을 여러 가지 형식으로 바꿔 본다면?
-# 대통령 탄핵일?
-# spring 대선
-# 아파트 붕괴
-# 경주 지진(시간)
-# 일본 대지진
+
+# 동일본 대지진 : 2011. 3. 11
+# 리만 브라더스 파산 : 2008. 9. 15
 # 
 
 # + active=""
@@ -171,6 +322,8 @@ x.strftime('%G-W%V-%u %H:%M:%S')
 #for (y in 2020:2023) 
 #  print(format(as.Date(paste0(y, '-01-01', sep='')), '%Y/%m/%d, V=%V U=%U u=%u w=%w A=%A a=%a'))
 #from Ax_rutils import lc, lseq
+
+# mypack.utils를 import하려면 먼저 dateparser 패키지를 설치해야
 from mypack.utils import lc, lseq
 
 seq = lseq
@@ -204,11 +357,8 @@ for im, y in enumerate(seq(2022,2025)):
 # # docker 설정에서 문제가 발생할 수도 있다
 # # https://www.44bits.io/ko/post/setup_linux_locale_on_ubuntu_and_debian_container
 #
-
-
-# + active=""
-# # datetime을 date으로 바꾸는 방법 : .date() 메쏘드
 # -
+
 
 # ## 6.3
 
@@ -533,16 +683,14 @@ dateparser.parse('2020 3월 01')
 # mdy('Mars 01 2020', locale='French_France.1252')
 # -
 
-# + active=""
-# #wday(today(), label = TRUE, abbr = FALSE, locale = "German")
-# #wday(today(), label = TRUE, abbr = FALSE, locale = "French")
-# #month(today(), label = TRUE, abbr = FALSE, locale = "German")
-# #month(today(), label = TRUE, abbr = FALSE, locale = "French")
-# locale.setlocale(locale.LC_ALL, "") # default
-# locale.getlocale()
-# today = datetime.datetime.today()
-# today.weekday() # 1
-# - 
+#wday(today(), label = TRUE, abbr = FALSE, locale = "German")
+#wday(today(), label = TRUE, abbr = FALSE, locale = "French")
+#month(today(), label = TRUE, abbr = FALSE, locale = "German")
+#month(today(), label = TRUE, abbr = FALSE, locale = "French")
+locale.setlocale(locale.LC_ALL, "") # default
+locale.getlocale()
+today = datetime.datetime.today()
+today.weekday() # 1
 
 
 # + active=""
@@ -698,7 +846,6 @@ t1-t0
 # # second() 초
 # # tz()     타임존
 # # dst()    써머타임(Daylight Saving Time)의 여부
-# -
 
 # + active=""
 # # Daylight-Saving Time?
@@ -735,10 +882,10 @@ t.strftime('%V')
 # %U : Week number of the year (Sunday as the first day of the week) as a zero padded decimal number. All days in a new year preceding the first Sunday are considered to be in week 0.
 # %W : Week number of the year (Monday as the first day of the week) as a decimal number. All days in a new year preceding the first Monday are considered to be in week 0.
 # %V : ISO 8601 week as a decimal number with Monday as the first day of the week. Week 01 is the week containing Jan 4.
+# -
 
-# + active=""
-# t.day
-# t = t.replace(day=2)
+t.day
+t = t.replace(day=2)
 
 # + active=""
 # yday(t); yday(t) <- 1; t
@@ -971,6 +1118,39 @@ d >= pd.to_datetime('2022-01-01')
 #
 # ex) df.resample('D').agg({'Close':'mean', 'High':'max', 'Low':'min', 'Volume':'sum'})
 # -
+
+
+# ### 부록
+
+
+
+import time
+time.localtime()
+
+# + active=""
+# timeNow <- Sys.time()
+# print(timeNow)
+# class(timeNow)
+# -
+
+import datetime
+timeNow = datetime.datetime.now()
+# almost the same result
+#  datetime.datetime.toda|y()
+#  datetime.datetime.utcnow()
+print(timeNow)
+type(timeNow)
+timeNow
+
+# + active=""
+# unclass(dateNow); print.default(dateNow)
+# unclass(timeNow); print.default(timeNow)
+# -
+
+print(timeNow.timestamp()) # POSIX timestamp
+import time
+time.time() #  timestamp of current time
+
 
 
 
