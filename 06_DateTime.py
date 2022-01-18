@@ -22,7 +22,7 @@
 #
 # * [The Complexity of Time Data Programming](https://www.mojotech.com/blog/the-complexity-of-time-data-programming/)
 # * [North Korea changes its time zone to match South](https://www.bbc.com/news/world-asia-44010705)
-# 
+#
 #     
 # ###  주요 내용(자료형)
 #
@@ -248,10 +248,33 @@ dt1, dt2, dt1.utcoffset(), dt2.utcoffset()
 
 # 이처럼 시간대를 잘못 설정하면 시간이 부정확하게 입력되므로 유의해야 한다.
 
+# #### 그 밖에
+
+
+# 년, 월, 일, 시, 분, 초, 마이크로초, 시간대 참조하기
+
+dt2.year, dt2.month,dt2.day, \
+dt2.hour, dt2.minute, dt2.second, dt2.microsecond, \
+dt2.tzinfo
+
+
+# 년, 월, 일, 시, 분, 초, 마이크로초 변경하기
+
+dt2.replace(year = 1989), dt2.replace(month=6), dt2.replace(day=11), \
+dt2.replace(hour = 10),   dt2.replace(minute = 1), dt2.replace(second = 30), dt2.replace(microsecond = 55000), \
+dt2.replace(tzinfo=tzSeoul)
+
+# 시간은 그대로 시간대만 변경하기(동일한 시각이 시간대가 다른 시간으로 변환된다)
+
+dt1.astimezone(pytzSeoul) # dt1을 1988년 DST가 적용된 시간으로 표기하면 오전 10시가 된다.
+
+
 
 
 
 # # 6.1
+
+
 
 # ## 6.1.1
 
@@ -1121,8 +1144,6 @@ d >= pd.to_datetime('2022-01-01')
 
 
 # ### 부록
-
-
 
 import time
 time.localtime()
