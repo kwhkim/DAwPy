@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.13.5
+#       jupytext_version: 1.13.6
 #   kernelspec:
 #     display_name: rtopython3-pip
 #     language: python
@@ -234,5 +234,28 @@ s2.drop(['b', 'c'])
 # np.delete -> pd.drop
 # np.concatenate -> pd.concat
 
+
+# %%
+
+# %% [markdown]
+# ## Slice 비교
+
+# %%
+lst = list(range(10))
+lst[2], lst[:], lst[7:len(lst)+3], lst[6:6]
+
+# %%
+import numpy as np
+A = np.arange(10, dtype='int32')
+A[2], A[:], A[7:len(A)+3], A[6:6], A[[2,3,7]] # A[[2,3,7,len(A)+3]] -> IndexError
+
+# %%
+import numpy as np
+import pandas as pd
+s = pd.Series(list(range(10)), index = list('abcdefghij'))
+s[2], s[:], s[7:len(s)+3], s[6:6], s[[2,3,7]]
+
+# %%
+s['b'], s[:], s['g':], s['g':'g'], s[['b', 'c', 'h']]
 
 # %%
