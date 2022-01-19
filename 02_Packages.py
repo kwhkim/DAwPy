@@ -7,11 +7,11 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.11.2
+#       jupytext_version: 1.13.6
 #   kernelspec:
-#     display_name: rtopython2-pip
+#     display_name: pandas
 #     language: python
-#     name: rtopython2-pip
+#     name: pandas
 # ---
 
 # %% [markdown]
@@ -981,6 +981,15 @@ print(sys.version)
 #   - dfply, pydatasets
 #   
 # PyPI에서 등록된 패키지가 워낙 많기(30여만 개!) 때문에 콘다에서도 모든 패키지의 버전 의존성을 관리할 수 없다. 그런 경우에는 `conda install`로 패키지를 설치할 수 없으므로 `pip install`을 써야 한다. 콘다에서는 `conda install`할 수 있는 모든 패키지를 설치한 후에 `pip install`을 사용할 것을 주문한다. 이렇게 해야 패키지의 의존성 관리가 더 정확하다고 한다. (관련 자료 : https://www.anaconda.com/blog/using-pip-in-a-conda-environment)
+
+# %% [markdown]
+# ### conda 대안
+#
+# 패키지 dependency를 solve하지 못하고 있을 때
+#
+# `conda install mamba`
+#
+# `mamba install ..... # conda 대신 mamba`
 
 # %% [raw]
 #

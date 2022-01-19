@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.13.5
+#       jupytext_version: 1.13.6
 #   kernelspec:
 #     display_name: rtopython3-pip
 #     language: python
@@ -259,6 +259,24 @@ df1.iloc[:,[0, 2, 3]]
 # 참거짓
 df1.loc[:,df1.columns.str.endswith('5')]
 
+# %%
+df1
+
+# %%
+df1_index = df1.index.tolist()
+
+# %%
+df1_index[4] = 'c'
+
+# %%
+df1.index = df1_index 
+
+# %%
+df1
+
+# %%
+df1.at['c', 's1']
+
 # %% [markdown]
 # ### 기타 : `.loc[]` 또는 `.iloc[]`이 없는 경우
 
@@ -272,12 +290,10 @@ df1[['s3', 's5']] # 열이름으로 찾는다
 df1[1:4] # slice는 행순번 우선
 
 # %%
-df1['s3':'s5'] # slice : 행순번 우선, 그다음 행이름으로 찾는다
+df1['b':'d'] # slice : 행순번 우선, 그다음 행이름으로 찾는다
+# df1['b':'c'] # 하지만 유일하지 않은 행이름이 있다면 KeyError
 # R의 df['colname'] 꼴과
 # R의 dplyr의 slice() 함수를 생각하면 쉽게 기억할 수 있을 듯 하다.
-
-# %%
-df1['b':'e']
 
 # %%
 # df1['b':'e', :], df1['b':'e', 's5'], df1['b':'e', ['s3', 's5']] 모두 불가능
@@ -342,14 +358,20 @@ df1
 # ### 넘파이 행렬
 
 # %%
+import numpy as np
+import pandas as pd
+
+# %%
 a = np.array([1,2,3,4,5], dtype='int8')
 
 # %%
 np.append(a, np.array([6,7,8]))
 
 # %%
-# 참고
-np.concatenate([a, np.array([6,7,8])])
+# 참고 : 처음 또는 중간에 삽입
+np.concatenate([a, np.array([6,7,8])]) # 마지막
+np.concatenate([np.array([6,7,8]), a]) # 처음
+np.concatenate([a[:2], np.array([6,7,8]), a[2:]]) # 2-번째 행 앞에 끼어넣기
 
 # %%
 np.delete(a,[1,4])
@@ -366,8 +388,10 @@ s = pd.Series([1,2,3,4,5],
 s.append(pd.Series([6,7,8]))
 
 # %%
-# 참고
+# 참고 : 처음 또는 중간에 삽입
 pd.concat([s, pd.Series([6,7,8])])
+pd.concat([pd.Series([6,7,8]), s]) # 처음에 삽입
+pd.concat([s[:2], pd.Series([6,7,8]), s[2:]]) # 2-번째 행 앞에 삽입
 
 # %%
 s2.drop(['b', 'c'])
@@ -377,5 +401,62 @@ s2.drop(['b', 'c'])
 # np.delete -> Series.drop
 # np.concatenate -> pd.concat
 
+
+# %%
+
+# %% [markdown]
+# ### 판다스 데이터 프레임 
+#
+# * `np.concat()`에서 `axis=1`로 설정하면 행에 대한 추가, 삭제 등이 가능하다.
+
+# %%
+dfA = df1.iloc[:3]
+dfB = df1.iloc[3:]
+
+# %%
+#dfA.append(dfB)
+pd.concat([dfA, dfB], axis=0)
+
+# %%
+dfA = df1.loc[:, ['s1', 's3']]
+dfB = df1.loc[:, ['s5', 's7']]
+df1 = pd.concat([dfA, dfB], axis=1)
+
+# %%
+dfA
+
+# %%
+dfA['s9'] = [1,2,3,4,5,6] 
+# 이런 식으로도 많이 쓰인다.
+# dfA에 열이름이 s9인 열 추가
+
+# %%
+dfA.drop(['e', 'd'])
+
+# %%
+df1.drop(['s1', 's3'], axis=1)
+
+# %%
+
+# %% [markdown]
+# ## Slice 비교
+
+# %%
+lst = list(range(10))
+lst[2], lst[:], lst[7:len(lst)+3], lst[6:6]
+
+# %%
+import numpy as np
+A = np.arange(10, dtype='int32')
+A[2], A[:], A[7:len(A)+3], A[6:6], A[[2,3,7]] # A[[2,3,7,len(A)+3]] -> IndexError
+
+# %%
+import numpy as np
+import pandas as pd
+s = pd.Series(list(range(10)), index = list('abcdefghij'))
+s[2], s[:], s[7:len(s)+3], s[6:6], s[[2,3,7]]
+
+# %%
+s['b'], s[:], s['g':], s['g':'g'], s[['b', 'c', 'h']]
 
 # %%
