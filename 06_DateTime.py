@@ -34,7 +34,7 @@
 # ### 파이썬/Computer
 #
 # 1. class 구조
-# 2. naive/aware
+# 2. (timezone/offset) naive/aware
 # 3. unix timestamp : seconds since unix epoch(1970-01-01 00:00:00)
 # 3. locale : 시스템 로케일에 대한 설명?
 # 4. platform-independent?
@@ -72,6 +72,7 @@
 
 # %% [markdown]
 # `time`은 시간, `date`는 날짜, `datetime`은 날짜시간 자료(값 1개, 스칼라)를 저장한다. `timedelta`는 시간 차이, `timezone`은 시간대(timezone)을 저장하고, 관련 연산을 수행할 수 있다.
+# `datetime` 모듈의 클래스는 윤초(leap seconds)를 무시한다.
 
 # %% [markdown]
 # 2023년 한글날(10.9) 오후 2시 20분을 생각해보자. 이 시각은 날짜와 시간으로 구성된다. 
@@ -428,61 +429,23 @@ sDate
 # %% [markdown]
 # 시간단위에 저장 가능한 시간의 범위가 달라진다.
 
-# %%
-| Code |  Meaning  | 저장가능한 (상대) 시간범위 | 저장가능한 (절대) 시간범위 |
-|:----:|:---------:|:------------------:|:-----------------------:|
-| `Y`  |    년      |  +/- 9.2e18 년      | [9.2e18 BC, 9.2e18 AD] |
-| `M`  |    월      |  +/- 7.6e17 년      | [7.6e17 BC, 7.6e17 AD] |
-W
-week
-+/- 1.7e17 years
-[1.7e17 BC, 1.7e17 AD]
-D
-day
-+/- 2.5e16 years
-[2.5e16 BC, 2.5e16 AD]
-And here are the time units:
-
-Code
-Meaning
-Time span (relative)
-Time span (absolute)
-h
-hour
-+/- 1.0e15 years
-[1.0e15 BC, 1.0e15 AD]
-m
-minute
-+/- 1.7e13 years
-[1.7e13 BC, 1.7e13 AD]
-s
-second
-+/- 2.9e11 years
-[2.9e11 BC, 2.9e11 AD]
-ms
-millisecond
-+/- 2.9e8 years
-[ 2.9e8 BC, 2.9e8 AD]
-us / μs
-microsecond
-+/- 2.9e5 years
-[290301 BC, 294241 AD]
-ns
-nanosecond
-+/- 292 years
-[ 1678 AD, 2262 AD]
-ps
-picosecond
-+/- 106 days
-[ 1969 AD, 1970 AD]
-fs
-femtosecond
-+/- 2.6 hours
-[ 1969 AD, 1970 AD]
-as
-attosecond
-+/- 9.2 seconds
-[ 1969 AD, 1970 AD]
+# %% [markdown]
+# | 코드 |  의미  | 저장가능한 (상대) 시간범위 | 저장가능한 (절대) 시간범위 |
+# |:----:|:---------:|:------------------:|:-----------------------:|
+# | `Y`  |    년(**Y**ear)      |  $\pm$9.2e18 년     | [9.2e18 BC, 9.2e18 AD] |
+# | `M`  |    월(**M**onth)      |  $\pm$ 7.6e17 년      | [7.6e17 BC, 7.6e17 AD] |
+# | `W`  |    주(**W**eek)      |  $\pm$ 1.7e17 년     | [7.6e17 BC, 7.6e17 AD] |
+# | `D`  |    일(**D**ay)      |  $\pm$ 2.5e16 년     | [2.5e16 BC, 2.5e16 AD] |
+# | `h`  |    시(**h**our)      |  $\pm$ 1.0e15 년     | [1.0e15 BC, 1.0e15 AD] |
+# | `m`  |    분(**m**inute)      |  $\pm$ 1.7e13 년     | [1.7e13 BC, 1.7e13 AD] |
+# | `s`  |    초(**s**econd)      |  $\pm$ 2.9e11 년     | [2.9e11 BC, 2.9e11 AD] |
+# | `ms`  |    밀리초(**m**illi**s**econd)     |  $\pm$ 2.9e8 년     | [ 2.9e8 BC, 2.9e8 AD] |
+# | `us`  |    마이크로초(micro**s**econd)     |  $\pm$ 2.9e5 년     | [290301 BC, 294241 AD] |
+# | `ns`  |    나노초(**n**ano**s**econd)     |  $\pm$ 292 년     | [ 1678 AD, 2262 AD] |
+# | `ps`  |    피코초(**p**ico**s**econd)     |  $\pm$ 106 일     | [ 1969 AD, 1970 AD] |
+# | `fs`  |    펨토초(**f**emto**s**econd)     |  $\pm$ 2.6 시간    | [ 1969 AD, 1970 AD] |
+# | `as`  |    아토초(**a**tto**s**econd)     |  $\pm$ 9.2초     |  [ 1969 AD, 1970 AD] |
+#
 
 # %% [markdown]
 # 문자열 리스트를 입력해도 날짜시간형으로 인식한다.
