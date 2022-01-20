@@ -240,6 +240,7 @@ datetimeNow.tzinfo
 # %%
 from datetime import timezone
 tzSeoul = timezone(offset = datetime.timedelta(hours = 9), name = 'Seoul')
+tzSeoul = timezone(offset = datetime.timedelta(hours = 9))
 # UTC와 시간차이를 datetime.timedelta로 나타냅니다.
 
 # %%
@@ -252,18 +253,40 @@ tzSeoul
 datetimeNow
 
 # %% [markdown]
-# naive한 날짜시간형 `datetimeNow`에 시간대 정보를 추가하려면 다음과 같이 `.astimezone()` 메쏘드와 시간대 정보 `tzSeoul`을 활용합니다.
+# naive한 날짜시간형 `datetimeNow`에 시간대 정보를 추가하려면 `.replace(tzinfo=)`와 `.astimezone(tz=)` 메쏘드를 활용합니다. `.replace(tzinfo=)`는 주어진 날짜시간은 그대로 두고 시간대만 수정합니다(날짜시간을 그대로 두고 시간대를 변경하면 의미하는 시각이 변하기 마련입니다). `.astimezone(tz=)`는 주어진 시각은 바꾸지 않으므녀 시간대를 포함한 날짜시간을 다른 시간대의 날짜 시간으로 변환합니다. 
+#
+# 보통 naive 날짜시간은 현재 컴퓨터가 사용하는 시간대를 가정하기 때문에 `tzSeoul`을 사용하면 둘의 차이를 확인하기 힘들 수 있습니다. UTC+0800(예. 홍콩) 시간대를 사용해봅니다. 
+
+# %%
+tzHongkong = timezone(datetime.timedelta(hours= 8))
+
+# %%
+datetimeNow.replace(tzinfo=tzHongkong)
+
+# %%
+datetimeNow.astimezone(tz=tzHongkong)
+
+# %%
+datetimeNow = datetime.datetime.now()
 
 # %%
 dt1 = datetimeNow.astimezone(tzSeoul)
 dt1
 
+# %%
+tzHongkong = timezone(offset = datetime.timedelta(hours = 8), name = 'Hongkong')
+
+# %%
+dt1.replace(tzinfo= tzHongkong)
+
 # %% [markdown]
 # 그런데 1988년 5월 10일 오전 9시라면 어떨까? 위와 마찬가지로 다음과 같이 써도 될까?
 
 # %%
-dt1 = datetime.datetime(1988,5,10,9).astimezone(tzSeoul)
+dt1 = datetime.datetime(1988,5,10,9).replace(tzinfo = tzSeoul)
 dt1
+
+# %%
 
 # %% [markdown]
 # 우리나라는 1988년 5월 8일부터 써머타임을 실시했다. 그래서 1988년 5월 10일에는 UTC와 시간차이가 10시간이었다! `datetime.timezone()`으로 생성된 시간대 정보는 고정된 시간차이를 저장하기 때문에 역사적으로 변해간 시간차이를 나타내기에는 적절하지 않다. 이럴 경우 보통 `pytz`라는 패키지를 사용한다.
@@ -297,6 +320,9 @@ dt2
 #
 
 # %%
+dt1
+
+# %%
 dt1 - dt2
 
 # %%
@@ -322,7 +348,7 @@ dt2.tzinfo
 
 
 # %% [markdown]
-# 년, 월, 일, 시, 분, 초, 마이크로초 변경하기
+# 년, 월, 일, 시, 분, 초, 마이크로초 덮어쓰기
 
 # %%
 dt2.replace(year = 1989), dt2.replace(month=6), dt2.replace(day=11), \
@@ -335,14 +361,109 @@ dt2.replace(tzinfo=tzSeoul)
 # %%
 dt1.astimezone(pytzSeoul) # dt1을 1988년 DST가 적용된 시간으로 표기하면 오전 10시가 된다.
 
-# %%
-
 # %% [markdown]
 # # 넘파이 행렬
 
 # %%
+import numpy as np
+
+# %% [markdown]
+# ### 생성
+#
+# 평소와 마찬가지로 리스트를 통해 원소를 입력할 수 있다. 이때 `dtype="datetime64"`를 잊지 말자. `datetime.datetime`, `datetime.date` 또는 날짜시간 형식을 갖춘 문자열은 모두 넘파이의 `datetime64` 타입으로 변형된다. 이때 `datetime64`에서 `64`는 `datetime.datetime`과 구분하기 위해 추가했다고 한다. 물론 `np.datetime`으로 써도 `datetime.datetime`과 구별된다(Namespace가 다르다!). 어쨋든 좀더 명시적으로 구분하기 위해 `datetime64`로 명명했다고 한다. 
 
 # %%
+sDate = np.array([datetime.datetime(2021,10,4,10),
+                  datetime.datetime(2022,3,1,9,11),
+                  datetime.datetime(2023,10,9,7,10)])
+sDate
+
+# %% [markdown]
+# `dtype="datetime64"` 또는 `dtype=np.datetime64`를 하지 않으면 dtype은 object로 저장된다.
+
+# %%
+sDate = np.array([datetime.date(2021,10,4),
+                  datetime.date(2022,3,1),
+                  datetime.date(2023,10,9)], 
+                 dtype='datetime64')
+sDate
+
+# %%
+sDate = np.array([datetime.datetime(2021,10,4,10),
+                  datetime.datetime(2022,3,1,9,11),
+                  datetime.datetime(2023,10,9,7,10)],
+                dtype='datetime64')
+sDate
+
+# %% [markdown]
+# dtype의 마지막에 `[D]`(일) 또는 `[us]`(마이크로초)는 시간단위를 나타낸다. `np.datetime64`는 내부적으로 특정한 시점(예. 1970-01-01 00:00)에서 지나간 시간으로 시각을 저장한다. 시간단위가 일(`[D]`)이라면 시각은 특정한 시점(예. 1970-01-01 00:00)에서 몇 일이 지났는지를 정수로 저장하게 된다. 
+
+# %% [markdown]
+# 문자열 리스트를 입력해도 날짜시간형으로 인식한다.
+
+# %%
+sDate = np.array(['2021-10-04 10:00', 
+                  '2022-03-01 11:00', 
+                  '2023-10-09 09:07:10'], dtype='datetime64')
+sDate
+
+# %% [markdown]
+# 만약 날짜시간을 표기하는 형식이 다르다면 다음과 같이 `pd.to_datetime()`을 사용할 수 있다. `pd.to_datetime()`의 결과 type은 `DatetimeIndex`라는 인덱스 타입이기 때문에 판다스 시리즈로 변환하기 위해서 `.to_numpy()` 메쏘드를 사용했다.
+
+# %%
+import pandas as pd
+sDate = pd.to_datetime(['10:00 04-10-2021',
+                        '11:00 01-03-2022',
+                        '09:07 09-10-2023'], 
+                       format = "%H:%M %d-%m-%Y").to_numpy()
+sDate
+
+# %%
+sDate.itemsize, sDate.size
+# dtype="datetime64"에서 64는 64 비트(8 바이트)를 의미함을 확인할 수 있다.
+
+# %% [markdown]
+# ### 시간대
+
+# %% [markdown]
+# 넘파이 배열은 시간대를 저장할 수 없다. 모든 시간은 UTC로 저장된다.
+
+# %% [markdown]
+# ## 문자열 변환
+
+# %% [markdown]
+# `np.datetimea_as_string()`을 사용하면 날짜시간형 넘파이 배열을 문자열로 변환한다. 형식은 `%Y-%m-%dT%H:%M:%S`로 고정되어 있으며 `unit=`을 통해 최소 시간 단위를 결정할 수 있다. `unit='D'`(**D**ay)로 하면 년-월-일까지만 출력한다. 이때 주어진 날짜시간 데이터에서 생략되는 정보가 있다면 `casting = 'unsafe'`로 놓아야 한다. 
+
+# %%
+np.datetime_as_string(sDate, unit='h')
+
+# %%
+np.datetime_as_string(sDate, unit='D', casting = 'unsafe') 
+# timezone = 'naive', 'UTC', 'local'
+# casting = 'no', 'equiv', 'safe', 'same_kind', 'unsafe'
+
+# %% [markdown]
+# 넘파이 배열은 모든 시각을 UTC로 저장하므로 출력시 필요한 시간대로 출력할 수 있다면 좋을 것이다. `timezone=`을 통해 출력 시간대를 설정할 수 있다. `naive`는 시간대 표시없이, `UTC`는 UTC를 의미하는 `Z`, 그리고 `local`은 현재 시간대의 UTC와 시간 차이를 시간 뒤에 붙인다. 
+
+# %%
+aDate1 = sDate[0]
+
+print(np.datetime_as_string(aDate1, unit='m', timezone='naive'))
+print(np.datetime_as_string(aDate1, unit='m', timezone='UTC'))
+print(np.datetime_as_string(aDate1, unit='m', timezone='local'))
+
+# %%
+pytzHongkong = pytz.timezone('Asia/Hong_Kong')
+
+# %%
+np.datetime_as_string(sDate, unit='m', timezone=pytzHongkong) 
+
+# %% [markdown]
+# 만약 특정한 날짜시간 형식의 문자열로 변환하고 싶다면 판다스 시리즈로 변환한 후에 `.dt.strftime()` 메쏘드를 사용할 수 있다.
+
+# %%
+pd.Series(sDate).dt.strftime("%H:%M:%S %d-%m-%Y")
+
 
 # %% [markdown]
 # # 판다스 시리즈
@@ -351,20 +472,116 @@ dt1.astimezone(pytzSeoul) # dt1을 1988년 DST가 적용된 시간으로 표기�
 import pandas as pd
 
 # %%
-s = pd.to_datetime(['2022-05-14 08:15', '2023-03-01 09:11', '2024-10-09 15:14'])
-
-# %%
-s.tz_localize(pytzSeoul) # 근데 왜 그냥 dtype='datetime[ns]'인 series에서는 안 됨?
-
-# %%
-s = pd.Series(['2022-05-14 08:15:10', '2023-03-01 09:11:20', '2024-10-09 15:14:05.99'],
+s = pd.Series(['2022-05-14 08:15:10', '1988-05-10 09:11:20', '2024-10-09 15:14:05.99'],
               dtype='datetime64[ns]')
-s
+s # naive
+
+# %%
+# to timezone aware
+tzSeoul = timezone(offset = datetime.timedelta(hours = 9), name='Seoul')
+s.dt.tz_localize(tzSeoul) 
+# 위에서 name='Seoul'을 생략하면
+# dtype: datetime64[ns, UTC+09:00]
+
+# %%
+s2 = s.dt.tz_localize(pytzSeoul)
+s2
+
+# %%
+# timezone conversion
+
+# %%
+s2.dt.tz_convert(tzHongkong) # UTC+0800으로 시간대 변환(고정된 시각)
+
+# %% [markdown]
+# ### 년, 월, 일, 시, 분, 초, 마이크로초, 나노초
 
 # %%
 s.dt.year, s.dt.month, s.dt.day, \
 s.dt.hour, s.dt.minute, s.dt.second, \
-s.dt.microsecond
+s.dt.microsecond, s.dt.nanosecond
+
+# %%
+s.dt.isocalendar().week, \
+s.dt.day_of_year, s.dt.dayofyear, \
+s.dt.days_in_month, s.dt.daysinmonth, \
+s.dt.day_of_week, s.dt.dayofweek, s.dt.weekday, \
+s.dt.month_name(), s.dt.day_name()
+
+# %%
+
+# %% [markdown]
+# ### 문자열 변환
+
+# %% [markdown]
+# dtype이 `datetime64`인 판다스 시리즈를 문자열 타입(`dtype="O"`)로 변환하거나, 문자열 타입을 `datetime64` 타입으로 변환하기 위해서는 `.dt.strftime()`과 `pd.to_datetime()`을 사용한다.
+
+# %%
+s_str_datetime = s.dt.strftime("%Y-%m-%d %H:%M:%S")
+s_str_datetime # dtype을 확인하자
+
+# %% [markdown]
+# 날짜시간 형식을 통제하지 않는다면 .astype('O')로도 충분하다.
+
+# %%
+s_str2_datetime = s.astype('O')
+s_str2_datetime
+
+# %%
+pd.to_datetime(s_str_datetime, format = '%Y-%m-%d %H:%M:%S')
+
+# %% [markdown]
+# 만약 `pd.to_datetime()`의 경우 문자열 리스트를 사용할 경우에는 결과가 `DatetimeIndex`가 되므로, `pd.Series()`를 통해 판다스 시리즈로 변환한다. (`.to_series()`를 사용할 수도 있다. 이때 결과 인덱스를 비교해보자.)
+
+# %%
+pd.to_datetime(['2022-05-14 08:15:10', 
+                '1988-05-10 09:11:20',
+                '2024-10-09 15:14:05'], format = '%Y-%m-%d %H:%M:%S').to_series()
+
+# %% [markdown]
+# 다음의 두 결과를 확인해 보자.
+
+# %%
+pd.Series(pd.to_datetime(['1300-01-01', '1310-12-25'], 
+                         format='%Y-%m-%d', errors='ignore'))
+# dtype이 datetime64[ns]가 아니라 object임
+
+# %%
+pd.Series(pd.to_datetime(['1990-01-01', '1991-12-25'], 
+                         format='%Y-%m-%d', errors='ignore'))
+
+# %% [markdown]
+# `['1300-01-01', '1310-12-25']`은 dtype `datetime64[ns]`로 저장되지 않았다. 왜 그럴까?
+
+# %% [markdown]
+# 꼭 dtype `datetime64[ns]`이 필요하다면 `errors='coerce'`로 해보자. 
+
+# %%
+pd.Series(pd.to_datetime(['1300-01-01', '1310-12-25'], 
+                         format='%Y-%m-%d', errors='coerce'))
+
+# %% [markdown]
+# 모두 실수의 `np.nan`에 해당하는 `np.datetime64('NaT')`가 되었다.
+
+# %% [markdown]
+# 넘파이 배열과 비교를 해보자. 
+
+# %%
+np.array(['1300-01-01', '1301-12-25'], dtype='datetime64')
+
+# %% [markdown]
+# dtype이 `datetime64[D]`로 시간 간격이 `D`(**D**ay)가 되었다. 판다스의 날짜시간형 데이터타입은 모두 시간간격이 `ns`(**n**ano**s**econd)이다. 이에 따라 판다스 날짜시간형이 저장할 수 있는 기간은 1678년에서 2262년까지이다. 따라서 1300년대의 날짜는 저장이 불가능한 것이다!
+
+# %% [markdown]
+# 혼동하지 말자. `pd.to_datetime(..., unit='D')`이나 `astype('datetime64[D]')`처럼 시간간격을 일로 설정할 수 있는 함수가 있지만, 판다스 시리즈에서 저장되는 형식은 언제나 `datetime64[ns]`이다.
+
+# %%
+pd.to_datetime([100,200], unit='D')
+
+# %%
+pd.Series(pd.to_datetime(['2022-01-20 19:04', '2023-11-03 02:10'])).astype('datetime64[D]')
+
+# %%
 
 # %%
 s.dt.year, s.dt.month, s.dt.day, \
@@ -373,62 +590,47 @@ s.dt.microsecond, s.dt.nanosecond, \
 s.dt.month_name(), s.dt.day_name()
 
 # %%
-s.dt.weekofyear, s.dt.isocalendar().week, \
-s.dt.day_of_year, s.dt.dayofyear, \
-s.dt.days_in_month, s.dt.daysinmonth, \
-s.dt.day_of_week, s.dt.dayofweek, s.dt.weekday, \
-
-
-
-# %%
-dir(s.dt)
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-from mypack.utils import lsf
-
-# %%
-import inspect
-print(inspect.getsource(lsf))
-
-
-# %%
-def lsf(module):
-	# 모듈의 함수 나열    
-    #if not isinstance(module, (types.ModuleType, type)):
-    #    raise ValueError("argument should be module type")
-    return [k for k, v in vars(module).items() 
-            if not k.startswith('_') and callable(v) and not isinstance(v, type)] 
-    # '_'로 시작하지 않는 함수 종류만 출력
-
-# %%
-lsf(s.dt)
-lsf(s) # 이런 경우에는 쓸 수 없음?
-
-# %%
-dir(s.dt)
-
-# %%
-s.dt.tz_localize(pytzSeoul)
-
-# %%
-s.index
-
-# %%
-s2 = s.reindex()
-
-# %%
 type(s2)
 
 # %%
 dir(s)
+
+# %% [markdown]
+# #### 시간대
+
+# %%
+s = pd.Series(pd.to_datetime(['2022-05-14 08:15', '2023-03-01 09:11', '2024-10-09 15:14']))
+s
+
+# %% [markdown]
+# 시간대를 설정하려면 `.dt.tz_localize()`를 사용하고, 시간대를 변경하려면 `dt.tz_convert()`를 사용한다.
+
+# %%
+s2 = s.dt.tz_localize(pytzSeoul)
+s2
+
+# %%
+s2.dt.tz_convert(tzHongkong)
+
+# %% [markdown]
+# ### 연산
+
+# %% [markdown]
+# #### 하루 후
+
+# %%
+datetime.datetime.now() + pd.Timedelta('1 day') # pd.Timedelta()에 문자열을 사용 가능
+
+# %%
+datetime.datetime.now() + pd.offsets.BDay() # 1 영업일
+
+# %%
+
+# %%
+
+# %%
+
+# %%
 
 # %%
 
