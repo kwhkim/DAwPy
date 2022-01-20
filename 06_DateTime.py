@@ -335,11 +335,38 @@ dt1, dt2, dt1.utcoffset(), dt2.utcoffset()
 # 이처럼 시간대를 잘못 설정하면 시간이 부정확하게 입력되므로 유의해야 한다.
 
 # %% [markdown]
-# #### 그 밖에
+# ### 날짜시간 사이 연산
+
+# %% [markdown]
+# `datetime.datetime` 또는 `datetime.date` 클래스 값을 서로 빼면 시간차(`datetime.timedelta`) 클래스가 된다.
+
+# %%
+x = datetime.datetime(2022,1,20,22)
+y = datetime.datetime(2022,12,25)
+tdiff = y - x
+tdiff
+
+# %%
+d_h_m_s(tdiff)
+
+# %% [markdown]
+# 2022년 1월 20일 오후 10시에서 2022년 12월 25일 오전 0시까지는 338일 2시간이 남았다.
+
+# %% [markdown]
+# 만약 주어진 시각에서 1시간이 지난 시각을 구하고자 한다면 `datetime.timedelta(hours=1)`을 더해야 한다. 다음과 같이 그냥 `+1`을 하면 오류가 발생한다.
+
+# %%
+x + 1
+
+# %%
+x + datetime.timedelta(days=338, hours=2)
+
+# %% [markdown]
+# ### 세부 요소 참조, 덮어쓰기, 변환
 
 
 # %% [markdown]
-# 년, 월, 일, 시, 분, 초, 마이크로초, 시간대 참조하기
+# #### 년, 월, 일, 시, 분, 초, 마이크로초, 시간대 참조하기
 
 # %%
 dt2.year, dt2.month,dt2.day, \
@@ -348,7 +375,7 @@ dt2.tzinfo
 
 
 # %% [markdown]
-# 년, 월, 일, 시, 분, 초, 마이크로초 덮어쓰기
+# #### 년, 월, 일, 시, 분, 초, 마이크로초 덮어쓰기
 
 # %%
 dt2.replace(year = 1989), dt2.replace(month=6), dt2.replace(day=11), \
@@ -356,13 +383,13 @@ dt2.replace(hour = 10),   dt2.replace(minute = 1), dt2.replace(second = 30), dt2
 dt2.replace(tzinfo=tzSeoul)
 
 # %% [markdown]
-# 시간은 그대로 시간대만 변경하기(동일한 시각이 시간대가 다른 시간으로 변환된다)
+# #### 시각은 그대로 시간대만 변경하기(동일한 시각이 시간대가 다른 시간으로 변환된다)
 
 # %%
 dt1.astimezone(pytzSeoul) # dt1을 1988년 DST가 적용된 시간으로 표기하면 오전 10시가 된다.
 
 # %% [markdown]
-# # 넘파이 행렬
+# ## 넘파이 행렬
 
 # %%
 import numpy as np
@@ -399,6 +426,65 @@ sDate
 # dtype의 마지막에 `[D]`(일) 또는 `[us]`(마이크로초)는 시간단위를 나타낸다. `np.datetime64`는 내부적으로 특정한 시점(예. 1970-01-01 00:00)에서 지나간 시간으로 시각을 저장한다. 시간단위가 일(`[D]`)이라면 시각은 특정한 시점(예. 1970-01-01 00:00)에서 몇 일이 지났는지를 정수로 저장하게 된다. 
 
 # %% [markdown]
+# 시간단위에 저장 가능한 시간의 범위가 달라진다.
+
+# %%
+| Code |  Meaning  | 저장가능한 (상대) 시간범위 | 저장가능한 (절대) 시간범위 |
+|:----:|:---------:|:------------------:|:-----------------------:|
+| `Y`  |    년      |  +/- 9.2e18 년      | [9.2e18 BC, 9.2e18 AD] |
+| `M`  |    월      |  +/- 7.6e17 년      | [7.6e17 BC, 7.6e17 AD] |
+W
+week
++/- 1.7e17 years
+[1.7e17 BC, 1.7e17 AD]
+D
+day
++/- 2.5e16 years
+[2.5e16 BC, 2.5e16 AD]
+And here are the time units:
+
+Code
+Meaning
+Time span (relative)
+Time span (absolute)
+h
+hour
++/- 1.0e15 years
+[1.0e15 BC, 1.0e15 AD]
+m
+minute
++/- 1.7e13 years
+[1.7e13 BC, 1.7e13 AD]
+s
+second
++/- 2.9e11 years
+[2.9e11 BC, 2.9e11 AD]
+ms
+millisecond
++/- 2.9e8 years
+[ 2.9e8 BC, 2.9e8 AD]
+us / μs
+microsecond
++/- 2.9e5 years
+[290301 BC, 294241 AD]
+ns
+nanosecond
++/- 292 years
+[ 1678 AD, 2262 AD]
+ps
+picosecond
++/- 106 days
+[ 1969 AD, 1970 AD]
+fs
+femtosecond
++/- 2.6 hours
+[ 1969 AD, 1970 AD]
+as
+attosecond
++/- 9.2 seconds
+[ 1969 AD, 1970 AD]
+
+# %% [markdown]
 # 문자열 리스트를 입력해도 날짜시간형으로 인식한다.
 
 # %%
@@ -429,7 +515,7 @@ sDate.itemsize, sDate.size
 # 넘파이 배열은 시간대를 저장할 수 없다. 모든 시간은 UTC로 저장된다.
 
 # %% [markdown]
-# ## 문자열 변환
+# ### 문자열 변환
 
 # %% [markdown]
 # `np.datetimea_as_string()`을 사용하면 날짜시간형 넘파이 배열을 문자열로 변환한다. 형식은 `%Y-%m-%dT%H:%M:%S`로 고정되어 있으며 `unit=`을 통해 최소 시간 단위를 결정할 수 있다. `unit='D'`(**D**ay)로 하면 년-월-일까지만 출력한다. 이때 주어진 날짜시간 데이터에서 생략되는 정보가 있다면 `casting = 'unsafe'`로 놓아야 한다. 
@@ -466,7 +552,10 @@ pd.Series(sDate).dt.strftime("%H:%M:%S %d-%m-%Y")
 
 
 # %% [markdown]
-# # 판다스 시리즈
+# ## 판다스 시리즈
+
+# %% [markdown]
+# ### 생성
 
 # %%
 import pandas as pd
@@ -492,21 +581,6 @@ s2
 
 # %%
 s2.dt.tz_convert(tzHongkong) # UTC+0800으로 시간대 변환(고정된 시각)
-
-# %% [markdown]
-# ### 년, 월, 일, 시, 분, 초, 마이크로초, 나노초
-
-# %%
-s.dt.year, s.dt.month, s.dt.day, \
-s.dt.hour, s.dt.minute, s.dt.second, \
-s.dt.microsecond, s.dt.nanosecond
-
-# %%
-s.dt.isocalendar().week, \
-s.dt.day_of_year, s.dt.dayofyear, \
-s.dt.days_in_month, s.dt.daysinmonth, \
-s.dt.day_of_week, s.dt.dayofweek, s.dt.weekday, \
-s.dt.month_name(), s.dt.day_name()
 
 # %%
 
@@ -581,20 +655,6 @@ pd.to_datetime([100,200], unit='D')
 # %%
 pd.Series(pd.to_datetime(['2022-01-20 19:04', '2023-11-03 02:10'])).astype('datetime64[D]')
 
-# %%
-
-# %%
-s.dt.year, s.dt.month, s.dt.day, \
-s.dt.hour, s.dt.minute, s.dt.second, \
-s.dt.microsecond, s.dt.nanosecond, \
-s.dt.month_name(), s.dt.day_name()
-
-# %%
-type(s2)
-
-# %%
-dir(s)
-
 # %% [markdown]
 # #### 시간대
 
@@ -621,10 +681,28 @@ s2.dt.tz_convert(tzHongkong)
 # %%
 datetime.datetime.now() + pd.Timedelta('1 day') # pd.Timedelta()에 문자열을 사용 가능
 
+# %% [markdown]
+# #### 1 영업일 후
+
 # %%
 datetime.datetime.now() + pd.offsets.BDay() # 1 영업일
 
 # %%
+
+# %% [markdown]
+# ### 년, 월, 일, 시, 분, 초, 마이크로초, 나노초
+
+# %%
+s.dt.year, s.dt.month, s.dt.day, \
+s.dt.hour, s.dt.minute, s.dt.second, \
+s.dt.microsecond, s.dt.nanosecond
+
+# %%
+s.dt.isocalendar().week, \
+s.dt.day_of_year, s.dt.dayofyear, \
+s.dt.days_in_month, s.dt.daysinmonth, \
+s.dt.day_of_week, s.dt.dayofweek, s.dt.weekday, \
+s.dt.month_name(), s.dt.day_name()
 
 # %%
 
