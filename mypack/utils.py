@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# %%
 import types
 
 def assign(varname, value):
@@ -88,8 +90,18 @@ def imported():
         
     # module object name(alias), 파일, 빌트인 모듈 여부
     return aliasnames, filenames, b_builtins 
-    
-	
+
+# listing available packages
+# from https://stackoverflow.com/questions/5632980/list-of-all-imports-in-python-3
+import shutil
+import pkgutil
+
+def show_acceptable_modules():
+    line = '-' * 100
+    print('{}\n{:^30}|{:^20}\n{}'.format(line, 'Module', 'Location', line))
+    for entry in pkgutil.iter_modules():
+        print('{:30}| {}'.format(entry[1], entry[0].path))
+
 
 # =====
 # From Ax_rutils.py
@@ -409,6 +421,7 @@ def pdDataFrame(**kwargs):
 import dateparser
 
 # aseq + pd.date_range
+# seq(6,9) -> ERROR???
 def seq(from_, to=None, by=None, lengthout=None, **kwargs):
     if isinstance(from_, str):
         if to is None:
