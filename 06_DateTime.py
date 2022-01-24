@@ -5,7 +5,8 @@
 ## 
 # %% [markdown]
 # ## 날짜 시간 데이터에 대한 개괄
-#
+
+# %% [markdown]
 # ###  사전 지식 
 #
 # 1. 날짜를 표기하는 방법은 나라마다 다르다.
@@ -15,15 +16,18 @@
 #     - 역사적으로도 역법이 바뀌었다.
 #     - 미래에는 어떻게 바뀔지 예상할 수 없다.
 # 3. 우리가 사용하는 날짜와 시간은 불규칙적으로 흐른다.
-#     - 하루는 항상 $86400 = 60 \times 60 \times 24$ 초인가? -> 윤초(leap second)
+#     - 하루는 항상 $86400 = 60 \times 60 \times 24$ 초인가? -> 가끔 윤초(leap second)가 생겨서 하루가 86401초가 된다.
 #     - 1달은 항상 동일한 날로 구성되는가? -> 윤달(2번째 달은 28일 또는 29일)
-#
-# ## 참고 동영상 
+
+# %% [markdown]
+# #### 참고 동영상 
 #
 # * [The Complexity of Time Data Programming](https://www.mojotech.com/blog/the-complexity-of-time-data-programming/)
 # * [North Korea changes its time zone to match South](https://www.bbc.com/news/world-asia-44010705)
 #
 #     
+
+# %% [markdown]
 # ###  주요 내용(자료형)
 #
 # 1. 표기 방법이 다른 날짜(/시간) 문자열과 날짜(시간) 타입의 상호 변환
@@ -45,8 +49,8 @@
 #
 # ### 최상의 전략과 이유? : 날짜시간을 저장하는 최상 전략이 뭐냐? 
 #
-# 1. 과거 시간은 UTC를 사용한다. : 왜냐하면 UTC와 시간대를 알면 해당 시간대로 날짜/시간을 구하는 것은 어렵지 않으니까. 과거 시간이 KST 1988-8-3이다. 그러면 그 정보를 그냥 저장하려고 하면 시간과 시간대를 동시에 저장해야 한다. 그런데 시간대가 다른 애들도 있으니까, 그런 애는 또 시간과 시간대를 따로 저장해야 하는데, UTC로 일괄 저장하면 날짜와 시간 정보만 저장하면 되고 그걸 표현할 때 필요한 시간대/타임존으로 변환해서 표현하면 되니까 가장 효율적이고 간편하다. 
-# 2. 미래 시간은 날짜시간과 시간대를 함께 저장한다. : 시간대(타임존)라는 게 예를 들어 2030년 6월 30일 오전 9시에 만나자고 한다면(우리나라 시간으로), 2030년에 약속을 잡았다. 근데 우리나라가 2025년부터 가령 서머타임을 실시했다. 그러면 만약 UTC로 그 시간을 저장해 놨으면, 서머타임을 실시한 시간과 일치하지 않게 된다. 시간대가 어떻게 변할 지 불확실하므로.
+# 1. 과거 시간은 UTC를 사용한다. : UTC와 시간대를 알면 해당 시간대로 시간을 구할 수 있다. 왜냐하면 UTC와 시간대를 알면 해당 시간대로 날짜/시간을 구하는 것은 어렵지 않으니까. 과거 시간이 KST 1988-8-3이다. 그러면 그 정보를 그냥 저장하려고 하면 시간과 시간대를 동시에 저장해야 한다. 그런데 시간대가 다른 애들도 있으니까, 그런 애는 또 시간과 시간대를 따로 저장해야 하는데, UTC로 일괄 저장하면 날짜와 시간 정보만 저장하면 되고 그걸 표현할 때 필요한 시간대/타임존으로 변환해서 표현하면 되니까 가장 효율적이고 간편하다. 
+# 2. 미래 시간은 날짜시간과 시간대를 함께 저장한다. : 미래에 어떻게 시간대 또는 써머타임이 변할 지 알 수 없다. 특정 시간대로 기술된 미래 시간은 UTC로 확정할 수 없다. 왜냐하면 시간대의 offset 또는 dst가 어떻게 변할지 미리 알 수 없기 때문이다. 시간대(타임존)라는 게 예를 들어 2030년 6월 30일 오전 9시에 만나자고 한다면(우리나라 시간으로), 2030년에 약속을 잡았다. 근데 우리나라가 2025년부터 가령 서머타임을 실시했다. 그러면 만약 UTC로 그 시간을 저장해 놨으면, 서머타임을 실시한 시간과 일치하지 않게 된다. 시간대가 어떻게 변할 지 불확실하므로.
 #
 
 # %%
@@ -74,7 +78,7 @@
 # ```
 
 # %% [markdown]
-# `time`은 시간, `date`는 날짜, `datetime`은 날짜시간 자료(값 1개, 스칼라)를 저장한다. `timedelta`는 시간 차이, `timezone`은 시간대(timezone)을 저장하고, 관련 연산을 수행할 수 있다.
+# `time`은 시간, `date`는 날짜, `datetime`은 날짜시간 자료(값 1개, 스칼라)를 저장한다. `timedelta`는 시간 차이, `timezone`은 시간대(timezone)을 저장한다. 두 시각의 차이는 `timedelta` 클래스가 된다.
 # `datetime` 모듈의 클래스는 윤초(leap seconds)를 무시한다.
 
 # %% [markdown]
@@ -104,7 +108,7 @@ date2 = datetime.date(2024, 10, 9)
 date2 - date1
 
 # %% [markdown]
-# 결과는 366일이다. 2024년은 윤년이라고 추측할 수 있다(윤년은 2월 29일로 구성된다).
+# 결과는 366일이다. 2024년은 윤년이라고 추측할 수 있다(윤년은 2월이 29일로 구성되며, 전체가 366일이다).
 
 # %% [markdown]
 # 이를 문자열에서 실행하려고 하면 오류가 발생한다.
@@ -157,7 +161,7 @@ d_h_m_s(datetime.timedelta(0,-90*60-1,-10))
 datetime.date(2024, 12, 25) - datetime.date(2024, 1, 1)
 
 # %% [markdown]
-# 오전 9시에서 오후 6시까지의 시간(근무시간?)을 구하려면 어떻게 해야 할까? `datetime.time(16,0)-datetime.time(9,0)`은 TypeError를 발생시킨다. 일단 날짜 없이 정확한 시간 차이를 구할 수 없다(왜냐하면 드물게 윤초가 존재하기 때문이다.)
+# 오전 9시에서 오후 6시까지의 시간(근무시간?)을 구하려면 어떻게 해야 할까? `datetime.time(16,0)-datetime.time(9,0)`은 TypeError를 발생시킨다. 일단 날짜 없이 정확한 시간 차이를 구할 수 없다(왜냐하면 드물게 윤초가 존재하기 때문이다. `datetime`의 클래스는 윤초를 무시하지만).
 #
 # 만약 이런 차이를 무시하고 시간 차이를 구하고 싶다면, 임의의 날짜를 지정해서 시간 차이를 구하면 된다. 
 #
@@ -171,11 +175,6 @@ datetime.datetime.combine(datetime.date(2024,1,1), datetime.time(18,0)) - \
 # dateNow <- Sys.Date()
 # print(dateNow)
 # class(dateNow)
-
-# %%
-import datetime
-import sys
-# sys — System-specific parameters and functions
 
 # %% [markdown]
 # 현재 날짜와 시간을 얻는 방법은 다음과 같다. 
@@ -215,6 +214,9 @@ datetimeNow
 
 # %% [markdown]
 # ### 문자열과 `datetime` 사이 변환
+
+# %% [markdown]
+# `datetime`을 문자열로 변환할 때 사용하는 기호는 strftime.org에서 확인 가능하다 
 
 # %%
 datetimeNow.strftime('%Y-%m-%d %H:%M:%S')
@@ -257,7 +259,7 @@ tzSeoul
 datetimeNow
 
 # %% [markdown]
-# naive한 날짜시간형 `datetimeNow`에 시간대 정보를 추가하려면 `.replace(tzinfo=)`와 `.astimezone(tz=)` 메쏘드를 활용합니다. `.replace(tzinfo=)`는 주어진 날짜시간은 그대로 두고 시간대만 수정합니다(날짜시간을 그대로 두고 시간대를 변경하면 의미하는 시각이 변하기 마련입니다). `.astimezone(tz=)`는 주어진 시각은 바꾸지 않으므녀 시간대를 포함한 날짜시간을 다른 시간대의 날짜 시간으로 변환합니다. 
+# naive한 날짜시간형 `datetimeNow`에 시간대 정보를 추가하려면 `.replace(tzinfo=)`와 `.astimezone(tz=)` 메쏘드를 활용합니다. `.replace(tzinfo=)`는 주어진 날짜시간은 그대로 두고 시간대만 수정합니다(날짜시간을 그대로 두고 시간대를 변경하면 의미하는 시각이 변하기 마련입니다). `.astimezone(tz=)`는 주어진 시각은 바꾸지 않으면서 시간대를 포함한 날짜시간을 다른 시간대의 날짜 시간으로 변환합니다. 
 #
 # 보통 naive 날짜시간은 현재 컴퓨터가 사용하는 시간대를 가정하기 때문에 `tzSeoul`을 사용하면 둘의 차이를 확인하기 힘들 수 있습니다. UTC+0800(예. 홍콩) 시간대를 사용해봅니다. 
 
@@ -289,8 +291,6 @@ dt1.replace(tzinfo= tzHongkong)
 # %%
 dt1 = datetime.datetime(1988,5,10,9).replace(tzinfo = tzSeoul)
 dt1
-
-# %%
 
 # %% [markdown]
 # 우리나라는 1988년 5월 8일부터 써머타임을 실시했다. 그래서 1988년 5월 10일에는 UTC와 시간차이가 10시간이었다! `datetime.timezone()`으로 생성된 시간대 정보는 고정된 시간차이를 저장하기 때문에 역사적으로 변해간 시간차이를 나타내기에는 적절하지 않다. 이럴 경우 보통 `pytz`라는 패키지를 사용한다.
@@ -443,11 +443,11 @@ sDate
 # | `m`  |    분(**m**inute)      |  $\pm$ 1.7e13 년     | [1.7e13 BC, 1.7e13 AD] |
 # | `s`  |    초(**s**econd)      |  $\pm$ 2.9e11 년     | [2.9e11 BC, 2.9e11 AD] |
 # | `ms`  |    밀리초(**m**illi**s**econd)     |  $\pm$ 2.9e8 년     | [ 2.9e8 BC, 2.9e8 AD] |
-# | `us`  |    마이크로초(micro**s**econd)     |  $\pm$ 2.9e5 년     | [290301 BC, 294241 AD] |
+# | `us`  |    마이크로초($\mu$**s**econd)     |  $\pm$ 2.9e5 년     | [290301 BC, 294241 AD] |
 # | `ns`  |    나노초(**n**ano**s**econd)     |  $\pm$ 292 년     | [ 1678 AD, 2262 AD] |
 # | `ps`  |    피코초(**p**ico**s**econd)     |  $\pm$ 106 일     | [ 1969 AD, 1970 AD] |
 # | `fs`  |    펨토초(**f**emto**s**econd)     |  $\pm$ 2.6 시간    | [ 1969 AD, 1970 AD] |
-# | `as`  |    아토초(**a**tto**s**econd)     |  $\pm$ 9.2초     |  [ 1969 AD, 1970 AD] |
+# | `as`  |    아토초(**a**tto**s**econd)     |  $\pm$ 9.2 초     |  [ 1969 AD, 1970 AD] |
 #
 
 # %% [markdown]
@@ -654,6 +654,45 @@ datetime.datetime.now() + pd.Timedelta('1 day') # pd.Timedelta()에 문자열을
 datetime.datetime.now() + pd.offsets.BDay() # 1 영업일
 
 # %%
+ts_now = pd.Timestamp.now()
+ts_now
+
+# %%
+ts_now.timetz() # local timezone에서 timestamp?
+
+# %%
+#ts_now.freqstr -> deprecated
+#ts_now.freq    -> deprecated
+
+# %%
+ts_now.to_julian_date()
+
+# %%
+pd.Timestamp.utcfromtimestamp(0)
+
+# %%
+pydt = ts_now.to_pydatetime()
+pydt.tzinfo # tzinfo가 None인 걸 보니 ts_now에도 timezone info는 들어있지 않을 듯?
+
+# %%
+dir(ts_now)
+
+# %%
+pd.Timestamp.now().value
+
+# %%
+time.time()
+
+# %%
+pd.Timestamp.utcnow().value
+
+# %%
+import time
+time.time() # UTC seconds?
+
+# %%
+import calendar
+calendar.timegm(time.localtime(time.time()))
 
 # %% [markdown]
 # ### 년, 월, 일, 시, 분, 초, 마이크로초, 나노초
@@ -671,6 +710,166 @@ s.dt.day_of_week, s.dt.dayofweek, s.dt.weekday, \
 s.dt.month_name(), s.dt.day_name()
 
 # %%
+
+# %% [markdown]
+# ### 판다스, 넘파이, 데이트타임 간 변환
+
+# %% [markdown]
+# 넘파이는 시간대를 저장할 수 없다. 동일한 시간대라면 1970-01-01 00:00 이후 초를 저장하면 되지만, 만약 dst가 적용될 수도 있다면, dst 정보없이 초와 시각을 정확하게 변환할 수 없다. 
+
+# %%
+import datetime
+import numpy as np
+import pandas as pd
+
+# %%
+t1 = datetime.datetime(2023, 1, 2, 11)
+t2 = datetime.datetime(2024, 4, 5)
+t1, t2
+
+# %%
+ae1 = np.datetime64(t1)
+ae2 = np.datetime64(t2)
+ae1, ae2
+
+# %%
+ae1 = np.datetime64('2023-01-02 11:00') # scalar
+ae2 = np.datetime64('2024-04-05') # scalar
+
+# %%
+ae1.item() # to datetime.datetime or datetime.date
+
+# %%
+# 만약 결과 type을 date로 통일하려면?
+res = ae1.item()
+if isinstance(res, datetime.datetime):
+    res = res.date()
+type(res), res
+
+# %%
+# 만약 결과 type을 datetime으로 통일하려면?
+res = ae2.item()
+if isinstance(res, datetime.date):
+    res = datetime.datetime.combine(res, datetime.time(0,0,0))
+type(res), res
+
+# %%
+a = np.array([ae1,ae2])
+a
+
+# %%
+a = np.array(['2023-01-02T11:00', '2024-04-05T00:00'], dtype='datetime64[m]')
+
+# %%
+a
+
+# %%
+a.tolist()
+
+# %%
+ae3 = np.datetime64('2025-05-08T14:20', '24h') # unit=이 있으면 안 됨
+# 24h은 D와 같지만, 
+
+# %%
+ae3b = np.array(['2025-05-08 14:20'], dtype='datetime64[24h]')
+ae3b
+
+# %%
+ae3 == ae3b
+
+# %%
+a = np.array([ae2, ae3])
+a.dtype, a.tolist() # list 안의 type이 하나로 통일되는 듯?
+
+# %%
+ae3 = np.datetime64('2025-05-08T14:20', 'D')
+a = np.array([ae2, ae3])
+a.dtype, a.tolist()
+
+# %%
+a1 = np.array([np.datetime64('2021')])
+a2 = np.array([np.datetime64('2021-04')])
+a3 = np.array([np.datetime64('2021-04-05')])
+a4 = np.array([np.datetime64('2021-04-05 11')])
+a5 = np.array([np.datetime64('2021-04-05 11:40')])
+a6 = np.array([np.datetime64('2021-04-05 11:40:50')])
+a7 = np.array([np.datetime64('2021-04-05 11:40:50.333')])
+
+# %%
+np.datetime_data(a1.dtype), \
+np.datetime_data(a2.dtype), \
+np.datetime_data(a3.dtype), \
+np.datetime_data(a4.dtype), \
+np.datetime_data(a5.dtype), \
+np.datetime_data(a6.dtype), \
+np.datetime_data(a7.dtype)
+
+# %%
+type(np.datetime_data(a7.dtype)[0]), np.datetime_data(a7.dtype)[0]
+
+# %%
+a8 = np.array(['2021-04-05 11:40:50.332253',
+               '2022-05-08 09:10:33.224214'],
+              dtype='datetime64[ns]')
+a8
+
+# %%
+a8[0]
+
+# %%
+a7[0].item() # datetime64[ms]
+
+# %%
+a8[0].item() # datetime64[ns]
+
+# %%
+time.time()
+
+# %%
+a8.tolist()
+
+# %%
+
+# %%
+a1[0].item()
+
+# %%
+a1.tolist()
+
+# %%
+
+# %%
+# ?np.datetime_data
+
+# %%
+# datetime_data(dtyp, /)의 설명(Docstring)에서
+# unit : str
+#    The :ref:`datetime unit <arrays.dtypes.dateunits>` on which this dtype
+#    is based.
+
+# %%
+a.dtype.str
+
+# %%
+s = pd.Series([e1, e2])
+
+# %%
+s
+
+# %%
+
+# %%
+s.to_numpy()
+
+# %%
+s.to_list()
+
+# %%
+for x in s.items():
+    print(x)
+    print(type(x))
+    print(isinstance(x[1], pd.Timestamp))
+
 
 # %%
 
@@ -1451,7 +1650,7 @@ t2b.astimezone(datetime.timezone.utc)
 # 참고 : https://brownbears.tistory.com/356
 
 # %% [raw]
-# strftime.org 
+#
 
 # %%
 # source의 확장성
@@ -1495,6 +1694,9 @@ t2.strftime('%Y-%m-%d %H:%M:%S %Z') # CET : Central Europe Time?
 
 # %% [markdown]
 # # pandas
+
+# %%
+import pandas as pd
 
 # %%
 t = pd.to_datetime(0, origin='2020/01/01', unit='D')
@@ -1643,6 +1845,181 @@ print(timeNow.timestamp()) # POSIX timestamp
 import time
 time.time() #  timestamp of current time
 
+# %% [markdown]
+# |                  | seconds     | `struct_time`         |       `str`        |
+# |:------------     |:------------|:----------------------|:-------------------|
+# | seconds          |             | `.gmtime()` in UTC     | `.ctime()` in local |   
+# |                  |             | `.localtime()` in local|                    |
+# |`struct_time`   |               |                       | `.asctime()`        |
+# |                |                |                       | `.strftime("%H%Z",)`   |
+# |`struct_time` in UTC   | `calendar.timegm()`|           |                     |
+# |              in local |  `.mktime()`       |            |                    |
+# |`str`             |                   | `.strptime( , "%H%Z")`|              |     
+# |  현재 시각         | `.time()` | 
+# |  현재 시간대       | `.timezone`|
+# |  현재 써머타임 여부  | `.daylight` |
+
 # %%
+calendar.timegm(time.localtime(time.time())) 
+# seconds in UTC -> struct_time in local ->  seconds
+
+# %%
+import os
+
+# %%
+import locale
+locale.localeconv()
+
+# %%
+locale.getlocale(locale.LC_ALL) # LC_ALL, COLLATE, CTYPE, MESSAGES, MONETARY, NUMERIC, TIME
+
+# %%
+locale.getlocale(locale.LC_COLLATE), \
+locale.getlocale(locale.LC_CTYPE), \
+locale.getlocale(locale.LC_MESSAGES), \
+locale.getlocale(locale.LC_MONETARY), \
+locale.getlocale(locale.LC_NUMERIC), \
+locale.getlocale(locale.LC_TIME)
+
+# %%
+locale.setlocale(locale.LC_ALL, "")
+
+# %%
+locale.getlocale(locale.LC_COLLATE), \
+locale.getlocale(locale.LC_CTYPE), \
+locale.getlocale(locale.LC_MESSAGES), \
+locale.getlocale(locale.LC_MONETARY), \
+locale.getlocale(locale.LC_NUMERIC), \
+locale.getlocale(locale.LC_TIME)
+
+# %% [raw]
+# Initially, when a program is started, the locale is the C locale, no matter what the user’s preferred locale is. There is one exception: the LC_CTYPE category is changed at startup to set the current locale
+# encoding to the user’s preferred locale encoding. The program must explicitly
+# say that it wants the user’s preferred locale settings for other categories by
+# calling setlocale(LC_ALL, ''). from https://docs.python.org/3.8/library/locale.html#module-locale
+
+# %%
+datetime.datetime(2020,1,4).strftime('%A %b %m %Y')
+
+# %%
+dir(locale)
+
+# %%
+x = time.strptime( "03KST", "%H%Z")
+x, x.tm_zone
+
+# %%
+import calendar
+for x in calendar.day_name:
+    print(x)
+
+# %%
+x = time.localtime(time.time())
+
+# %%
+x.tm_zone
+
+# %%
+time.strftime("%Y-%m-%d %H:%M:%S%Z", time.gmtime(time.time()))
+
+# %%
+time.strftime("%Y-%m-%d %H:%M:%S%Z", time.localtime(time.time()))
+
+# %%
+# ?time.get_clock_info
+
+
+# %%
+time.ctime(time.mktime(time.localtime(time.time())))
+# time.ctime(time.mktime(time.gmtime(time.time())))
+
+# %%
+import calendar
+
+# %%
+time.ctime(calendar.timegm(time.gmtime(time.time())))
+
+# %%
+# ?time.ctime
+
+# %%
+# ?time.gmtime
+
+# %%
+time.gmtime(0)
+
+# %%
+# ?time.localtime
+
+# %%
+time.localtime(0)
+
+
+# %%
+time.time(), time.time_ns() 
+# current time in seconds since the Epoch,
+# current time in nanoseconds since the Epoch
+
+# %%
+# time.gmtime() : 
+#   current time in seconds since the Epoch -> time.struct_time()
+time.gmtime(time.time()), time.gmtime(0) 
+
+# %%
+time.strptime('2023-04-05 11:09', '%Y-%m-%d %H:%M')
+
+# %%
+time.struct_time(tm_year=2016, tm_mon=12, tm_mday=31, tm_hour=24, tm_min=59, tm_sec=60, tm_isdst=0)
+
+# %%
+time.struct_time(time.strptime('2016-12-31 24:59:60', '%Y-%m-%d %H:%M:%S'))
+
+# %%
+time.strptime('2016-12-31 23:59:60', '%Y-%m-%d %H:%M:%S')
+
+# %%
+time.asctime(time.gmtime(time.time()))
+
+# %%
+time.asctime(time.strptime('2016-12-31 23:59:60', '%Y-%m-%d %H:%M:%S'))
+
+# %%
+dir(time)
+
+# %%
+# ?time.ctime  # seconds -> a string in local time
+
+# %%
+dir(time)
+
+# %%
+# ?time.time
+
+# %%
+# ?time.time_ns
+
+# %%
+# ?time.mktime # time tuple to seconds
+
+# %%
+x = time.gmtime(0)
+type(x)
+
+# %%
+import inspect
+inspect.getsource(time.struct_time)
+
+# %%
+time.__spec__
+
+# %%
+time.mktime(time.gmtime(0))
+
+# %%
+time.gmtime(0)
+
+
+# %%
+# ?time.mktime
 
 # %%
