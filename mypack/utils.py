@@ -38,6 +38,10 @@ def ordered(categories):
     #print(categories)
     from pandas.api.types import CategoricalDtype
     return CategoricalDtype(categories=categories, ordered=True)
+
+def unordered(categories):
+    from pandas.api.types import CategoricalDtype
+    return CategoricalDtype(categories=categories, ordered=False)    
 	
 def lsf(module):
 	# 모듈의 함수 나열    
@@ -521,3 +525,112 @@ np_apply(y, (0,), sum)
 
 np_apply(x, (1,2), sum)
 np_apply(y, (1,2), sum)
+
+
+# %% [markdown]
+# # 범주형
+
+# %%
+def cat_combine(x, lst_a, b):
+    typ = type(x)
+    if isinstance(x, pd.Categorical):
+        if b not in x.categories:
+            x2 = pd.Series(x.add_categories(b), index = x.add_categories(b),
+                          dtype = "category")
+        else:
+            x2 = pd.Series(x, index = x,
+                          dtype = "category")
+    elif isinstance(x, pd.Series) and hasattr(x, "cat"):
+        if b not in x.cat.categories:
+            x2 = x.cat.add_categories(b)
+            x2.index = x2
+        else:
+            x2 = x
+            x2.index = x2
+    else:
+        raise ValueError("x should be either pd.Categorical or pd.Series([], dtype='category')")
+        
+    #print(x2)
+    #print(type(x2))
+    #print('*'*10)
+    for cat in lst_a:
+        x2.loc[cat] = b
+    
+    #print(x2.index)
+    #print(x2)
+    #print(type(x2))
+        
+    return typ(x2.cat.remove_categories(list(set(lst_a)-set([b]))))
+        
+
+def cat_collapse_cum(x, min_freq = None, min_pct = None, others = 'others'):
+    if min_freq is not None and min_pct is not None:
+        raise ValueError("Only one of min_freq or min_pct should be set")
+    if min_freq is None and min_pct is None:
+        min_pct = 0.01
+    typ = type(x)
+    if isinstance(x, pd.Categorical):
+        if others in x.categories:
+            raise ValueError(f"others({others}) already in the categories")
+    elif isinstance(x, pd.Series) and hasattr(x, "cat"):
+        if others in x.cat.categories:
+            raise ValueError(f"others({others}) already in the categories")
+    else:
+        raise ValueError("x should be either pd.Categorical or pd.Series([], dtype='category')")
+    
+    cats = x.value_counts()
+    cats_sum = cats.sum()
+    cats_cumsum = cats.sort_values().cumsum()
+    if min_freq is not None:
+        cats_below = cats_cumsum < min_freq
+    else:
+        cats_below = cats_cumsum/cats_sum < min_pct
+    cats_remain = set(cats.index) - set(cats[cats_below].index)
+    if isinstance(x, pd.Categorical):
+        x2 = x.set_categories(list(cats_remain)+[others])
+    else:
+        x2 = x.cat.set_categories(list(cats_remain)+[others])
+    # x3 = x2.value_counts(dropna = False)
+    x2[x2.isna()] = others
+    if isinstance(x, pd.Categorical):
+        x2 = x2.remove_unused_categories()
+    else:
+        x2 = x2.cat.remove_unused_categories()
+    
+    return typ(x2)
+
+def cat_collapse(x, min_freq = None, min_pct = None, others = 'others'):
+    if min_freq is not None and min_pct is not None:
+        raise ValueError("Only one of min_freq or min_pct should be set")
+    if min_freq is None and min_pct is None:
+        min_pct = 0.01
+    typ = type(x)
+    if isinstance(x, pd.Categorical):
+        if others in x.categories:
+            raise ValueError(f"others({others}) already in the categories")
+    elif isinstance(x, pd.Series) and hasattr(x, "cat"):
+        if others in x.cat.categories:
+            raise ValueError(f"others({others}) already in the categories")
+    else:
+        raise ValueError("x should be either pd.Categorical or pd.Series([], dtype='category')")
+    
+    cats = x.value_counts()
+    if min_freq is not None:
+        cats_below = cats < min_freq
+    else:
+        cats_below = cats/cats.sum() < min_pct
+    cats_remain = set(cats.index) - set(cats[cats_below].index)
+    if isinstance(x, pd.Categorical):
+        x2 = x.set_categories(list(cats_remain)+[others])
+    else:
+        x2 = x.cat.set_categories(list(cats_remain)+[others])
+    # x3 = x2.value_counts(dropna = False)
+    x2[x2.isna()] = others
+    if isinstance(x, pd.Categorical):
+        x2 = x2.remove_unused_categories()
+    else:
+        x2 = x2.cat.remove_unused_categories()
+    
+    return typ(x2)
+
+# %%

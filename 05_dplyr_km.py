@@ -13,7 +13,6 @@
 #data(diamonds , package='ggplot2')
 from codecs import xmlcharrefreplace_errors # !!!???
 # https://www.cmi.ac.in/~madhavan/courses/prog2-2015/docs/python-3.4.2-docs-html/library/codecs.html
-# python 3.4.2까지만 지원하는...
 #from pydataset import data
 #diamonds = data('diamonds')
 
@@ -218,7 +217,7 @@ df[df['mpg'] > 30] # 위의 방법은 실수할 가능성이 있다.
 # `not`, `and`, `or`은 논리값(True/False)에 사용하는 연산
 # `~`, `&`, `|`은 비트(bitwise) 연산
 #
-# 우선순위 : `~` > `&`> `|` > 비교연산자(`==`, `<`, `>` 등) > `not` > `and` > `or`
+# 우선순위 : `~` > `&`> `|` > not > and > or
 #
 # 비트 연산이 더 높다!
 # 비트 연산 `~`, `&`, `|`를 넘파이 배열이나 데이터프레임 시리즈에 적용하면
@@ -226,15 +225,13 @@ df[df['mpg'] > 30] # 위의 방법은 실수할 가능성이 있다.
 #
 
 # %%
-# 일반적인 비트 연산의 예
-x = 0b011010 # 이진수 011010
-y = 0b110011 # 이진수 110011
-print(f"{x:08b}") # 형식 08b : 8자리 2진수(앞쪽에 0으로 공란 채움)
+x = 0b011010
+y = 0b110011
+print(f"{x:08b}")
 print(f"{y:08b}")
 print(f"{x & y:08b}")
 
 # %%
-# numpy의 벡터화된 연산 예 : +, *, /, ...
 np.array([1,2,3]) + np.array([2,4,3])
 
 # %%
@@ -242,29 +239,7 @@ np.array([True,False,False]) & np.array([True,True,False]) # 벡터화된 AND
 # &, |, ~ # 벡터화된 논리 연산
 
 # %%
-df[df['mpg'] > 30 & df['carb'] == 1] 
-
-# %% [markdown]
-# 위의 식은 `&`가 비교연산자 `==`, `>`, `<` 등보다 우선순위가 높기 때문에 다음과 같이 해석된다. 
-#
-# ```
-# df[df['mpg'] > (30 & df['carb']) == 1]
-# ```
-#
-# 파이썬 비교 연산자는 `a > b == 1`과 같은 표현이 가능하지만(`a > b and b == 1`로 해석),
-# 넘파이 배열은 불가능하다. 다음을 보자.
-
-# %%
-a = np.array([1,2,3])
-b = np.array([3,2,1])
-c = np.array([3,1,1])
-a > b
-
-# %%
-b == c
-
-# %%
-a > b == c
+df[df['mpg'] > (30 & df['carb']) == 1] 
 
 # %%
 df[(df['mpg'] > 30) & (df['carb'] == 1)] # &, |, ~ 
@@ -328,13 +303,13 @@ df = df.iloc[2:5]
 df.iloc[:, [1,3]] # df의 1,3-번째 열
 
 # %% [markdown]
-# `.filter()`의 경우 R과 다르게 행이름이나 열이름을 기준으로 데이터를 선택한다. `.filter()`를 사용하는 몇 가지 방법은 다음과 같다.
+# `.filter()`의 경우 R과 다르게 열이름을 열을 선택한다. #R에서 filter 함수는 행을 논리형으로 선택했지만, `.filter()`를 사용하는 몇 가지 방법은 다음과 같다.
 #
-# 1. `df.filter(items=lst_colname, axis=1)` : `df.loc[:, lst_colname]`과 같다(`lst_colname`은 열이름을 담고 있는 리스트).
+# 1. `df.filter(items=lst_colname, axis=1)` : `df.loc[:, lst_colname]`과 같다(`lst_colname`은 열이름을 담고 있는 리스트). #axis=0일때는 행 선택도 가능. 
 #
 # 2. `df.filter(like=substr, axis=1)` : `substr`이 열이름 속에 포함되는 열 선택
 #
-# 3. `df.filter(regex=regex, axis=1)` : 정규표현식 `rexgex`에 해당하는 패턴을 열이름 속에서 찾을 수 있는 열 선택
+# 3. `df.filter(regex=regex, axis=1)` : 정규표현식 `regex`에 해당하는 패턴을 열이름 속에서 찾을 수 있는 열 선택 
 #
 #
 #
@@ -364,7 +339,7 @@ df.filter(items = ['cyl', 'hp']) # 열이름 cyl, hp 열 선택
 import numpy as np
 
 # %%
-#which(colnames(tb)=='hp')
+#which(colnames(tb)=='hp') # [0]을 넣는 이유는 type을 numpy.ndarray로 맞춰 주기 위해
 np.where(df.columns == 'hp')[0]  # 열이름이 'hp'인 열의 순번 확인
 
 # %%
@@ -425,6 +400,11 @@ df.iloc[:, lc(lseq(0,3), lseq(7,9))]
 #tb3 %>% select(starts_with('ca')) 
 #tb3 %>% select(ends_with('p')) 
 #tb3 %>% select(contains('c'))
+
+# %%
+df.columns.str.startswith('c')
+
+# %%
 df.filter(regex = '^c', axis=1) 
 df.filter(regex = '^c')
 df.filter(regex = '^ca')
@@ -544,7 +524,7 @@ df.filter(regex = '^((?!c).)*$')
 #df = data('mtcars')
 df = pd.read_csv('pydataset_mtcars.csv', index_col=0)
 df2 = df.loc[:, ['hp', 'cyl', 'qsec']].iloc[:3, :]
-df2['shape'] = True
+df2['shape'] = True # np.array 설명할때 a= np.array[[3,2,1]]. numpy에는 알아서 만드는 변수들이 있다. a.shape은 x by x인지 a.size.. 등등 shape도 마찬가지로 차원의 크기를 말하는 건데. shape은 겹치는 명렁어라 일부러 
 
 # %%
 df2
@@ -609,7 +589,7 @@ df[['hp','qsec']].agg(np.mean)
 
 # %%
 df.agg(V1 = ('hp', np.mean)) # V1은 'hp' 컬럼에 np.mean을 적용하라
-df.agg(hpMean = ('hp', np.mean), qsecMedian = ('qsec', 'median'))
+df.agg(hpMean = ('hp', np.mean), qsecMedian = ('qsec', 'median'))# df.agg(hpMean = ('hp', 'mean'), qsecMedian = ('qsec', 'median'))
 
 # %%
 # df.agg(hpMean = np.mean, qsecMedian = np.median) # TypeError
@@ -763,7 +743,7 @@ mtcars.assign(q = np.exp(mtcars.qsec)).head(3)
 #         expGear=exp(gear), expCarb=exp(carb)) %>% 
 #  head(n=3)
 mtcars.assign(expMpg = np.exp(mtcars.mpg),
-              expCyl = np.exp(mtcars.cyl))
+              expCyl = np.exp(mtcars.cyl)) # 뒷부분 생략
 
 # %%
 #mtcars %>% mutate_all(exp) %>% head(n=3) 
@@ -789,7 +769,7 @@ mtcars.transform(np.exp)
 # mtcars %>% mutate_at(coln, exp) %>% head(n=3) 
 
 # %%
-colmn = ['cyl', 'disp', 'drat', 'carb']
+colmn = ['cyl', 'disp', 'drat', 'carb'] # transmute가 된 것처럼 결과가 출력된다
 mtcars.loc[:, colmn].transform(np.exp).head(3)
 
 # %%
