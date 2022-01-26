@@ -38,9 +38,11 @@
 # ### 파이썬/Computer
 #
 # 1. class 구조 : 데이터 타입
-# 2. (timezone/offset) naive/aware : 시간대를 어떤 알고 있는 날짜/시간(aware)에 지정해 줄 수도 있고, 그 정보가 아예 없는 경우도 있다(naive). timezone은 시간대니까 우리가 KST 이러면 한국표준시. 한국에서 사용하는 시간. 한국에서 사용하는 시간이 항상 UTC(그리니치 천문대 기준시, 협정세계시)의 시간차와 항상 동일한 것은 아니다(여러 가지 이유(서머타임, 정상회담 관련...예시)로 차이가 날 수 있다). 또한 Timezone 내에서도 항상 동일한 것은 아니다. Offset은 협정세계시와 현재 사용하고 있는 로컬타임존의 시간 차이를 말한다. 
-# 3. unix timestamp : seconds since unix epoch(1970-01-01 00:00:00) # 시간을 어떻게 나타내냐. 날짜 년월일 이런건 사실 역사적으로, 문화적으로 차이가 있다(역법, 연호..). 이과적 마인드로 어떤 기점을 기준으로 흘러간 시간을 초로 나타내겠다. 이게 Unix timestamp인데, 그 기원을 유닉스 기원이라고 해서 1970-01-01 00:00:00을 기점으로 쓰겠다는 것. 1970-01-01은 UTC 기준. 다른 시간대들은 Daylight saving이나, 국경 단위 때문에 달라지는 것들이 있는데, UTC는 기준으로 사용되기 때문에 그런 종류의 변환이 없다. 
-# 3. locale : 시스템 로케일에 대한 설명? : 로케일이라는 것은 컴퓨터의 지역적 특성. 날짜 시간 표기법이라든지 UTC OFFSET이라든지 숫자를 어떻게 표현하느냐 이런 것을 시스템에 저장해 놓은 것. 시스템 로케일은 특정 컴퓨터의 시스템이 전반적으로 사용하는 지역적 (시간) 설정. 
+# 2. (timezone/offset) naive/aware : 파이썬의 날짜시간형은 시간대(timezone) 또는 시간차(offset) 정보가 포함되어 있을 수도 있고(aware), 없을 수도 있다(naive). 
+#   - naive: 시간대(timezone) 또는 시간차(offset) 정보가 없는 경우, 추상적인 시각, UTC의 시각, 또는 현재 지역의 시각을 나타낼 수 있으므로 유의해야할 필요가 있다.  
+#   - aware: offset과 timezone을 구분할 수 있어야 한다. UTC와의 시간차를 offset이라고 하며, 시간대를 timezone이라 한다. 시간대는 써머타임의 실시 여부 등과 같은 행정적인 이유로 UTC와의 시간차가 줄어들거나 늘어날 수 있다. 이는 역사적으로 그랬으며 미래에도 그럴 가능성이 크지만, 미리 예측할 수는 없다. 예를 들어 우리나라의 KST(Korean Standard Time)는 1988년의 마지막 써머타임 이후 UTC와의 시간차가 변하지 않았다. 북한의 평양시간(PYT, Pyongyang Time)은 2015년 8월 15일부터 표준시를 UTC+09:00에서 UTC+08:30(UTC보다 8시간 30분 빠른 시간)으로 변경하였다. 하지만 그해 이뤄진 남북정상회담을 계기로 2018년 5월 5일 0시부터 UTC+09:00으로 재변경하였다(2018년 5월 4일 23시 30분이 5월 5일 0시로 조정되었다). 
+# 3. unix timestamp : 시각은 특정한 시각을 기준으로 흘러간 시간으로 나타낼 수 있다. 보통 기원(epoch)라 불리는 시각으로부터 흘러간 초(seconde)를 사용한다. 이는 공학적으로 깔끔하다. 왜냐하면 달력이란 나라마다 문화마다 다르기 때문이다. 우리나라와 서방 국가들은 그레고리력을 사용하지만, 일본은 별도로 일본력을 사용하고, 이슬람에서는 이슬람력을 사용하는 등 세계의 모든 국가가 같은 달력을 사용하지 않기 때문에, 년, 월 등도 사용하는 달력에 따라 달라지기 때문이다. unix timestamp는 unix epoch(UTC 1970년 1월 1일 자정)로부터 흘러간 초를 나타낸다.   
+# 3. 로케일(locale) : 로케일이란 컴퓨터의 지역적 특성을 저장해 놓은 것이다. 컴퓨터에서 사용하는 문자, 달력, 숫자 표기 등은 지역에 따라 달라진다. 이런 차이를 운영체제 등의 로케일로 설정한다. 
 # 4. platform-independent? : 로케일을 설정하는 방법은 운영 체제(윈도우, 리눅스)에 따라 다르다. 그래서 로케일 설정을 운영 체제에 상관없이 할 수 있도록 만든 함수들이 있다. 그런 함수들을 platform-independent한 함수라고 부른다. 
 # 5. standard modules(time, datetime, calendar), numpy & pandas dtype : 파이썬에서 날짜/시간을 다루는 방법은 빌트인 함수(time, datetime, calendar)를 사용할 수도 있고, 제3자 패키지(넘파이, 판다스)를 사용할 수도 있다. 근데 저장하는 방법이 여러 가지가 존재한다. 데이터 분석할때는 넘파이나 판다스를 쓰지만, 파이썬만 쓰는 경우는 time이나 datetime도 쓰기 때문에 이런 걸 알아 두거나 나중에 찾아볼 수 있게 정리해 놓는 것이 필요하다. 
 #
@@ -49,9 +51,9 @@
 #
 # ### 최상의 전략과 이유? : 날짜시간을 저장하는 최상 전략이 뭐냐? 
 #
-# 1. 과거 시간은 UTC를 사용한다. : UTC와 시간대를 알면 해당 시간대로 시간을 구할 수 있다. 왜냐하면 UTC와 시간대를 알면 해당 시간대로 날짜/시간을 구하는 것은 어렵지 않으니까. 과거 시간이 KST 1988-8-3이다. 그러면 그 정보를 그냥 저장하려고 하면 시간과 시간대를 동시에 저장해야 한다. 그런데 시간대가 다른 애들도 있으니까, 그런 애는 또 시간과 시간대를 따로 저장해야 하는데, UTC로 일괄 저장하면 날짜와 시간 정보만 저장하면 되고 그걸 표현할 때 필요한 시간대/타임존으로 변환해서 표현하면 되니까 가장 효율적이고 간편하다. 
-# 2. 미래 시간은 날짜시간과 시간대를 함께 저장한다. : 미래에 어떻게 시간대 또는 써머타임이 변할 지 알 수 없다. 특정 시간대로 기술된 미래 시간은 UTC로 확정할 수 없다. 왜냐하면 시간대의 offset 또는 dst가 어떻게 변할지 미리 알 수 없기 때문이다. 시간대(타임존)라는 게 예를 들어 2030년 6월 30일 오전 9시에 만나자고 한다면(우리나라 시간으로), 2030년에 약속을 잡았다. 근데 우리나라가 2025년부터 가령 서머타임을 실시했다. 그러면 만약 UTC로 그 시간을 저장해 놨으면, 서머타임을 실시한 시간과 일치하지 않게 된다. 시간대가 어떻게 변할 지 불확실하므로.
+# 1. 과거 시간은 UTC를 사용한다 : 과거 시간은 UTC만 저장할 수 있다. 왜냐하면 UTC로 저장된 과거 시간은 원하는 시간대로 쉽게 변환할 수 있기 때문이다. UTC로 저장하면 시간마다 시간대 정보를 저장하지 않아도 되기 때문에 저장공간을 아낄 수 있다는 장점도 있다. 하지만 과거로 갈 수록 시간대 정보가 정확하지 않을 수 있다는 단점이 있다. 특히 특이한 시간대의 정보 역사적 기록이 남아있지 않은 경우도 있다. 시간대 정보의 갱신이 제때 이루어지지 않을 수도 있다. 예를 들어 현재 평양시간 정보는 UTC+08:30으로 최근의 변경사항이 갱신되지 않았다.
 #
+# 2. 미래 시간은 날짜시간과 시간대를 함께 저장한다. : 시간대의 UTC와의 시간차가 미래에 어떻게 바뀔지 예상할 수 없다. 우리나라가 2030년부터 써머타임을 실시한다고 생각해보자. UTC로 저장된 2030년 날짜시간은 바뀐 시간차에서 부정확해진다. 예를 들어 UTC 2030년 8월 1일 01:00은 현재 시간차(UTC+09:00)에서 2030년 8월 1일 10:00을 나타내지만, 써머타임이 실시되어 시간이 1시간 앞당겨진다면(UTC+08:00) 2030년 8월 1일 09:00을 나타내기 때문이다. 
 
 # %%
 # 음력
@@ -120,14 +122,24 @@ date2 - date1
 # 시간의 차이를 나타내는 `datetime.timedelta` 클래스는 직접 생성하기 보다는 주어진 날짜, 시간, 날짜시간에서 얻는 경우가 더 많을 것이다. 그래도 생성하는 방법을 보인다면 다음과 같다.
 
 # %%
-datetime.timedelta(days=2, seconds = 70, microseconds = 100.50, milliseconds = -20.5, minutes = -70.43, hours=1, weeks=3)
-
+datetime.timedelta(weeks=3, days=2, 
+                   hours=1, minutes = -70.43, seconds = 70, 
+                   microseconds = 100.50, milliseconds = -20.5)
 
 # %% [markdown]
 # 일, 초, 밀리초(1/1000초), 마이크로초(1/1000밀리초), 분, 시간, 주를 입력하면 알아서 계산해준다. 이때 음수도 가능하고, 실수도 가능하다. 하지만 달(month)과 년(year)은 사용할 수 없다. 왜냐하면 달과 년의 길이는 고정되어 있지 않기 때문이다. (달의 길이는 28,29,30,31일 중 하나이고, 년의 길이는 365일, 366일 중의 하나이다.)
 
 # %% [markdown]
-# `timedelta` 클래스는 전체 시간을 **일**, **초**, **마이크로초**로 저장하기 때문에 시간, 분을 확인하기 어렵다. 다음의 함수 `d_h_m_s()`는 `timedelta` 인스턴스에서 **시간**, **분**을 계산해준다.
+# 그런데 `datetime.timedelta()`는 `days=`, `seconds=`, `microseconds=`가 모두 양수 또는 음수가 아니라서 그 값을 정확하게 읽기도 힘들다. 다음의 예를 보자. 
+
+# %%
+datetime.timedelta(weeks=-3, days=2, 
+                   hours=1, minutes = -70.43, seconds = 70, 
+                   microseconds = 100.50, milliseconds = -20.5)
+
+
+# %% [markdown]
+# `timedelta` 클래스는 전체 시간을 **일**, **초**, **마이크로초**로 저장하기도 때문에 시간, 분을 확인하기 어렵다. 다음의 함수 `d_h_m_s()`는 `timedelta` 인스턴스에서 **시간**, **분**을 계산해주고, 모든 값을 양수 또는 음수로 나타내어 시간을 확인하기 용이하다.
 
 # %%
 def d_h_m_s(td):
@@ -153,6 +165,13 @@ d_h_m_s(datetime.timedelta(1,83200, 10))
 
 # %%
 d_h_m_s(datetime.timedelta(0,-90*60-1,-10))
+
+# %% [markdown]
+# `datetutil` 패키지의 `relativedelta()`는 년, 월, 일까지 시간의 차이를 구해준다. 하지만 이때 년, 월, 일은 절대적인 시간이 아니라 차이의 기준에 따라 그 길이가 달라지는 상대적(`relative`)인 차이(`delta`)임을 유의하자.
+
+# %%
+from dateutil.relativedelta import relativedelta
+relativedelta(datetime.datetime(2023, 12, 25), datetime.datetime.now())
 
 # %% [markdown]
 # 2024년 1월 1일에서 2024년 12월 25일까지 시간(일수)을 구해보자. 
@@ -494,6 +513,11 @@ np.datetime_as_string(sDate, unit='D', casting = 'unsafe')
 # timezone = 'naive', 'UTC', 'local'
 # casting = 'no', 'equiv', 'safe', 'same_kind', 'unsafe'
 
+# %%
+np.datetime_as_string(sDate, unit='D', casting = 'same_kind') 
+# ??? 각각의 의미?
+# 공식 문서에 자세한 내용이 없는 듯
+
 # %% [markdown]
 # 넘파이 배열은 모든 시각을 UTC로 저장하므로 출력시 필요한 시간대로 출력할 수 있다면 좋을 것이다. `timezone=`을 통해 출력 시간대를 설정할 수 있다. `naive`는 시간대 표시없이, `UTC`는 UTC를 의미하는 `Z`, 그리고 `local`은 현재 시간대의 UTC와 시간 차이를 시간 뒤에 붙인다. 
 
@@ -646,6 +670,24 @@ s2.dt.tz_convert(tzHongkong)
 
 # %%
 datetime.datetime.now() + pd.Timedelta('1 day') # pd.Timedelta()에 문자열을 사용 가능
+
+# %% [markdown]
+# #### 한 달 후
+
+# %% [markdown]
+# `pd.Timedelta()`는 `'1 month'`를 지원하지 않는다. 왜냐하면 1달(`1 month`)이란 기준에 따라 그 길이가 달라지기 때문이다.
+
+# %%
+datetime.datetime.now() + pd.Timedelta('1 month')
+
+# %% [markdown]
+# 이런 경우에는 `pd.DateOffset(months=1)`를 사용하자. `pd.DateOffset()`은 `years =`, `months =` 등을 사용하여 특정한 날짜를 기준으로 한 달 뒤, 한 달 후 등을 계산할 수 있다. 
+
+# %%
+dtNow = datetime.datetime.now() 
+dtNow, dtNow + pd.DateOffset(months=1)
+
+# %%
 
 # %% [markdown]
 # #### 1 영업일 후
@@ -875,18 +917,20 @@ for x in s.items():
 
 # %%
 
+# %% [markdown]
+# # 추가할 사항
+
+# %% [markdown]
+# * 표기법
+#   - 국제 표준(ISO8601)
+#   - 지역적 특성 고려(로케일) : 직접 시스템 로케일을 변경하는 방법을 지양하고 운영체제에 독립적인 지역 설정 방법 소개
+#  
+# * 기호 의미 표
+
 # %%
 
 # %% [markdown]
-# # 6.1
-
-# %%
-
-# %% [markdown]
-# ## 6.1.1
-
-# %% [markdown]
-# ### ISO 8601
+# ### ISO 8601 날짜 표기법
 
 # %%
 # !!! 역사적인 날을 여러 가지 형식으로 바꿔 본다면?
@@ -906,10 +950,7 @@ for x in s.items():
 
 
 # %% [markdown]
-# ## 6.1.2
-
-# %% [markdown]
-# ### ISO 8601 시간
+# ### ISO 8601 시간 표기법
 
 # %% [raw]
 # # 스타일     표기                      의미
@@ -917,7 +958,7 @@ for x in s.items():
 # # 확장형  hh:mm:ss(,ss)(Z)(+-hh(:)mm)  년-월-일(,100분의 1초)(Z)(타임존)
 
 # %% [markdown]
-# ## 6.2
+# ## 날짜 표기 변환
 
 # %% [raw]
 # x <- Sys.time()
@@ -927,6 +968,7 @@ for x in s.items():
 # format(x, '%G-W%V-%u %H:%M:%S')
 
 # %%
+import datetime
 x = datetime.datetime.now()
 print(x.strftime('%Y-%m-%d %H:%M:%S'))
 print(x.strftime('%Y-%jT%H:%M:%S'))
@@ -952,6 +994,11 @@ x.strftime('%G-W%V-%u %H:%M:%S')
 # %u     1자리 (주 중) ISO 8601 일(1-7, 1=월요일)
 
 # %%
+import locale
+locale.getlocale(locale.LC_ALL)
+# 처음 부분에서 locale을 수정해야? -> 한글로
+
+# %%
 #for (y in 2020:2023) 
 #  print(format(as.Date(paste0(y, '-01-01', sep='')), '%Y/%m/%d, V=%V U=%U u=%u w=%w A=%A a=%a'))
 #from Ax_rutils import lc, lseq
@@ -974,7 +1021,8 @@ for im, y in enumerate(seq(2022,2025)):
 # %%
 # https://docs.python.org/3/library/locale.html#background-details-hints-tips-and-caveats
 import locale
-locale.setlocale(locale.LC_ALL, '') 
+# !!! 시스템의 기본 설정으로 바꾼다?
+locale.setlocale(locale.LC_ALL, '')  
 for im, y in enumerate(seq(2022,2025)):
     print(datetime.datetime.strptime(f'{y:04d}-{im+1:02d}-01', '%Y-%m-%d').
     strftime('%Y/%m/%d, V=%V U=%U u=%u w=%w A=%A a=%a B=%B b=%b'))
@@ -993,14 +1041,7 @@ for im, y in enumerate(seq(2022,2025)):
 
 
 # %% [markdown]
-# ## 6.3
-
-# %% [markdown]
-# ### 6.3.1
-
-
-# %% [markdown]
-# #### ISO 8601 
+# ### ISO 8601 날짜 표기 인식
 
 # %%
 # !!! 실제 이런 형식이 어디서 사용되고 있는지 확인 또는 예시가 있으면 좋을 듯.
@@ -1023,25 +1064,10 @@ for im, y in enumerate(seq(2022,2025)):
 # %%
 #??? https://stackoverflow.com/questions/969285/how-do-i-translate-an-iso-8601-datetime-string-into-a-python-datetime-object
 from dateutil import parser
-datetime.datetime.strptime('20220102', '%Y%m%d')
-parser.parse('20220102') # subpackage parser
-datetime.datetime.strptime('2022-01-02', '%Y-%m-%d')
-parser.parse('2022-01-02')
-
-# %%
-from mypack.utils import lsf, lsf_doc
-### ??? package의 모든 subpackage와 module 나열하기???
-### https://www.google.com/search?q=python+listing+all+subpackages&client=safari&rls=en&sxsrf=AOaemvKWU59ayc3ntrOhR9iEJmJ3Ef02Mg%3A1642213240292&ei=eC_iYYKdEYaEr7wPufWO2Ak&ved=0ahUKEwiCudSG2bL1AhUGwosBHbm6A5sQ4dUDCA0&uact=5&oq=python+listing+all+subpackages&gs_lcp=Cgdnd3Mtd2l6EAM6BwgAEEcQsAM6BwgjELACECdKBAhBGABKBAhGGABQ-BNYhhpgtBtoAXACeACAAZ0BiAHpB5IBAzAuN5gBAKABAcgBCsABAQ&sclient=gws-wiz
-
-
-# %%
-import dateutil
-
-# %%
-lsf(dateutil) # 굳이 dateutil 아래 parser에 함수를 넣은 이유가?
-
-# %%
-lsf_doc(dateutil)
+x = datetime.datetime.strptime('20220102', '%Y%m%d')
+y = parser.parse('20220102') # subpackage parser
+z = datetime.datetime.strptime('2022-01-02', '%Y-%m-%d')
+x, y, z, parser.parse('2022-01-02')
 
 # %%
 datetime.datetime.fromisoformat('2022-01-02')
@@ -1051,14 +1077,19 @@ datetime.datetime.fromisoformat('2022-01-02')
 # %%
 import aniso8601
 # https://aniso8601.readthedocs.io/en/v1.0.0/
-aniso8601.parse_date('20220102')
-aniso8601.parse_date('2022-01-02')
-aniso8601.parse_date('2022-W14-1') # ISO 8601 week date format
-aniso8601.parse_date('2022-144')   # ISO 8601 ordinal date
+x = aniso8601.parse_date('20220102')
+y = aniso8601.parse_date('2022-01-02')
+z = aniso8601.parse_date('2022-W14-1') # ISO 8601 week date format
+x, y, z, aniso8601.parse_date('2022-144')   # ISO 8601 ordinal date
 
 # %% [raw]
 # as.Date('2021002', format='%Y%j'); as.Date(parse_iso_8601('2021002'))
 # as.Date('2021-002', format='%Y-%j'); as.Date(parse_iso_8601('2021-002'))
+
+# %%
+#https://stackoverflow.com/questions/17784849/print-an-error-message-without-printing-a-traceback-and-close-the-program-when-a
+#import sys
+#sys.tracebacklimit = 0
 
 # %%
 parser.parse('2022002') # ParseError: year 2022002 is out of range
@@ -1841,23 +1872,30 @@ timeNow
 # unclass(timeNow); print.default(timeNow)
 
 # %%
+time.time().gmtime()
+
+# %%
+time.localtime(timeNow.timestamp())
+
+# %%
 print(timeNow.timestamp()) # POSIX timestamp
 import time
 time.time() #  timestamp of current time
 
 # %% [markdown]
-# |                  | seconds     | `struct_time`         |       `str`        |
-# |:------------     |:------------|:----------------------|:-------------------|
-# | seconds          |             | `.gmtime()` in UTC     | `.ctime()` in local |   
-# |                  |             | `.localtime()` in local|                    |
-# |`struct_time`   |               |                       | `.asctime()`        |
-# |                |                |                       | `.strftime("%H%Z",)`   |
-# |`struct_time` in UTC   | `calendar.timegm()`|           |                     |
-# |              in local |  `.mktime()`       |            |                    |
-# |`str`             |                   | `.strptime( , "%H%Z")`|              |     
-# |  현재 시각         | `.time()` | 
-# |  현재 시간대       | `.timezone`|
-# |  현재 써머타임 여부  | `.daylight` |
+# |                  | seconds     | `struct_time`         |       `str`        |   `datetime`   |
+# |:------------     |:------------|:----------------------|:-------------------|:--------------|
+# | seconds          |             | `time.gmtime(x)` in UTC     | `time.ctime(x)` in local |   
+# |                  |             | `time.localtime(x)` in local|                    | `
+# |`struct_time`   |               |                       | `time.asctime(x)`        |
+# |                |                |                       | `time.strftime("%H%Z",x)`   |
+# |`struct_time` in UTC   | `calendar.timegm(x)`|           |                     |
+# |              in local |  `time.mktime(x)`       |            |                    |
+# | `datetime`     |     `x.timestamp()`       |            |                     |                   |
+# |`str`             |                   | `time.strptime(x, "%H%Z")`|              |     
+# |  현재 시각         | `time.time()` | 
+# |  현재 시간대       | `x.timezone`|
+# |  현재 써머타임 여부  | `x.daylight` |
 
 # %%
 calendar.timegm(time.localtime(time.time())) 
@@ -2023,3 +2061,24 @@ time.gmtime(0)
 # ?time.mktime
 
 # %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+from mypack.utils import lsf, lsf_doc
+### ??? package의 모든 subpackage와 module 나열하기???
+### https://www.google.com/search?q=python+listing+all+subpackages&client=safari&rls=en&sxsrf=AOaemvKWU59ayc3ntrOhR9iEJmJ3Ef02Mg%3A1642213240292&ei=eC_iYYKdEYaEr7wPufWO2Ak&ved=0ahUKEwiCudSG2bL1AhUGwosBHbm6A5sQ4dUDCA0&uact=5&oq=python+listing+all+subpackages&gs_lcp=Cgdnd3Mtd2l6EAM6BwgAEEcQsAM6BwgjELACECdKBAhBGABKBAhGGABQ-BNYhhpgtBtoAXACeACAAZ0BiAHpB5IBAzAuN5gBAKABAcgBCsABAQ&sclient=gws-wiz
+
+
+# %%
+import dateutil
+
+# %%
+lsf(dateutil) # 굳이 dateutil 아래 parser에 함수를 넣은 이유가?
+
+# %%
+lsf_doc(dateutil)
