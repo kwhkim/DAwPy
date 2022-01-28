@@ -495,6 +495,13 @@ x.rename_categories({'a':'Alpha', 'b':'Beta'}), \
 y.cat.rename_categories({'a':'Alpha', 'b':'Beta'})
 
 # %% [markdown]
+# 모든 범주 이름을 바꾸려면 다음과 같이 새로운 범주 이름만 리스트로 제공해도 된다.
+
+# %%
+x.rename_categories(['Alpha', 'Beta', 'Charley']), \
+y.cat.rename_categories({'a':'Alpha', 'b':'Beta'})
+
+# %% [markdown]
 # 범주의 순서를 바꾸기 위해서는 `.reorder_categories()`와 `.set_categories()`를 사용할 수 있다. `.reorder_categories()`의 경우 기존의 범주를 재배치(`reorder`)하여 순서를 결정한다. 기존의 범주가 빠지거나, 새로운 범주가 추가될 수 없다. 반면 `.set_categories()`는 범주를 새롭게 지정하면서 순서까지 바꾼다. 기존의 범주가 빠지거나 새로운 범주가 추가될 수도 있다.
 
 # %%

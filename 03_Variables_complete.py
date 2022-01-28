@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.13.5
+#       jupytext_version: 1.13.6
 #   kernelspec:
 #     display_name: rtopython3-pip
 #     language: python
@@ -680,6 +680,11 @@ isinstance(x1, int), isinstance(x2, float), isinstance(x3, str), \
 isinstance(x4, pd.Series) and x4.dtype=="category" and x4.cat.ordered == False, \
 isinstance(x5, pd.Series) and x5.dtype=="category" and x5.cat.ordered == True, \
 isinstance(x6, datetime.date), isinstance(x7, datetime.time), isinstance(x8, datetime.datetime)
+
+# %%
+# pandas documentation 추천 방법 : 범주형 확인
+isinstance(x4, pd.Series) and hasattr(x4, 'cat') and x4.cat.ordered == False
+isinstance(x4, pd.Series) and hasattr(x4, 'cat') and x4.cat.ordered == True
 
 # %% [markdown]
 # 아래를 보면 각 조건식이 서로 다른 타입일 때에도 오류를 발생시키지 않고 잘 작동하고 있음을 보여준다(이 부분은 뒤에서 리스트를 배운 후에 봐야 이해할 수 있다).
