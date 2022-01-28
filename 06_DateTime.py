@@ -238,7 +238,7 @@ print(datetime.datetime.strptime('11:30:00', '%H:%M:%S'))   # %Y-%m-%d의 기본
 datetimeNow.tzinfo
 
 # %% [markdown]
-# 우리가 `datetime.datetime.now()`로 얻은 날짜시간은 시간대에 대한 정보가 없다. 이렇게 시간대 정보가 없는 날짜시간형을 naive(offset)라고 하고 시간대 정보가 있는 날짜시간형을 aware(offset)라고 한다. naive 날짜시간형은 본인의 컴퓨터가 다른 시간대로 옮겨간다던지 다른 시간대의 컴퓨터로 정보를 옮기면 그 정확한 의미를 확인할 수 없기 때문에 시간대 정보를 추가해주는 것이 좋다.
+# 우리가 `datetime.datetime.now()`로 얻은 날짜시간은 시간대에 대한 정보가 없다. 이렇게 시간대 정보가 얻는 날짜시간형을 naive(offset)라고 하고 시간대 정보가 있는 날짜시간형을 aware(offset)라고 한다. naive 날짜시간형은 본인의 컴퓨터가 다른 시간대로 옮겨간다던지 다른 시간대의 컴퓨터로 정보를 옮기면 그 정확한 의미를 확인할 수 없기 때문에 시간대 정보를 추가해주는 것이 좋다.
 
 # %% [markdown]
 # `datetime` 모듈에는 지역시간과 UTC와의 차이를 나타내기 위해 `timezone` 클래스가 있습니다만, 이는 **고정된 시간차이**만 나타낼 수 있습니다. 시간대는 역사적으로 UTC와의 시간차이가 변해왔습니다.
@@ -303,7 +303,7 @@ pytzSeoul = pytz.timezone('Asia/Seoul')
 pytzSeoul
 
 # %% [markdown]
-# 위의 출력 결과를 보면 `LMT+8:28:00 STD`로 다소 생소한 수가 나타난다. 이는 `datetime.datetime.strptime('11:30:00', '%H:%M:%S')`에서 나타난 기본 날짜 1900년 1월 1일의 시간차이를 나타낸다.(#1900년 1월 1일에는 UTC와 KST가 8시간 28분 차이가 났다) `pytzSeoul`은 서울의 시간대를 나타내고 날짜에 따라 UTC와의 시간차이가 달라진다. `pytzSeoul.localize()`로 naive 날짜 시간을 aware하게 만들 수 있다.
+# 위의 출력 결과를 보면 `LMT+8:28:00 STD`로 다소 생소한 수가 나타난다. 이는 `datetime.datetime.strptime('11:30:00', '%H:%M:%S')`에서 나타난 기본 날짜 1900년 1월 1일의 시간차이를 나타낸다. `pytzSeoul`은 서울의 시간대를 나타내고 날짜에 따라 UTC와의 시간차이가 달라진다. `pytzSeoul.localize()`로 naive 날짜 시간을 aware하게 만들 수 있다.
 
 # %%
 datetimeNow =datetime.datetime.now()
@@ -460,8 +460,7 @@ sDate = np.array(['2021-10-04 10:00',
 sDate
 
 # %% [markdown]
-# 만약 날짜시간을 표기하는 형식이 다르다면 다음과 같이 `pd.to_datetime()`을 사용할 수 있다. `pd.to_datetime()`의 결과 type은 `DatetimeIndex`라는 인덱스 타입이기 때문에 넘파이 배열
-# 로 변환하기 위해서 `.to_numpy()` 메쏘드를 사용했다.
+# 만약 날짜시간을 표기하는 형식이 다르다면 다음과 같이 `pd.to_datetime()`을 사용할 수 있다. `pd.to_datetime()`의 결과 type은 `DatetimeIndex`라는 인덱스 타입이기 때문에 판다스 시리즈로 변환하기 위해서 `.to_numpy()` 메쏘드를 사용했다.
 
 # %%
 import pandas as pd
@@ -611,7 +610,7 @@ pd.Series(pd.to_datetime(['1300-01-01', '1310-12-25'],
 np.array(['1300-01-01', '1301-12-25'], dtype='datetime64')
 
 # %% [markdown]
-# dtype이 `datetime64[D]`로 시간 간격이 `D`(**D**ay)가 되었다.(64비트 정수로 표현할 수 있는 범위가 -2**63 부터 2**63인데 그 Day의 단위를 나노세컨드로 하면 양수로 2**63, 그걸 연으로 환산하면 약 292년 정도 된다. Unix epoch 1970년부터 +_292년을 저장할 수 있다.) 판다스의 날짜시간형 데이터타입은 모두 시간간격이 `ns`(**n**ano**s**econd)이다. 이에 따라 판다스 날짜시간형이 저장할 수 있는 기간은 1678년에서 2262년까지이다. 따라서 1300년대의 날짜는 저장이 불가능한 것이다!
+# dtype이 `datetime64[D]`로 시간 간격이 `D`(**D**ay)가 되었다. 판다스의 날짜시간형 데이터타입은 모두 시간간격이 `ns`(**n**ano**s**econd)이다. 이에 따라 판다스 날짜시간형이 저장할 수 있는 기간은 1678년에서 2262년까지이다. 따라서 1300년대의 날짜는 저장이 불가능한 것이다!
 
 # %% [markdown]
 # 혼동하지 말자. `pd.to_datetime(..., unit='D')`이나 `astype('datetime64[D]')`처럼 시간간격을 일로 설정할 수 있는 함수가 있지만, 판다스 시리즈에서 저장되는 형식은 언제나 `datetime64[ns]`이다.

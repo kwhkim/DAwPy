@@ -140,7 +140,7 @@ x.min(), x.max()
 x.as_ordered()
 
 # %% [markdown]
-# `.as_ordered()`를 하면 새로운 객체가 생성되고, `.as_ordered(inplace=True)`를 하면 `x`가 바로 변환된다. (결과만 보면 `x=x.as_ordered()`와 같다.)  
+# `x.as_ordered()`를 하면 새로운 객체가 생성되고, `x.as_ordered(inplace=True)`를 하면 `x`가 바로 변환된다. (결과만 보면 `x=x.as_ordered()`와 같다.) # 바로 반환된다는 것은 새로운 객체를 생성하지 않고 x 자체를 변환시킨다는 것.
 
 # %% [markdown]
 # 이때 범주 순위를 결정하기 위해서는 `.reorder_categories()`를 사용할 필요가 있다.
@@ -149,7 +149,7 @@ x.as_ordered()
 x.as_ordered().reorder_categories(['Charley', 'Beta', 'Alpha'])
 
 # %% [markdown]
-# 만약 `.as_ordered(inplace=True)`를 했다면, 마찬가지로 `.reorder_categories([], inplace=True)`를 해준다. 하지만 `.reorder_categories()`에서 `inplace=True`는 판다스 미래 버전에서 허용되지 않는다고 한다. 그러니 미래 판다스 버전까지 염두해 둔다면 `x=x.reorder_categories([], inplace=True)`가 나을 것이다.
+# 만약 `.as_ordered(inplace=True)`를 했다면, 마찬가지로 `.reorder_categories([], inplace=True)`를 해준다. 하지만 `.reorder_categories()`에서 `inplace=True`는 판다스 미래 버전에서 허용되지 않는다고 한다. 그러니 미래 판다스 버전까지 염두해 둔다면 `x=x.reorder_categories([])`가 나을 것이다.
 
 # %%
 x.as_ordered(inplace=True)
@@ -188,7 +188,7 @@ s
 # 위의 출력을 보자. 위의 `a`, `b`, `c` 등은 인덱스를 나타내고, 오른쪽은 값(`Alpha`, `Beta` 등)을 나타낸다. `dtype:`은 자료형을 나타낸다. 그 아래 `Categories`는 범주 목록과 순위 관계를 보여준다. 
 
 # %% [markdown]
-# (예상했겠지만) 데이터 타입이 범주형(명목형 또는 순위형)인 판단스 시리즈는 여러 가지 방식으로 생성할 수 있다.
+# (예상했겠지만) 데이터 타입이 범주형(명목형 또는 순위형)인 판다스 시리즈는 여러 가지 방식으로 생성할 수 있다.
 
 # %%
 pd.Series(['Alpha', 'Beta', 'Alpha', np.nan, None], dtype='category', index=list('abcde'))
@@ -284,7 +284,7 @@ x1.dtype
 x1.dtype == "category", x2.dtype == "category", x3.dtype == "category", x4.dtype == "category"
 
 # %%
-x1.dtype == 'cat'
+x1.dtype == 'cat' # 'category'로 적어줄 경우만 True로 출력된다. 
 
 # %%
 from pandas.api.types import CategoricalDtype
@@ -314,9 +314,10 @@ n = 30
 import numpy as np
 import pandas as pd
 
-x = np.random.random_integers(1,3,n)
+x = np.random.random_integers(1,3,n) # 현재는 다음과 같은 메세지가 출력된다: DeprecationWarning: This function is deprecated. Please call randint(1, 3 + 1) instead
 x # 1부터 3까지의 정수 중 하나를 무작위로 추출한다(총 30개).
 # x = np.random.choice([1,2,3], n) 로도 가능하다.
+
 
 
 # %%
@@ -336,7 +337,7 @@ dat = pd.DataFrame({'x':x, 'y':y})
 # 우선 데이터를 시각화 보면 다음과 같다.
 
 # %%
-dat.plot(x='x', y='y', kind='scatter')
+dat.plot(x='x', y='y', kind='scatter') # 
 # * matplotlib.pyplot을 사용한다면 다음과 같다.
 # import matplotlib.pyplot as plt
 # plt.scatter(x, y)
@@ -555,7 +556,10 @@ cat_combine(x, ['a', 'b'], 'c')
 cat_combine(y, ['a', 'b'], 'c')
 
 # %% [markdown]
-# `cat_collapse()`와 `cat_collapse_min()`은 모두 빈도 또는 비율이 작은 범주를 하나(예. `others`)로 묶어준다.
+# `cat_collapse(x, min_freq)`와 `cat_collapse(x, min_pct)`은 모두 빈도 또는 비율이 작은 범주를 하나(예. `others`)로 묶어준다.
+
+# %%
+cat_collapse
 
 # %%
 res1 = cat_collapse(x, min_pct=0.1, others='insignificant') 
