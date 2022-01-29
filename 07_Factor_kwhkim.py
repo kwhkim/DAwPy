@@ -95,6 +95,9 @@ type(y), y.dtype
 x.categories, x.codes
 
 # %% [markdown]
+# 참고로 이렇게 `x.categories`와 `x.codes`로 분리 저장된 내용을 다시 합치고 싶다면 `np.asarray(x)`를 한다.
+
+# %% [markdown]
 # 만약 결측값(`None` 또는 `np.nan`)이 있다면 코드 `-1`로 저장된다.
 
 # %%
@@ -435,7 +438,18 @@ pd.concat([s, pd.Series(['b'], dtype=unordered(['a', 'b']))])
 pd.concat([s, pd.Series(['b'], dtype=unordered(['b']))])
 
 # %% [markdown]
-# 범주가 많건 적던 dtype이 다르다면 dtype은 `object`로 변경된다. 물론 `.astype('category')`로 다시 범주형으로 변환할 수 있다.
+# 범주가 많건 적던 dtype이 다르다면 dtype은 `object`로 변경된다. 물론 `.astype('category')`로 다시 범주형으로 변환하거나 다음과 같이 `union_categorical()` 함수를 사용할 수 있다(순위형인 경우, 범주는 같은데 순위가 다르다면 에러가 발생한다. 만약 순위를 무시하고 싶다면 `ignore_order=True`로 설정한다.)
+
+# %%
+from pandas.api.types import union_categoricals
+union_categoricals([s, pd.Series(['b'], dtype=unordered(['b']))])
+s
+# %% [markdown]
+# 한 가지 아쉬운 점은 판다스 시리즈의 경우 인덱스가 보존되지 않는다는 점이다. 결과로 시리즈가 필요하다면 다음과 같이 인덱스를 보존할 수 있다.
+s2 = pd.Series(['b'], dtype=unordered(['b']))
+pd.Series(union_categoricals([s, s2]),
+          index = s.index.union(s2))
+
 
 # %% [markdown]
 # ## 범주형 다루기
@@ -594,3 +608,15 @@ res2.value_counts()/len(res1)
 # * https://stackoverflow.com/questions/39099217/pandas-reduce-number-of-categorical-variables-in-value-counts-tabulation
 
 # %%
+
+# %%
+## 07_Factor_kwhkim.py 정리
+#일단 생성
+pd.Categorical()  # ordered = True, False
+
+#먼저 R의 factor를 잘 알아야?
+#아니면 일부 기능만 python으로 구현해도...
+
+
+factor(c('a', 'b', 'c'), levels=c('a', 'b')) # 어떤 값을 범주에 포함시키는가?
+factor(c('a', 'b', 'c'), levels = c('a', 'b', 'c'), labels = c('a', 'b', 'a'))  # 그 값들에 대해 범주명을 뭘로 할 것인가?

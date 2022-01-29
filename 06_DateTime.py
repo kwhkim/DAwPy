@@ -303,7 +303,7 @@ pytzSeoul = pytz.timezone('Asia/Seoul')
 pytzSeoul
 
 # %% [markdown]
-# 위의 출력 결과를 보면 `LMT+8:28:00 STD`로 다소 생소한 수가 나타난다. 이는 `datetime.datetime.strptime('11:30:00', '%H:%M:%S')`에서 나타난 기본 날짜 1900년 1월 1일의 시간차이를 나타낸다.(#1900년 1월 1일에는 UTC와 KST가 8시간 28분 차이가 났다) `pytzSeoul`은 서울의 시간대를 나타내고 날짜에 따라 UTC와의 시간차이가 달라진다. `pytzSeoul.localize()`로 naive 날짜 시간을 aware하게 만들 수 있다.
+# 위의 출력 결과를 보면 `LMT+8:28:00 STD`로 다소 생소한 수가 나타난다. 이는 `datetime.datetime.strptime('11:30:00', '%H:%M:%S')`에서 나타난 기본 날짜 1900년 1월 1일의 시간차이를 나타낸다(1900년 1월 1일에는 UTC와 KST가 8시간 28분 차이가 났다). `pytzSeoul`은 서울의 시간대를 나타내고 날짜에 따라 UTC와의 시간차이가 달라진다. `pytzSeoul.localize()`로 naive 날짜 시간을 aware하게 만들 수 있다.
 
 # %%
 datetimeNow =datetime.datetime.now()
