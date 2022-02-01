@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.13.5
+#       jupytext_version: 1.13.6
 #   kernelspec:
 #     display_name: rtopython3-pip
 #     language: python
@@ -58,7 +58,6 @@
 # ## 8.1
 
 # %% [markdown]
-#
 
 # %%
 import numpy as np
@@ -187,9 +186,6 @@ dat.equals(dat02)
 # 예) data type(categorical vs. string, int32 vs int64)
 
 # %%
-# mtcars = dat.copy()
-
-# %%
 mtcars['am2'] = np.where(mtcars['am'] == 1, 'auto', 'manual')
 mtcars['am3'] = pd.Categorical(mtcars['am2'])
 mtcars.info()
@@ -247,10 +243,8 @@ pickle.dump(dat, open('Gasoline.pkl', 'wb'))
 # %%
 print(os.path.getsize('Gasoline.txt'))
 print(os.path.getsize('Gasoline.pkl'))
-
-
-# %%
 dat
+
 
 # %% [markdown]
 # ## 8.3 외부에서 작성된 텍스트 데이터 화일 불러읽기 : `pd.read_csv()`
@@ -303,6 +297,7 @@ datMsg
 
 # %% [markdown]
 # 만약 `pd.DataFrame`의 옵션이 필요하다면, 다음의 함수를 사용하자.
+
 
 # %%
 def pdDataFrame(**kwargs):
@@ -383,7 +378,7 @@ store.root
 
 # %%
 store['a'] = datMsg
-
+# store['b'] = dat
 # %%
 #store['b'] = dat
 # NotImplementedError: Cannot store a category dtype in a HDF5 dataset that uses format="fixed". Use format="table".
@@ -519,7 +514,6 @@ import magic
 # # !pip3 install magic
 # https://stackoverflow.com/questions/436220/how-to-determine-the-encoding-of-text
 
-# %%
 def predict_encoding(file_path, n_lines=20):
     '''Predict a file's encoding using chardet'''
     import chardet
@@ -623,20 +617,16 @@ import lxml.html as lh
 import pandas as pd
 
 url = 'http://pokemondb.net/pokedex/all'
-#url = 'http://www.nber.org/data/population-birthplace-diversity/JoEG_BP_diversity_data.csv'
+
+url = 'http://www.nber.org/data/population-birthplace-diversity/JoEG_BP_diversity_data.csv'
 page = requests.get(url)
 doc = lh.fromstring(page.content)
-
-# %%
-doc
-
-# %%
 tr_elements = doc.xpath('//tr')
-#tr_elements = doc.xpath('')
 
 [len(T) for T in tr_elements[:12]]
 
 # %%
+
 ## 인터넷에서 읽어오기
 
 # %%
@@ -668,6 +658,7 @@ txtio1 = StringIO(txt1.decode('cp949'))
 
 
 
+
 dat = pd.read_csv(txtio1, sep=";")
 dat
 
@@ -694,8 +685,7 @@ def guess_encoding01(file_path, n_lines=20):
 guess_encoding01('dat.csv')
 
 # %%
-guess_encoding01('R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv')
-# EUC-KR과 CP949의 차이?
+guess_encoding01('R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv')# EUC-KR과 CP949의 차이?
 
 # %%
 from bs4 import UnicodeDammit
@@ -709,6 +699,7 @@ def guess_encoding02(filename):
 
 guess_encoding02('R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv')
 
+
 # %%
 import magic
 # pip install python-magic-bin # windows
@@ -720,6 +711,7 @@ def guess_encoding03(filename):
     return encoding
 
 guess_encoding03('R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv')
+
 
 
 # %%
@@ -761,6 +753,7 @@ def isUTF8(data):
 # %%
 n_lines = 20
 with open('R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv', 'rb') as f:
+
     # Join binary lines for specified number of lines
     #rawdata = b''.join([f.readline() for _ in range(n_lines)])
     rawdata = b''.join([f.read() for _ in range(n_lines*79)])
@@ -779,10 +772,12 @@ dat01.head()
 # %%
 # %ls "R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv"
 
+
 # %%
 #dat02 = pd.read_csv('서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv')
 #UnicodeDecodeError: 'utf-8' codec can't decode byte 0xb4 in position 1: invalid start byte
 dat02 = pd.read_csv('R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv', encoding='CP949')
+
 #https://m.blog.naver.com/PostView.nhn?blogId=youji4ever&logNo=221592440302&proxyReferer=https:%2F%2Fwww.google.com%2F
 
 # %%
@@ -864,6 +859,7 @@ guess_encoding01("data/JoEG_BP_diversity_data.csv"), \
 guess_encoding02("data/JoEG_BP_diversity_data.csv"), \
 guess_encoding03("data/JoEG_BP_diversity_data.csv")
 
+
 # %%
 import pandas as pd
 
@@ -912,9 +908,8 @@ dt.fread("http://www.nber.org/data/population-birthplace-diversity/JoEG_BP_diver
 # dat1
 
 dat1 = pd.read_csv('data/UTF-8test.txt',
-# dat1 = pd.read_csv('R/dat_UTF8.txt',
                    encoding='UTF-8'
-                   );
+                   )
 dat1
 
 
@@ -1059,7 +1054,6 @@ vSh = pd.read_excel(fn)
 
 # %%
 vSh
-
 
 # %% [raw]
 # %conda install xmltodict
@@ -1249,7 +1243,7 @@ for sh in lSh:
         exec(sh+"=dat['"+sh+"']")
 
 # %%
-'FirstSheet' in globals(), 'To'
+'FirstSheet' in globals()
 
 # %% [markdown]
 # ## 8.5
@@ -1325,20 +1319,9 @@ def pdf2txt(fn_pdf, fn_txt, progress=False):
 
 
 # %%
-# %ls data/*.pdf  # 국가법령정보센터(law.go.kr)에서 다운로드함
 
 # %%
-#import os
-#os.chdir('data')
-
-# %%
-#pdf2txt('민법_2021.pdf', '민법.txt')
-
-# %%
-os.chdir('..')
-
-# %%
-#pdf2txt('data/민법_2021_01_26.pdf', '민법.txt')
+pdf2txt('민법(법률)(제17905호)(20210126).pdf', '민법.txt')
 
 # %% [markdown]
 # # 8.5.1
@@ -1384,6 +1367,7 @@ FirstSheet
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
+
 url = "https://en.wikipedia.org/wiki/List_of_most_common_surnames_in_Europe"
 req = requests.get(url)
 html = req.text
@@ -1396,6 +1380,7 @@ html_tables[12]
 # %%
 
 # %%
+
 
 # %%
 soup = BeautifulSoup(html, 'html.parser')
