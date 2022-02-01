@@ -58,25 +58,33 @@
 # ## 8.1
 
 # %% [markdown]
-# ### `pydataset` package
 
 # %%
 import numpy as np
 import pandas as pd
-from dataset_pydataset import data
-data().head() # 전제 데이터 리스트
+
+# %%
+#from pydataset import data
+#data().head() # 전제 데이터 리스트
+
+# %%
+Wages1 = pd.read_csv('dataset/pydataset/Wages1.csv')
 
 # %%
 ## 파이썬에 BankWages 라이브러리 동일하지 않음
-Wages1 = data('Wages1')
+# Wages1 = data('Wages1')
 Wages1.head()
 
 # %%
-import matplotlib.pyplot as plt
-plt.scatter('exper', 'wage', data=Wages1)
+Wages1 = pd.read_csv('dataset/pydataset/Wages1.csv', index_col=0)
 
 # %%
-Bwages = data('Bwages')
+import matplotlib.pyplot as plt
+plt.scatter('exper', 'wage', data=Wages1) # plt.scatter(x,y, data)
+
+# %%
+# Bwages = data('Bwages')
+Bwages = pd.read_csv('dataset/pydataset/Bwages.csv', index_col=0)
 plt.scatter('exper', 'wage', data=Bwages)
 
 # %% [markdown]
@@ -111,7 +119,11 @@ pd.DataFrame(data=skdat['data'], columns = skdat['feature_names']).head()
 # 2. 이렇게 저장된 데이터 화일은 텍스트 편집기로 그 내용을 확인할 수 있고, 수정도 가능합니다. 그리고 이 데이터 화일을 다시 파이썬으로 불러들이기 위해서는 `pandas`의 `read_csv()` 함수를 사용합니다. 이때 첫 번째 인자로 화일 이름을 적어줍니다. 이렇게 불러들인 데이터를 확인해 보면, 저장한 데이터와 크게 차이가 없지만 조금 다릅니다. 만약 저장한 데이터 프레임과 동일한 데이터 프레임을 얻고 싶다면 화일 이름 다음에 `index_col=0`을 써야 합니다. `index_col=`은 인덱스가 데이터 화일의 몇 번째 열, column에 있는지를 나타냅니다. 데이터 프레임에 `.to_csv()` 메쏘드를 사용한 결과 화일을 보면 데이터 프레임의 인덱스가 저장되어 있음을 확인할 수 있습니다. 그래서 `index_col=0`을 써주면 0번째 열은 데이터 프레임의 인덱스가 됩니다.
 
 # %%
-dat = data("mtcars")
+mtcars = pd.read_csv('dataset/pydataset/mtcars.csv', index_col=0)
+
+# %%
+# dat = data("mtcars")
+dat = mtcars.copy()
 
 # %%
 dat.head(3)
@@ -128,7 +140,7 @@ dat02 = pd.read_csv('dat.txt', index_col=0)  # rowname 대신 index란 용어를
 
 # %%
 dat.equals(dat02)
-(dat - dat02).iloc[14:17]
+(dat - dat02).iloc[14:17] # type에 상관없이 같다/다르다를 확인하려면?!!!
 
 # %%
 np.savetxt(r'dat.txt', dat.values, fmt='%d') # %d : 정수꼴 
@@ -208,11 +220,19 @@ dat.equals(dat2)
 
 # %%
 import os
-os.path.getsize("dat.txt")
+os.path.getsize("dat.txt"), \
 os.path.getsize("dat.pkl")
 
 # %%
-dat = data('Gasoline')
+#from pydataset import data
+#data('Gasoline')
+
+# %%
+
+# %%
+Gasolin = pd.read_csv('dataset/pydataset/Gasoline.csv', index_col=0)
+#Gasolin = pd.read_csv('/Users/kwhkim/git/DAwPy/dataset/pydataset', index_col=0)
+# /Users/kwhkim/git/DAwPy/dataset/pydataset
 
 # %%
 dat.to_csv('Gasoline.txt')
@@ -223,6 +243,7 @@ pickle.dump(dat, open('Gasoline.pkl', 'wb'))
 # %%
 print(os.path.getsize('Gasoline.txt'))
 print(os.path.getsize('Gasoline.pkl'))
+dat
 
 
 # %% [markdown]
@@ -275,7 +296,8 @@ datMsg =pdDataFrame(
 datMsg
 
 # %% [markdown]
-# 만약 `pd.DataFrame`의 옵션이 필요하다면, 다음의 함수르
+# 만약 `pd.DataFrame`의 옵션이 필요하다면, 다음의 함수를 사용하자.
+
 
 # %%
 def pdDataFrame(**kwargs):
@@ -356,9 +378,17 @@ store.root
 
 # %%
 store['a'] = datMsg
+# store['b'] = dat
+# %%
+#store['b'] = dat
+# NotImplementedError: Cannot store a category dtype in a HDF5 dataset that uses format="fixed". Use format="table".
 
 # %%
-store['b'] = dat
+#store.append('b', dat)
+# ValueError: Can only append to Tables
+
+# %%
+dat.to_hdf('store.h5', key='b', format='t')
 
 # %%
 store
@@ -483,6 +513,7 @@ pd.read_hdf('store.h5', key='b')
 import magic
 # # !pip3 install magic
 # https://stackoverflow.com/questions/436220/how-to-determine-the-encoding-of-text
+
 def predict_encoding(file_path, n_lines=20):
     '''Predict a file's encoding using chardet'''
     import chardet
@@ -494,6 +525,7 @@ def predict_encoding(file_path, n_lines=20):
 
     return chardet.detect(rawdata)['encoding']
 
+# chardet를 먼저 인스톨한다. conda install chardet
 predict_encoding('dat.csv')
 
 # %%
@@ -585,6 +617,7 @@ import lxml.html as lh
 import pandas as pd
 
 url = 'http://pokemondb.net/pokedex/all'
+
 url = 'http://www.nber.org/data/population-birthplace-diversity/JoEG_BP_diversity_data.csv'
 page = requests.get(url)
 doc = lh.fromstring(page.content)
@@ -593,9 +626,7 @@ tr_elements = doc.xpath('//tr')
 [len(T) for T in tr_elements[:12]]
 
 # %%
-# ?open
 
-# %%
 ## 인터넷에서 읽어오기
 
 # %%
@@ -620,6 +651,13 @@ from io import StringIO
 import pandas as pd
 
 txtio1 = StringIO(txt1.decode('cp949'))
+#txtio1 = StringIO(txt1.decode('ascii'))
+# UnicodeDecodeError: 'ascii' codec can't decode byte 0xaa in position 4666: ordinal not in range(128)
+#txtio1 = StringIO(txt1.decode('utf-8'))
+# UnicodeDecodeError: 'utf-8' codec can't decode byte 0xaa in position 4666: invalid start byte
+
+
+
 
 dat = pd.read_csv(txtio1, sep=";")
 dat
@@ -647,8 +685,7 @@ def guess_encoding01(file_path, n_lines=20):
 guess_encoding01('dat.csv')
 
 # %%
-guess_encoding01('서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv')
-# EUC-KR과 CP949의 차이?
+guess_encoding01('R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv')# EUC-KR과 CP949의 차이?
 
 # %%
 from bs4 import UnicodeDammit
@@ -660,7 +697,8 @@ def guess_encoding02(filename):
     suggestion = UnicodeDammit(content)
     return suggestion.original_encoding   
 
-guess_encoding02('서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv')
+guess_encoding02('R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv')
+
 
 # %%
 import magic
@@ -672,7 +710,8 @@ def guess_encoding03(filename):
     encoding = m.from_buffer(blob)
     return encoding
 
-guess_encoding03('서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv')
+guess_encoding03('R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv')
+
 
 
 # %%
@@ -713,7 +752,8 @@ def isUTF8(data):
 
 # %%
 n_lines = 20
-with open('서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv', 'rb') as f:
+with open('R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv', 'rb') as f:
+
     # Join binary lines for specified number of lines
     #rawdata = b''.join([f.readline() for _ in range(n_lines)])
     rawdata = b''.join([f.read() for _ in range(n_lines*79)])
@@ -722,20 +762,22 @@ isASCII(rawdata), check_bom(rawdata), isUTF8(rawdata)
 # %%
 
 # %%
-dat01 = pd.read_csv('Seoul_Hangang_Tourist_2009_2013.csv', encoding = 'UTF-8')
+dat01 = pd.read_csv('R/서울시 한강공원 이용객 현황 (2009_2013년).csv', encoding = 'UTF-8')
 dat01.head()
 
 # %%
-dat01 = pd.read_csv('Seoul_Hangang_Tourist_2009_2013.csv', header =0)
+dat01 = pd.read_csv('R/서울시 한강공원 이용객 현황 (2009_2013년).csv', header =0)
 dat01.head()
 
 # %%
-# %ls "서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv"
+# %ls "R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv"
+
 
 # %%
 #dat02 = pd.read_csv('서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv')
 #UnicodeDecodeError: 'utf-8' codec can't decode byte 0xb4 in position 1: invalid start byte
-dat02 = pd.read_csv('서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv', encoding='CP949')
+dat02 = pd.read_csv('R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv', encoding='CP949')
+
 #https://m.blog.naver.com/PostView.nhn?blogId=youji4ever&logNo=221592440302&proxyReferer=https:%2F%2Fwww.google.com%2F
 
 # %%
@@ -813,9 +855,10 @@ dat02.head(n=3)
 #
 
 # %%
-guess_encoding01("JoEG_BP_diversity_data.csv"), \
-guess_encoding02("JoEG_BP_diversity_data.csv"), \
-guess_encoding03("JoEG_BP_diversity_data.csv")
+guess_encoding01("data/JoEG_BP_diversity_data.csv"), \
+guess_encoding02("data/JoEG_BP_diversity_data.csv"), \
+guess_encoding03("data/JoEG_BP_diversity_data.csv")
+
 
 # %%
 import pandas as pd
@@ -823,12 +866,11 @@ import pandas as pd
 # %%
 dat03 = pd.read_csv("http://www.nber.org/data/population-birthplace-diversity/JoEG_BP_diversity_data.csv", \
                    encoding='ISO-8859-1')
+dat03.head(n=3)
 
 # %%
 dat03 = pd.read_csv("http://www.nber.org/data/population-birthplace-diversity/JoEG_BP_diversity_data.csv", \
                    encoding='CP949')
-
-# %%
 dat03.head(n=3)
 
 # %%
@@ -865,28 +907,25 @@ dt.fread("http://www.nber.org/data/population-birthplace-diversity/JoEG_BP_diver
 #                    stringsAsFactors=FALSE);
 # dat1
 
-dat1 = pd.read_csv('UTF-8test.txt',
+dat1 = pd.read_csv('data/UTF-8test.txt',
                    encoding='UTF-8'
-                   );
+                   )
 dat1
 
 
 # %%
-dat1 = pd.read_csv('UTF-8test2.txt',
+dat1 = pd.read_csv('data/UTF-8test2.txt',
                    encoding='UTF-8'
                    );
 dat1
 
 # %%
-dat1 = pd.read_csv('UTF-8test.txt',
+dat1 = pd.read_csv('data/UTF-8test.txt',
                    encoding='UTF-8',
                    quotechar='"',
                    doublequote=True
                    );
 dat1
-
-# %%
-# ?pd.read_csv
 
 # %%
 import csv
@@ -896,7 +935,7 @@ import csv
 # csv.QUOTE_ALL, QUOTE_MINIMAL, QUOTE_NONNUMERIC, QUOTE_NONE
 
 # %%
-dat1 = pd.read_csv('UTF-8test.txt',
+dat1 = pd.read_csv('data/UTF-8test.txt',
                    encoding='UTF-8',
                    quotechar='"',
                    doublequote=True,
@@ -912,7 +951,7 @@ dat1
         
 # dat2
 
-dat2 = pd.read_table('UTF-8test.txt', 
+dat2 = pd.read_table('data/UTF-8test.txt', 
                    sep=',', 
                    encoding='UTF-8',
                    header=None
@@ -940,26 +979,26 @@ with open("dat.csv", "rt", encoding='UTF-8') as f:
 #                           encoding='UTF-8'); 
 # dat3
 
-dat3 = dt.fread('UTF-8test.txt')
+dat3 = dt.fread('data/UTF-8test.txt')
 dat3
 
 # %% [markdown]
 # 위에서 보면 정확하게 읽은 것은 `dt.fread()` 뿐이다. 어떻게 `pd.read_table()`로도 정확하게 읽을 수 있을까?
 
 # %%
-dat3.to_pandas().to_csv('UTF-8test.csv')
+dat3.to_pandas().to_csv('data/UTF-8test.csv')
 
 # %%
-pd.read_csv('UTF-8test.csv', index_col=0)
+pd.read_csv('data/UTF-8test.csv', index_col=0)
 
 # %%
-pd.read_table('UTF-8test.csv', index_col=0, quotechar='"', doublequote=True, sep=',')
+pd.read_table('data/UTF-8test.csv', index_col=0, quotechar='"', doublequote=True, sep=',')
 
 # %% [markdown]
 # 이번에는 정확하게 읽었다. 그렇다면 화일내용을 확인해보자.
 
 # %%
-with open('UTF-8test.csv', encoding='UTF-8') as f:
+with open('data/UTF-8test.csv', encoding='UTF-8') as f:
 # 윈도우에서는 open(encoding = '')의 기본값은 cp949인 듯
     lns = f.readlines()
     for l in lns:
@@ -998,7 +1037,7 @@ with open('UTF-8test.csv', encoding='UTF-8') as f:
 # read_excel(path= , sheet= )
 
 # %%
-pd.read_excel('서울시 한강공원 이용객 현황 (2009_2013년).xls')
+pd.read_excel('data/서울시 한강공원 이용객 현황 (2009_2013년).xls')
 #install xlrd
 #ValueError: Your version of xlrd is 2.0.1. In xlrd >= 2.0, only the xls format is supported. Install openpyxl instead.
 #openpyxl
@@ -1010,7 +1049,7 @@ pd.read_excel('서울시 한강공원 이용객 현황 (2009_2013년).xls')
 #rm(list=ls())
 
 # %%
-fn = "excel_example.xls"
+fn = "data/excel_example.xls"
 vSh = pd.read_excel(fn)
 
 # %%
@@ -1065,8 +1104,6 @@ vSh
 # Note: you may need to restart the kernel to use updated packages.
 
 # %%
-
-
 def get_sheet_details(filename):
     sheets = []
     # Make a temporary directory with the file name
@@ -1095,12 +1132,12 @@ def get_sheet_details(filename):
 # %%
 
 # %%
-pd.read_excel('excel_example.xls', sheet_name=0)
+pd.read_excel('data/excel_example.xls', sheet_name=0)
 
 # %%
 
 # %% [markdown]
-# ### excel 화일(`.xlsx')에서 sheet name 확인하기 : `get_sheet_details()`
+# ### excel 화일(`.xlsx`)에서 sheet name 확인하기 : `get_sheet_details()`
 #
 # 아래 참조 사이트에서 조금 수정하였다.
 #
@@ -1151,34 +1188,35 @@ def get_sheet_details(file_path, tempname = '.temp_get_sheet_details'):
     return sheets1
 
 # %%
-get_sheet_details('excel_example.xlsx')
+get_sheet_details('data/excel_example.xlsx')
 
 # %% [markdown]
 # 반면 아래와 같이 `pd.read_excel`은 제대로 작동되지 않는 듯 하다.
 
 # %%
 # 제대로 작동하지 않는 듯...
-file = 'excel_example.xlsx'
+file = 'data/excel_example.xlsx'
 xl = pd.ExcelFile(file, engine='openpyxl')
 # engine = 
 # 'xlrd' supports most old/new Excel file formats.
 # 'openpyxl' supports newer Excel file formats
 print(xl.sheet_names)
 
+# %%
 import xlrd
-xls = xlrd.open_workbook(r'excel_example.xlsx', on_demand=True)
+xls = xlrd.open_workbook(r'data/excel_example.xlsx', on_demand=True)
 print(xls.sheet_names())
 
 # %% [markdown]
 # 반면 `.xls`의 경우 `pd.ExcelFile()`과 `pd.read_excel`은 제대로 작동한다. 
 
 # %%
-xls = pd.ExcelFile('excel_example.xls')
+xls = pd.ExcelFile('data/excel_example.xls')
 sheets = xls.sheet_names
 sheets
 
 # %%
-vSh = pd.read_excel('./excel_example.xls', sheet_name = sheets)
+vSh = pd.read_excel('data/excel_example.xls', sheet_name = sheets)
 vSh
 
 # %%
@@ -1189,7 +1227,7 @@ vSh
 #del Ketchup
 
 # %%
-fn = "excel_example.xls"
+fn = "data/excel_example.xls"
 
 xls = pd.ExcelFile(fn)
 lSh = xls.sheet_names
@@ -1199,12 +1237,13 @@ dat = pd.read_excel(fn, sheet_name = sheets)
 
 for sh in lSh:
     if sh in globals().keys() or sh in locals().keys():
-        print('변수 '+sh+ ' 가 이미 존재합니다.')
+        print('변수 ' + sh + ' 가 이미 존재합니다.')
         break
     else:
         exec(sh+"=dat['"+sh+"']")
 
 # %%
+'FirstSheet' in globals()
 
 # %% [markdown]
 # ## 8.5
@@ -1280,7 +1319,6 @@ def pdf2txt(fn_pdf, fn_txt, progress=False):
 
 
 # %%
-# %ls *.pdf  # 국가법령정보센터(law.go.kr)에서 다운로드함
 
 # %%
 pdf2txt('민법(법률)(제17905호)(20210126).pdf', '민법.txt')
@@ -1321,19 +1359,28 @@ FirstSheet
 #                     stringsAsFactors = FALSE, encoding = "UTF-8")
 # head(df, n=10)
 
+# %% [markdown]
+# 웹사이트에서 테이블 긁어오기
+# 다음의 소스코드는 `url`의 테이블을 모두 읽어 `html_tables`에 리스트로 저장한다. 
+
 # %%
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 
-# %%
 url = "https://en.wikipedia.org/wiki/List_of_most_common_surnames_in_Europe"
-
-# %%
 req = requests.get(url)
+html = req.text
+html_tables = pd.read_html(html)
+len(html_tables)
 
 # %%
-html = req.text
+html_tables[12]
+
+# %%
+
+# %%
+
 
 # %%
 soup = BeautifulSoup(html, 'html.parser')
