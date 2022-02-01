@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.13.6
+#       jupytext_version: 1.13.5
 #   kernelspec:
 #     display_name: rtopython3-pip
 #     language: python
@@ -109,6 +109,9 @@ with open('data/movies.csv', encoding = 'UTF-8') as f:
 
 # %% [markdown]
 # 위의 데이터를 읽기 위해서는 다음과 같은 방법을 사용한다.
+
+# %%
+import pandas as pd
 
 # %%
 pd.read_fwf('data/numeric.fwf', # 파일이름
@@ -376,6 +379,8 @@ def check_bom_file(filename):
 
 
 # %%
+#fn = 'R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv'
+fn = 'data/서울시 한강공원 이용객 현황 (2009_2013년).csv'
 check_bom_file(fn)
 
 # %% [markdown]
