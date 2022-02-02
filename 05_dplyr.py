@@ -330,11 +330,11 @@ df.iloc[:, [1,3]] # df의 1,3-번째 열
 # %% [markdown]
 # `.filter()`의 경우 R과 다르게 행이름이나 열이름을 기준으로 데이터를 선택한다. `.filter()`를 사용하는 몇 가지 방법은 다음과 같다.
 #
-# 1. `df.filter(items=lst_colname, axis=1)` : `df.loc[:, lst_colname]`과 같다(`lst_colname`은 열이름을 담고 있는 리스트).
+# 1. `df.filter(items=lst_colname, axis=1)` : `df.loc[:, lst_colname]`과 같다(`lst_colname`은 열이름을 담고 있는 리스트). 만약 `df.filter(items= , axis=0)`과 같이 쓴다면 행을 선택하는데 사용할 수도 있다. 
 #
 # 2. `df.filter(like=substr, axis=1)` : `substr`이 열이름 속에 포함되는 열 선택
 #
-# 3. `df.filter(regex=regex, axis=1)` : 정규표현식 `rexgex`에 해당하는 패턴을 열이름 속에서 찾을 수 있는 열 선택
+# 3. `df.filter(regex=regex, axis=1)` : 정규표현식 `regex`에 해당하는 패턴을 열이름 속에서 찾을 수 있는 열 선택
 #
 #
 #
@@ -365,7 +365,7 @@ import numpy as np
 
 # %%
 #which(colnames(tb)=='hp')
-np.where(df.columns == 'hp')[0]  # 열이름이 'hp'인 열의 순번 확인
+np.where(df.columns == 'hp')[0]  # 열이름이 'hp'인 열의 순번 확인. 여기서 [0]는 np.where()의 결과가 tuple이기 때문에 0-번째 원소를 선택하기 위해 쓰였다. 0-번째 원소의 type은 np.ndarray이다.
 
 # %%
 #which(colnames(tb)=='qsec') 
@@ -425,6 +425,7 @@ df.iloc[:, lc(lseq(0,3), lseq(7,9))]
 #tb3 %>% select(starts_with('ca')) 
 #tb3 %>% select(ends_with('p')) 
 #tb3 %>% select(contains('c'))
+df.columns.str.startswith('c')
 df.filter(regex = '^c', axis=1) 
 df.filter(regex = '^c')
 df.filter(regex = '^ca')
@@ -545,6 +546,11 @@ df.filter(regex = '^((?!c).)*$')
 df = pd.read_csv('pydataset_mtcars.csv', index_col=0)
 df2 = df.loc[:, ['hp', 'cyl', 'qsec']].iloc[:3, :]
 df2['shape'] = True
+# 넘파이 배열에는 기본적 정보를 담고 있는 속성이 있다. 
+# 예를 들어 .shape(각 차원의 크기), .size(원소의 갯수) 등이 대표적이다.
+# 이렇게 자동적으로 존재하는 속성과 열이름이 겹치게 되면 
+# df2['shape']을 df2.shape으로 확인할 수 없다.
+# df2.shape은 df2의 각 차원의 크기를 나타낸다. 
 
 # %%
 df2
@@ -610,6 +616,7 @@ df[['hp','qsec']].agg(np.mean)
 # %%
 df.agg(V1 = ('hp', np.mean)) # V1은 'hp' 컬럼에 np.mean을 적용하라
 df.agg(hpMean = ('hp', np.mean), qsecMedian = ('qsec', 'median'))
+# df.agg(hpMean = ('hp', 'mean'), qsecMedian = ('qsec', np.median)) 와 동일한 결과
 
 # %%
 # df.agg(hpMean = np.mean, qsecMedian = np.median) # TypeError
@@ -763,7 +770,7 @@ mtcars.assign(q = np.exp(mtcars.qsec)).head(3)
 #         expGear=exp(gear), expCarb=exp(carb)) %>% 
 #  head(n=3)
 mtcars.assign(expMpg = np.exp(mtcars.mpg),
-              expCyl = np.exp(mtcars.cyl))
+              expCyl = np.exp(mtcars.cyl)) # 뒷 부분 생략?
 
 # %%
 #mtcars %>% mutate_all(exp) %>% head(n=3) 
@@ -791,6 +798,7 @@ mtcars.transform(np.exp)
 # %%
 colmn = ['cyl', 'disp', 'drat', 'carb']
 mtcars.loc[:, colmn].transform(np.exp).head(3)
+# R의 transmute와 같이 기존의 열에 덮어쓴다.
 
 # %%
 #mtcars %>% 
