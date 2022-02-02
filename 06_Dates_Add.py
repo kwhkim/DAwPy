@@ -486,3 +486,25 @@ rng_utc = pd.date_range('3/6/2012 00:00', periods=3, freq='D', tz=dateutil.tz.tz
 # https://docs.microsoft.com/en-us/windows-server/networking/windows-time-service/windows-time-service-tools-and-settings
 
 
+# Whats wrong with storing datetime in UTC?
+#  - https://codeblog.jonskeet.uk/2019/03/27/storing-utc-is-not-a-silver-bullet/
+#  - http://www.creativedeletion.com/2015/03/19/persisting_future_datetimes.html
+# [stop using utcnow & utcfromtimestamp](https://blog.ganssle.io/articles/2019/11/utcnow.html)
+# 
+
+
+# Problems ... Timezone
+# [The Problem with Time & Timezones - Computerphile](https://www.youtube.com/watch?v=-5wpm-gesOY&ab_channel=Computerphile)
+# [Why Leap Seconds Cause Glitches](https://www.youtube.com/watch?v=Uqjg8Kk1HXo&ab_channel=TomScott)
+# [2038 problem](https://www.youtube.com/watch?v=QOeWxA9sXFY)
+
+
+# [The Complexity of Time Data Programming](https://www.mojotech.com/blog/the-complexity-of-time-data-programming/)
+# [North Korea changes its time zone to match South](https://www.bbc.com/news/world-asia-44010705)
+# 
+
+# https://www.guru99.com/date-time-and-datetime-classes-in-python.html
+
+# DST? Timezone?
+# https://www.prokerala.com/travel/timezones/Asia/Seoul?mode=history
+
