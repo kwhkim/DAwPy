@@ -2,6 +2,7 @@
 f <- file("서울시 한강공원 이용객 현황 (2009_2013년).csv", "rb")
 marks <- readBin(f, "raw", n=10)
 
+# 출처: https://en.wikipedia.org/wiki/Byte_order_mark
 BOM_UTF8 <- as.raw(c(0xef, 0xbb, 0xbf))
 BOM_UTF16BE <- as.raw(c(0xfe, 0xff))
 BOM_UTF16LE <- as.raw(c(0xff, 0xfe))
@@ -28,6 +29,7 @@ check_marks = function(BOM) {
 
 names(BOMs)[sapply(BOMs, check_marks)]
 
+# ====
 # 함수로 만들기
 # checkBOM(filename)
 
@@ -64,11 +66,35 @@ checkBOM = function(filename) {
         readBin(con, "raw", n = length(BOMs[[res]]))
         return(list(BOM=res, con=con))
     } else {
-        return(list(BOM="", con=open(file(filename), "rb")))
+        return(list(BOM="", con=file(filename), "rb"))
     }
     
 }
 
-x <- readBin(res$con, what = 'raw', n=1000000)
-y <- rawToChar(x)
-y
+filename = "서울시 한강공원 이용객 현황 (2009_2013년).csv"
+#filename = "08_ImportingData_Add.R"
+res = checkBOM(filename)
+res$BOM
+if (res$BOM != "") {
+  fsize = file.size(filename)
+  x <- readBin(res$con, what = 'raw', n=fsize + 1)
+  y <- rawToChar(x)
+  Encoding(y) <- res$BOM
+  # 이렇게 하면 res$BOM이 UTF-8 일 떄만 성공
+  # 하지만 다른 인코딩이면 rawToChar(x)에서 에러가 날 확률이 높음
+  # 에러가 나지 않는다면
+  # iconv(y, res$BOM, "")와 같이 default encoding으로 인코딩을 변환하거나
+  # iconv(y, res$BOM, "UTF-8")로 변환하고, Encoding() <- "UTF-8"로 마무리해야 할 듯
+  cat(y)
+}
+
+
+read_csv(filename, locale(encoding = 'UTF-8-BOM')) # Error: Unknown encoding UTF-8-BOM
+read_csv(res$con, locale(encoding = 'UTF-8'))
+read_csv(filename, )
+
+
+## 참고자료
+
+* https://stackoverflow.com/questions/39593637/dealing-with-byte-order-mark-bom-in-r
+* https://118k.tistory.com/863

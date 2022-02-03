@@ -69,8 +69,18 @@ import pandas as pd
 pd.read_excel('data/excel_example.xls')
 
 # %%
+dat = pd.read_excel('data/excel_example.xls')
+
+# %%
+dat.head()
+
+# %%
 pd.read_excel('data/excel_example.xls', sheet_name=1) 
 # sheet_name = 1 : 2번째 시트(sheet)
+
+# %%
+# 모든 sheet 읽기
+pd.read_excel('data/excel_example.xls', sheet_name=None) 
 
 # %%
 pd.read_excel('data/excel_example.xlsx')
@@ -190,5 +200,38 @@ scipy.io.savemat('data/korea.mat', {'korea':num_korea})
 
 # %%
 scipy.io.loadmat('data/korea.mat')['korea']
+
+# %% [markdown]
+# ### === END OF DOCUMENT
+
+# %% [markdown]
+# In general it is not a very good idea to use pickle to transmit a dictionary over a network (json could be better here). Though in rare cases it might be useful e.g., multiprocessing module. – 
+# jfs
+#  Jan 23 '12 at 9:42 
+# @Tim Pietzcker: protocol=0 (default on Python2.x) can be used with files opened in text mode. – 
+# jfs
+#  Jan 23 '12 at 9:43 
+# @J.F.Sebastian: OK, but he opened the file for reading, not for writing. – 
+# Tim Pietzcker
+#  Jan 23 '12 at 10:10
+# Geez, this is what happens when you write the code here absentmindedly and don't actually debu
+#
+#
+# Pickling is absolutely necessary for distributed and parallel computing.
+#
+# Say you wanted to do a parallel map-reduce with multiprocessing (or across cluster nodes with pyina), then you need to make sure the function you want to have mapped across the parallel resources will pickle. If it doesn't pickle, you can't send it to the other resources on another process, computer, etc. Also see here for a good example.
+#
+# To do this, I use dill, which can serialize almost anything in python. Dill also has some good tools for helping you understand what is causing your pickling to fail when your code fails.
+#
+# And, yes, people use picking to save the state of a calculation, or your ipython session, or whatever. You can also extend pickle's Pickler and UnPickler to do compression with bz2 or gzip if you'd like.
+#
+#
+#
+# ### pickle과 관련
+#
+# * https://en.wikipedia.org/wiki/Serialization
+# * https://docs.python.org/3/library/pickle.html#restricting-globals
+# * https://stackoverflow.com/questions/25353753/python-can-i-safely-unpickle-untrusted-data
+# * https://nbviewer.org/gist/minrk/5241793
 
 # %%

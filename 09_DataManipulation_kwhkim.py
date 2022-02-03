@@ -7,6 +7,21 @@
 # * 가로형/세로형 변환하기
 
 # %% [markdown]
+# 자료가 분석에 가장 적합한 상태로 제공되는 경우는 거의 없다.[^crowdflower] 이 장에서는 주어진 데이터를 가공하는 방법을 살펴본다. 구체적으로 다음의 세 작업에 대해 알아본다.
+#
+# 1. **주어진 데이터에서 집단별 요약치를 구하거나 집단별로 함수를 적용하기** : 예를 들어 학년별 평균 체중을 구하거나, 학급별 평균 체중을 구하는 경우를 생각해보자. 또는 우리나라 광역도시별로 개인의 소득분위수를 구하고 싶다면 어떻게 해야 하는가? 데이터를 특정한 변수를 기준으로 분리한 후 요약통계치를 구하거나(`.aggregate()`), 어떤 변환 작업(`.transform()`)을 한 후, 결과를 모아 합치는 작업을 파이썬에서 어떻게 할 수 있을까?
+#
+# 2. **분리된 데이터를 합치기** : 자료는 여기저기 흩어져 있는 경우가 많다. GDP 자료는
+# 통계청에서, 무역자료는 관세청에서 구했다. 이 둘을 적절하게 합쳐서 새로운 자료를 만들거나, 분석을 해야 경제와 무역에 관한 새로운 통찰을 얻을 수 있을 것이다. 어쨋든 우선 두 자료를 하나로 합쳐야 한다.
+#
+# 3. **가로형 데이터를 변환하여 세로형으로 만들거나 반대 방향으로 변환하기** : 가로형은
+# 가로로 긴 형태의 자료이고, 세로형은 세로로 긴 형태의 자료이다. 영어로는 Wide-form, Long-form이라고 칭한다. 기본적으로 가로형은 한 행에 여러 관측값이 나열되어 있고, 세로형은 한 행에 하나의 관측값이 적혀 있다. 시각화, 자료 제출, 분석 등 목적과 요구에 따라 자료를 두 가지 형태로 변환할 수 있어야 한다.
+#
+# [^crowdflower]: CrowdFlower의 설문 조사 결과에 따르면 데이터 분석가는 업무 시간의 무려 80%(!) 를 데이터 수집과
+# 전처리에 사용한다고 한다.
+
+# %% [markdown]
+#
 # ## 집단별로 함수 적용하기
 #
 # 5장에서 판다스 데이터 프레임을 사용하여 데이터를 가공하는 기본적인 방법에 대해 알아보았다. 여기에서는 이를 좀더 확장하고, 데이터프레임이 아닌 경우에도 집단별로 함수를 적용하는 방법에 대해 알아본다. 
@@ -66,6 +81,9 @@ v[g=="Male"].mean(), v[g=="Female"].mean()
 
 
 # %%
+v.groupby(g).mean()
+
+# %%
 type(v[g=='Male'])
 
 # %%
@@ -98,7 +116,10 @@ dat.groupby('g').agg(np.mean)
 dat.groupby('g').agg(lambda x: np.mean(x))
 
 # %%
-dat.agg(lambda x: np.mean(x), axis=0)
+dat.agg(np.mean, axis=0)
+
+# %%
+dat.groupby(g).agg("mean")
 
 # %%
 dat.agg(lambda x: np.mean(x), axis=1)
@@ -291,6 +312,18 @@ isinstance(np.add, np.ufunc)
 ## cummin, cumprod, cumsum, ffill, first, head, last, 
 ## max, mean, median, min, ngroup, nth, ohlc, pad, prod, 
 ## rank, pct_change, size, sem, std, sum, var, tail
+
+## summary(agg)
+##   max, mean, median, min, nth, size, sem, std, sum, var, count
+
+# %%
+v.groupby(g).max(), v.groupby(g).mean(), v.groupby(g).median(), v.groupby(g).min()
+
+# %%
+v, g
+
+# %%
+v.groupby(g).nth(n=2), v.groupby(g).size(), v.groupby(g).sem(), v.groupby(g).std()
 
 # %%
 v[:5].agg(lambda x: np.mean(x))
