@@ -57,7 +57,7 @@ a+b
 [1,3,2]+[-1,-3,-5]
 
 # %% [markdown]
-# ## 집단별 함수 적용하기 : 요약 통계치 계산 함수
+# ## 데이터프레임에서 집단별 함수 적용하기 : 요약 통계치 계산 함수
 
 # %% [markdown]
 # 먼저 `data/student_height.csv`의 데이터를 읽어오자.
@@ -144,7 +144,7 @@ v.groupby(g).agg(perc_diff90)
 # * 문제 : 위의 결과를 보며 `Female`이 `Male`에 우선한다. 알파벳 순서에 따른 것이다. 만약 `Male`을 우선 출력하고 싶다면 어떻게 할 수 있을까? 데이터 프레임의 데이터 타입을 타입을 적절하게 변환해보자.
 
 # %% [markdown]
-# ### 집단별 요약 통계치 구하기(예)
+# ### 데이터프레임에서 집단별 요약 통계치 구하기(예)
 
 # %% [markdown]
 # #### 빈도표
@@ -289,7 +289,7 @@ for dfgrouped in dat.groupby(['h_if','gender', 'num']).size().unstack('num').res
 
 
 # %% [markdown]
-# ### 집단별 함수 적용하기
+# ### 데이터프레임에서 집단별 함수 적용하기
 
 # %% [markdown]
 # 집단별로 함수를 적용할 때 함수의 결과에 따라 다음의 분류가 가능하다.
@@ -352,195 +352,120 @@ dat.set_index('gender').groupby('gender').transform(normalize_df)
 # %%
 dat.set_index('gender', append=True).groupby('gender').transform(normalize_df) 
 
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
+# %% [markdown]
+# ### 행렬에서 차원 축소
 
 # %% [markdown]
-# # 9.1.3 `sweep`, `mapply`, `rapply`
-
-# %%
-# 근데 중요한 것은 이런 함수가 아니라, 어떤 작업을 하려는 것이며,
-# 그것이 어떤 논리에 의해 이런 함수로 나타나게 되었는가가 중요?
+# R에서 `apply()`함수는 배열의 차원을 축소할 때 사용할 수 있다. 예를 들어 3차원 배열 `a`에 대해 `apply(a, mean, c(1,2))`를 하면 `a`의 1,2차원을 제외한 나머지 차원은 제거된다. 이때 제거하는 방법은 1,2차원을 제외한 차원이 다른 원소를 모두 모아 `mean`을 구하게 된다. 파이썬에서도 이런 **종류**의 기능을 하는 함수 `np.apply_along_axis()`와 `np.apply_over_axes()`가 마련되어 있지만, R의 `apply()`와 완전히 같지 않다.
 
 # %% [markdown]
-# ### `apply`
-
-# %% magic_args="-o mat" language="R"
-# mat=matrix(c(1,3,6,2,4,5), 3, 2)
-# mat
-
+# `np.apply_along_axis()`는 `axis`가 단수형인 것에서 짐작할 수 있듯이 한 차원에 대해 함수를 적용한다. 
 
 # %%
-mat = np.array([1,3,6,2,4,5]).reshape(2,3).T
+import numpy as np
 
 # %%
-mat
-
-# %% language="R"
-# apply(mat, MARGIN=1, FUN=function(x) x-1)
-
-
-# %%
-mat - 1
-
-# %%
-np.apply_over_axes(np.sum, mat, 1) # R에서는 남길 차원, Python에서는 aggregate할 차원
-
-# %%
-np.apply_over_axes(sum, mat, 1)
-
-# %%
-sum(np.array([[1,3,2], [2,2,2]]))
-# 기본값 axis=0
-
-# %%
-help(np.apply_over_axes)
-
-# %%
-np.apply_over_axes(lambda x, y: print(x,y), mat, 1)
-mat
-np.apply_over_axes(sum, mat, 1)
-
-# !!!
-#>>> np.sum(mat, axis=0)
-#array([10, 11])
-#>>> np.sum(mat, axis=1)
-#array([ 3,  7, 11])
-#>>> sum(mat, 0)
-#array([10, 11])
-#>>> sum(mat, 1)
-#array([11, 12])
-### mat[0] + mat[1] + 1 의 결과인 듯...
-
-
-# %%
-np.apply_along_axis(lambda x: print(x), mat, 1)
-# !!! apply_along_axis와 apply_over_axes의 차이는???
-
-# Custom function을 쓰기가 어렵네...??!!!
+a = np.array([[170, 175, 173],
+              [164, 166, 165]])
 
 # %% [markdown]
-# ### `sweep`
-#
-
-# %% language="R"
-# sweep(mat, MARGIN=1, STATS=c(1,3,5), FUN="-") 
-# # sweep(mat, MARGIN=1, STATS=1, "-") 도 동일하다.
-
-
-# %% language="R"
-# apply(mat, MARGIN=1, FUN=sum)
+# 예를 들어 배열 `a`에서 `a[0,:]`은 남자의 키, `a[1,:]`은 여자의 키라면 `np.apply_along_axis(np.mean, a, 1)`을 한다면 `a`의 1-번째 차원의 원소에 `np.mean()`을 하게 된다.
 
 # %%
-np.apply_over_axes(np.sum, mat, 1)  
-# R의 MARGIN은 남겨질 차원을 의미하고,
-# Python np.apply_over_axes의 axes는 합쳐질 차원을 의미한다.
-# 따라서 R apply의 MARGIN과 Python np.apply_over_axes의 axes를 모두 모으면,
-# 전체 차원이 된다.
+np.apply_along_axis(np.mean, 1, a) 
+# np.apply_along_axis(func1d, axis, arr)
 
 # %%
-# 하지만 np.sum이 아니라 sum을 쓰면 이상해진다.
-np.apply_over_axes(sum, mat, 1)  
-
-# 이런 실수를 방지하려면,
-# #!!!???
-np.apply_over_axes(np.sum, mat, 1)
-np.apply_over_axes(np.sum, mat, axes=1)
-
-np.apply_over_axes(sum, mat, axes = 1)
-np.apply_over_axes(sum, mat, axes = 0)  # 비교
-
-np.apply_over_axes(sum, mat, [0,1]) # !!! ???
-
-# %%
-# 하지만 R처럼 1차원으로 반환받고 싶다면,
-np.apply_over_axes(np.sum, mat, 1).squeeze() # 크기가 1인 차원은 생략한다
-
-# 이건 그냥 func(a, axis)... axis는 another argument
-np.apply_over_axes(lambda x, y: np.array([print(x, y) is None]), mat, axes = 0)  
-# %% magic_args="-o arr" language="R"
-# arr = array(rnorm(5^4), c(5,5,5,5))
-
-# %%
-arr = np.random.normal(0,1, (3,3,3,3))
-
-# %% language="R"
-# apply(arr, MARGIN=c(1,4), FUN=sum)
-
-# %%
-np.apply_over_axes(np.sum, arr, [1,2]).squeeze() 
-# 위 행렬의 (0,0)-번째 원소는 
-arr[0, :, :, 0].sum()
-# 0,1,2,3에서 첫번째와 4번째를 제외하면, 1,2
+b = np.array([[[170, 175, 173],
+               [164, 166, 165]],
+              [[180, 182, 181],
+               [175, 173, 166]],
+              [[185, 178, 179],
+               [165, 163, 160]]])
 
 # %% [markdown]
-# ## `mapply` 
-
-# %% language="R"
-# x <- list(c(1,3,2), c(1,4,4,4), c(1,0))
-# lapply(x, sum)
-# mapply(sum, x, SIMPLIFY=FALSE)
-
-
-# %% language="R"
-# x <- list(c(1,3,2), c(1,4,4,4), c(1,0))
-# sapply(x, sum)
-# mapply(sum, x, SIMPLIFY=TRUE)
-
-# %% language="R"
-# x <- c(12,14,11)
-# y <- c(3,1,5)
-# z <- c('a', 'b','c')
-#
-# mapply("-", x, y)
+# 배열 `b`에서 `b[:,0,:]`은 남자의 키, `b[:,1,:]`은 여자의 키다. 배열 `a`와 비교했을 때 한 차원이 증가했는데, `b`의 0-번째 차원은 학교를 나타낸다. `b[0,:,:]`은 학교 A, `b[1,:,:]`은 학교 B, `b[2,:,:]`은 학교 C의 자료라고 생각하자.
 
 # %%
-x = [12,14,11]
-y = [3,1,5]
-
-[a-b for a, b in zip(x,y)]
-
-# %%
-x = np.array([12,14,11])
-y = np.array([3,1,5])
-
-x-y
-
-# %% language="R"
-# mapply(paste, x, y, z, MoreArgs = list(sep='/'))
+b.shape
 
 # %% [markdown]
-# R의 `paste(..., sep='/')`는 python에서 `/.join([...])`로 번역될 수 있다.
+# 학교에 따른 (남자와 여자를 모두 합친) 키 평균을 구하고자 한다면 다음과 같이 할 수 있다.
 
 # %%
-x = [12,14,11]
-y = [3,1,5]
-z = ['a', 'b', 'c']
+np.apply_over_axes(np.mean, b, (1,2))
 
-["/".join([str(a),str(b),c]) for a,b,c in zip(x,y,z)]
+# %% [markdown]
+# `np.apply_over_axes(np.mean, b, (1,2))`가 어떻게 계산되는지 확인해보자. 먼저 `b2 = np.mean(b, axis=1, keepdims=True)`을 계산한다. 그 결과 `b2`에 대해 `np.mean(b2, axis=2, keepdims=True)`를 하여 결과를 산출한다.
 
-# %% language="R"
-# rapply(list(c(1,4,2), list(c(1,1,1), c(2,5,2,5))), sum)
+# %% [markdown]
+# 이는 R의 `apply()`와 다른데 왜냐하면 `apply()`에서는 계산이 각 차원마다 순차적으로 이루어지는 것이 아니라 모든 차원을 합쳐서 계산하기 때문이다.
 
-
-# %%
-def c(*args):
-    return pd.Series(args)
-
+# %% [markdown]
+# 만약 `np.median()`을 사용한다면 차원마다 순차적으로 계산되기 때문에 달라지는 상황을 확인할 수 있다.
 
 # %%
-c(1,4,2)
+np.apply_over_axes(np.median, b, (1,2))
+
+# %%
+np.apply_over_axes(np.median, b, (2,1))
+
+# %% [markdown]
+# 첫 번째 계산 결과는 `np.median(b, axis=1, keepdims=True)`를 한 후에 그 결과에 `np.median( , axis=2, keepdims=True)`를 하고, 두 번째 결과는  `np.median(b, axis=2, keepdims=True)`를 한 후에 그 결과에 `np.median( , axis=1, keepdims=True)`를 하게 된다.
+
+# %% [markdown]
+# 만약 R의 `apply()`처럼 1-번째 차원과 2-번째 차원을 전부 통틀어서 `np.meidan()`을 하고자 한다면? 다시 말해 `np.median(b[0,:,:])`, `np.median(b[1,:,:])`, `np.median(b[2,:,:])`를 구하고자 한다면?
+
+# %%
+np.median(b[0,:,:]), np.median(b[1,:,:]), np.median(b[2,:,:])
+
+# %%
+b.reshape(b.shape[0], -1)
+
+# %%
+b
+
+# %%
+np.apply_along_axis(np.median, 1, b.reshape(b.shape[0], -1))
+
+# %% [markdown]
+# 하지만 합쳐야 할 차원이 연속하지 않을 경우에는 이렇게 간단하지 않다. 저자는 `mypack/utils.py`에 `np_apply()` 함수를 만들어 놓았다.
+
+# %%
+from mypack.utils import np_apply
+
+# %%
+np_apply(b, (0,), np.median) # R과 마찬가지로 np_apply(arr, axis, func)에서 axis는 남겨지는 차원이다.
+
+# %% [markdown]
+# `np_apply()`를 사용하면 원하는 차원에 대해 함수를 적용할 수 있다. 예를 들어 `np.median(b[:,0,:])`과 `np.median(b[:,1,:])`를 구해보자. 1-번째 차원을 제외하고 다른 차원을 모두 `np.median()`을 적용한다.
+
+# %%
+np.median(b[:,0,:]), np.median(b[:,1,:])
+
+# %%
+np_apply(b, 1, np.median)
+
+# %% [markdown]
+# 만약 학교와 성별 차원을 남기고 싶다면 다음과 같이 할 수 있다.
+
+# %%
+np_apply(b, (0,1), np.median)
+
+# %% [markdown]
+# ### 리스트에 함수 적용하기
+
+# %% [markdown]
+# R의 `rapply()` 함수는 리스트의 각 원소에 함수를 적용한다. 리스트는 계층적 구조가 가능하기 때문에 리스트의 원소가 다시 리스트라면 그 리스트의 원소에 함수를 적용한다.
+
+# %%
+from mypack.utils import c
 
 # %%
 data = [c(1,4,2), [c(1,1,1), c(2,5,2,5)]]
 
+
+# %%
 def rapply(the_list, func):
     res = []
     for each_item in the_list:
@@ -555,178 +480,3 @@ rapply(data, np.sum)
 # %% [markdown]
 # 위의 결과를 다시 `flatten`하는(tree 구조를 1차원으로 펴는) 방법은 다음의 링크를 참조하세요.
 # * https://winterj.me/list_of_lists_to_flatten/
-
-# %% language="R"
-# rapply(list(c(1,4,2), list(c(1,1,1), c(2,5,2,5))), sum, how='list')
-
-
-# %% [markdown]
-# ## 9.2 여러데이터프레임 합치기
-
-# %% language="R"
-# #install.packagesc("dplyr")
-# library(dplyr)
-# options(stringsAsFactors=F)
-# dfCustomer <- data.frame(
-#   id = c(1,2,3,4,5),
-#   name = c("김희선","박보검","설현","김수현","전지현"),
-#   addr = c("서울시","부산시","인천시","강릉시","목포시")
-# )
-# dfPurchase <- data.frame(
-#   name = c("김희선","박보검","김희선","설현","김수현","박보검"),
-#   product = c("바지","샴푸","텔레비전","바지","바지","샴푸")
-# )
-# dfProduct <- data.frame(
-#   product = c("샴푸","텔레비전","바지"),
-#   price =c(13800, 560000,80000)
-# )
-
-# %%
-# 8장에서 정의한 `pdDataFrame`을 사용해보자.
-
-def pdDataFrame(**kwargs):
-    ar_opt = {}
-    ar_data = {}    
-    for k in kwargs:
-        #print(k)
-        if k.startswith('_'):
-            ar_opt[k[1:]] = kwargs[k]
-        else:
-            ar_data[k] = kwargs[k]
-    
-    #print(ar_opt)
-    #print(ar_data)
-    
-    return pd.DataFrame(ar_data, **ar_opt)
-
-def c(*args):
-    return pd.Series(args)
-
-
-# %%
-
-# %%
-
-# %%
-
-# %% [markdown]
-# ### 집단별로 함수 적용하기
-
-# %% language="R"
-# tapply(dat$h, list(dat$gender, dat$num), mean)
-# #dat$h에 대해서 list(dat$gender, dat$num)기준으로 mean 적용하기
-#
-# #https://stackoverflow.com/questions/53781634/aggregation-in-pandas
-# #https://stackoverflow.com/questions/17621325/equivalent-pandas-function-to-this-r-aggregation
-
-# %%
-dat[['gender', 'num', 'h']].groupby(['gender', 'num']).mean()
-
-# %%
-dat[['gender', 'num', 'h']].groupby(['gender', 'num']).mean().unstack('num')
-
-# %% language="R"
-# aggregate(h~gender+num, sum, data=dat)
-# # h에 대해서 gender와 num 기준으로 sum
-
-
-# %% [markdown]
-# `.groupby()`를 하기 전에 먼저 컬럼을 선택하는 데 낫다??
-
-# %%
-dat.groupby(['gender', 'num'])[['h']].sum()
-dat[['gender', 'num', 'h']].groupby(['gender', 'num'])[['h']].sum()
-# 위의 두 가지가 속도 차이가 많이 나는가?
-
-# %%
-dat.groupby(['gender', 'num'])[['h']].sum() 
-# 그냥 .groupby() 한 후에 columns을 선택해도 괜찮을 듯???
-
-# %%
-dat[['gender', 'num', 'h']].groupby(['gender', 'num']).sum()
-
-# %% language="R"
-# aggregate(cbind(h,w)~gender+num, sum, data=dat)
-
-
-# %%
-dat.groupby(['gender', 'num'])[['h', 'w']].sum()
-
-# %% language="R"
-# aggregate(.~gender+num, sum, data=dat)
-
-
-# %%
-dat.groupby(['gender', 'num']).sum()
-
-# %%
-#tapply(dat$h, list(dat$gender, dat$num), mean)
-dat[['h', 'gender', 'num']].groupby(['num', 'gender']).mean().unstack('num')
-
-# %%
-#aggregate(h~gender+num, sum, data=dat)
-dat[['h', 'gender', 'num']].groupby(['gender', 'num']).sum()
-
-# %%
-#aggregate(h+w~gender+num, sum, data=dat)
-dat['h_plus_w'] = dat['h']+dat['w']
-dat[['h_plus_w', 'gender', 'num']].groupby(['gender', 'num']).sum()
-
-# %%
-#aggregate(cbind(h,w)~gender+num, sum, data=dat)
-dat[['h', 'w', 'gender', 'num']].groupby(['gender', 'num']).sum()
-
-# %%
-#aggregate(.~gender+num, sum, data=dat)
-dat.groupby(['gender', 'num']).sum()
-
-# %% [markdown]
-# `.sum()`, `.mean()` 등의 메쏘드가 아니라 임의 함수를 적용하고 한다면,
-# `.apply()`를 활용한다. `apply()`는 데이터 프레임의 각 열마다 함수를 적용한다.
-
-# %%
-dat[['num', 'h', 'w', 'BMI']].apply(lambda x: np.mean(x)/np.std(x))
-
-# %%
-dat[['num', 'h', 'w', 'BMI']].agg(lambda x: np.mean(x)/np.std(x))
-
-# %% [markdown]
-# 위에서는 `.apply()`와 `.agg()`의 결과가 동일했다. 하지만 항상 그렇지는 않다. `.apply(lambda x: f(x))`의 경우, `lambda` 함수의 입력은 데이터 프레임이다. 따라서 `.apply(lambda x: x.describe())`와 같이 데이터 프레임을 가정하고 메쏘드를 쓸 수 있다. 하지만 `.agg(lambda x: f(x))`의 경우, 입력 `x`에는 데이터 프레임의 한 컬럼(`pandas.Series`)이 들어가므로, `.apply(lambda x: x.describe())`는 불가능하다. 
-
-# %%
-dat.apply(lambda x: x.describe())
-
-# %%
-dat.num.head()
-
-# %%
-
-# %%
-dat.num.describe()
-
-# %%
-dat.agg(lambda x: x.describe())
-
-# %% [markdown]
-# 함수를 적용하기 전에 함수를 적용하기에 적절한 컬럼을 선별해야 함을 유의하자.
-
-# %% [markdown]
-# `.groupby()`와 함께 사용하여 집단별 함수를 적용할 수 있다.
-
-# %%
-#aggregate(dat, list(dat$gender, dat$num), length)
-dat.groupby(['gender', 'num']).apply(lambda x: len(x))
-# apply의 경우, 입력은 DataFrame, 출력은 DataFrame, Series, scalar 모두 가능하다. 하지만 group마다 그 결과 다를 경우엔?
-
-# %%
-dat.groupby(['gender', 'num']).agg(lambda x: len(x))
-
-# %% language="R"
-# by(dat, list(dat$gender, dat$num), summary)[c(1,2)]
-
-# %% [markdown]
-# `apply()`에 사용하는 함수는 스컬라(scalar)를 반환할 수도 있고, 다음과 같이 pandas.Series를 반환할 수도 있다.
-
-# %%
-datDescribe = dat.groupby(['gender', 'num']).apply(lambda x: x.describe())
-datDescribe.head(n =10)
