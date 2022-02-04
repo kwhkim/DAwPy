@@ -40,6 +40,7 @@ datJson
 with open('data/s2.json', 'rt', encoding = 'UTF-8') as f:
     datJson = json.loads(f.read())
 datJson
+# 이 부분이 포함된 이유? 에러가 나는 원인 (혹은 원인 미상)을 적어 주면 좋을 것 같습니다
 # JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
 # 해결책? https://stackoverflow.com/questions/25707558/json-valueerror-expecting-property-name-line-1-column-2-char-1
 
@@ -66,10 +67,32 @@ datJson
 # 작과 끝을 표시하는 겹따옴표(`"`) 와 문자 곁따옴표를 구분하기 위해, 그리고 `\\`는 탈출
 # 문자로 백슬래쉬(`\`) 를 쓰기 때문에 필요하다. `\b`(backspace), `\t`(tab), `\n`(new line),
 # `\f`(feedforward), `\r`(carraige return)은 ASCII 코드 08번부터 0C까지의 제어문자에
-# 서 수직탭을 제외한 문자들이다. 사용 가능한 문자에 개행문자(Line Feed; `"\n"` 또는
-# `"\u000a"`)와 캐리지리턴(Carriage Return; `"\r"` 또는 `"\u000d"`)가 빠져 있기 때문에
+# 서 수직탭을 제외한 문자들이다. JSON의 문자열은 '"'character'"'의 형식으로 이루어지는데, 이 character부분에 사용 가능하지 않은 문자는 우선 '"', '\'가 있다. 일부 탈출 문자는 문자열에 사용할 수 있는데, 사용할 수 있는 탈출 문자의 리스트는 다음과 같다 (\", \\, \/, \b, \n, \r, \t, \uhhhh).
+#
+# 개행문자(Line Feed; `"\n"` 또는
+# `"\u000a"`)가 있고, 둘째로 캐리지리턴(Carriage Return; `"\r"` 또는 `"\u000d"`)이 있다. 
+#
 # 다음과 같은 JSON 화일은 엄밀하게 말해 JSON 형식에 어긋난다(겹따옴표 안에 코드포
 # 인트 10 또는 13의 줄바꿈문자가 포함되어 있다). 이런 경우에는 `strict=False`를 설정을 하면 무사히 파일을 읽을 수 있다.
+#
+# #파이썬에서 return을 나타내는 방법.
+#
+# 1)
+# x="""a
+# """b
+# print(x)
+# a
+# b
+#
+# 2)x="a\nb"
+# print(x)
+# a
+# b
+#
+# 그래서 문자열을 저장할 때도 2가지 방식이 있다. 제어 문자(\n)을 쓰는 방식과 """를 여러 번 쓰는 방식. 두 가지의 차이. \n은 보이는데, 다른 건 출력해도 구별이 안 될 수 있음. 입력할 때도 애매하고. 
+#
+#
+# 문자열 \n과 개행문자(\n)를 JSON 텍스트 내에서 구별할 수 있어야 하는데 , 문자의 경우에는 제어문자 번호대가 빠지고, \를 의미하기 위해서 쓸 수 없고, 큰따옴표도 큰따옴표를 의미하기 위해서는 쓸 수 없다. 
 
 # + active=""
 # # s1b.json
@@ -136,8 +159,9 @@ dat
 
 # ### 계층 구조
 
-# 일련의 값을 모으는 두 방법에서 값이 쓰일 위치에 다른 일련의 값을 쓰면 계층적 구조를
-# 만들 수 있다.
+# 일련의 값을 모으는 두 방법에서 값이 쓰일 위치에 다른 일련의 값을 쓰면 계층적 구조를 만들 수 있다.
+#
+# # 값을 써야 하는 위치에 다른 일련의 값(리스트)을 쓰면 계층적 구조를 만들 수 있다.
 
 # + active=""
 # ## vector or list
@@ -170,10 +194,14 @@ dat
 
 import json
 
+# +
 datJsonOrig = {'a':'b', 'num':[1,2,3],
                'dict':{'a':24, 'c':[2,4,5], '숫자들':['하나', '둘', '셋']}}
 with open('data/dat_dict.json', 'wt') as f:
     f.write(json.dumps(datJsonOrig, indent=2))
+    
+# 어떤 작업? 211이 나오는데. 파일을 쓰는 건데(wt), 최종 캐릭터의 개수라고 생각하면 된다. 
+# -
 
 with open('data/dat_dict.json', 'rt') as f:
     lst = f.readlines()
