@@ -63,10 +63,13 @@ a+b
 # 먼저 `data/student_height.csv`의 데이터를 읽어오자.
 
 # %%
-dat = pd.read_csv('data/student_height.csv')
+dat = pd.read_csv('data/student_height.csv', index_col=0)
 
 # %% [markdown]
 # `dat`의 `g`열은 학생의 성별(`Male`/`Female`)을, `v`는 학생의 키를 담고 있다. 간단하게 시각화를 해보자.
+
+# %%
+dat.head()
 
 # %%
 dat.hist(by='g', sharex = True) 
@@ -87,6 +90,9 @@ dat.groupby('g').mean()
 # %% [raw]
 # dat.gropuby('g').agg('mean')
 # dat.gropuby('g').agg(np.mean)
+
+# %% [markdown]
+# 만약 문자열 `'mean'`을 입력한다면, `agg()` 함수는 입력된 데이터 프레임에 `dat`에서 `getattr(dat, 'mean')`을 찾아서 실행한다. 다시 말해 `dat.mean()`을 실행하는 것이다. 좀더 자세한 내용은 마지막의 
 
 # %% [markdown]
 # 95-백분위수와 05-백분위수의 차이를 구하는 다음과 같은 함수 `perc_diff90()`를 정의해 보자.
