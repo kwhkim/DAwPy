@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # %%
+#from optparse import AmbiguousOptionError
 import types
 
 def assign(varname, value):
@@ -632,5 +633,33 @@ def cat_collapse(x, min_freq = None, min_pct = None, others = 'others'):
         x2 = x2.cat.remove_unused_categories()
     
     return typ(x2)
+
+# %%
+def summary_set(A,B, sort=True, out = True):
+    if not isinstance(A, set):
+        A = set(A)
+    if not isinstance(B, set):
+        B = set(B)
+    AminusB = A-B
+    AintB = A.intersection(B)
+    BminusA = B-A
+    def printsort(x):
+        print(sorted(list(x)))
+    if out:
+        if sort:
+            print('* elements only in A:')
+            printsort(AminusB)
+            print('* elements both in A & B:')
+            printsort(AintB)
+            print('* elements only in B:')
+            printsort(BminusA)            
+        else:
+            print('* elements only in A:')
+            print(AminusB)
+            print('* elements both in A & B:')
+            print(AintB)
+            print('* elements only in B:')
+            print(BminusA)
+    return (AminusB, AintB, BminusA)
 
 # %%

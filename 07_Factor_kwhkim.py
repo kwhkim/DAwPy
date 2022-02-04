@@ -447,9 +447,9 @@ union_categoricals([s, pd.Series(['b'], dtype=unordered(['b']))])
 s
 # %% [markdown]
 # 한 가지 아쉬운 점은 판다스 시리즈의 경우 인덱스가 보존되지 않는다는 점이다. 결과로 시리즈가 필요하다면 다음과 같이 인덱스를 보존할 수 있다.
-s2 = pd.Series(['b'], dtype=unordered(['b']))
-pd.Series(union_categoricals([s, s2]),
-          index = s.index.union(s2))
+# s2 = pd.Series(['b'], dtype=unordered(['b']))
+# pd.Series(union_categoricals([s, s2]),
+#           index = s.index.union(s2))
 
 
 # %% [markdown]

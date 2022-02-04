@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-
+# +
+# 주어진 년/월의 총 일 수 구하기?
 
 # +
 # https://ellun.tistory.com/320
@@ -11,12 +12,12 @@
 
 
 # Y2K, 밀레니엄 버그
-# 
+#
 # 컴퓨터 200년 인식 오류 대란
 #
 # 2038 bug
 # 날짜를 어떻게 저장할 것인가?
-# 
+#
 
 # `datetime`, `numpy`, `pandas` 모듈
 
@@ -67,7 +68,7 @@ def tup_to_datetime(*args):
         return "{:04d}".format(*args)
     else:
         raise ValueError("! NOT supported format. Supported format is YYYY-mm-dd HH:MM:SS")
-    
+
 
 
 tup_to_datetime(2022,1,4), tup_to_datetime(2014,5,8,14,3), tup_to_datetime(2019,8)
@@ -104,7 +105,7 @@ def pdTimestamp(*args):
             return pd.Timestamp(*args[0])
     else:
         return pd.Timestamp(*args)
-            
+
 
 
 pdTimestamp([(2014,5,8,14,3), (2012,6,4)])
@@ -127,21 +128,21 @@ pdTimestamp(2014,5,8,14,3)
 
 
 
-## Epoch : 시간 기원
-## http://www.ktword.co.kr/test/view/view.php?m_temp1=2706
-## 여러 epoch:  https://en.wikipedia.org/wiki/Epoch_(computing)
-## 뉴럴 넷 훈련에서 epochs?
-## . a period of time marked by distinctive features, noteworthy events, changed conditions, etc.: an epoch of peace.
-## 2. the beginning of a distinctive period in the history of anything.
+# # Epoch : 시간 기원
+# # http://www.ktword.co.kr/test/view/view.php?m_temp1=2706
+# # 여러 epoch:  https://en.wikipedia.org/wiki/Epoch_(computing)
+# # 뉴럴 넷 훈련에서 epochs?
+# # . a period of time marked by distinctive features, noteworthy events, changed conditions, etc.: an epoch of peace.
+# # 2. the beginning of a distinctive period in the history of anything.
 
-## 매우 긴 시간...
-## Geological Time?(지질학적 시간)
+# # 매우 긴 시간...
+# # Geological Time?(지질학적 시간)
 
-## Unix Epoch?
+# # Unix Epoch?
 
 # Unix Epoch(aka POSIX Time), C, C++, ... : 1970-01-01
 # MATLAB : BC 0000-01-01
-# 
+#
 
 # 지질학적 시간, billions of years
 # 천문단위(Astrological Unit)
@@ -472,17 +473,85 @@ rng_utc = pd.date_range('3/6/2012 00:00', periods=3, freq='D', tz=dateutil.tz.tz
 
 
 # 정확한 현재 시각 맞추기
-### Time Server?
+# ## Time Server?
 # https://www.windowscentral.com/how-manage-time-servers-windows-10
 # Type the address of Network Time Protocol (NTP) server. For example, 
 # # if you want to use the Google Public NTP server, you can enter time.google.com
-# 
+#
 # https://www.kriss.re.kr/standard/view.do?pg=standard_set_02
 #   time.kriss.re.kr??? - SNTP (Simple Network Time Protocol)
 #
 # https://www.groovypost.com/howto/synchronize-clock-windows-10-with-internet-atomic-time/
-# 
+#
 # https://answers.microsoft.com/en-us/windows/forum/all/how-to-force-windows-10-time-to-synch-with-a-time/20f3b546-af38-42fb-a2d0-d4df13cc8f43
 # https://docs.microsoft.com/en-us/windows-server/networking/windows-time-service/windows-time-service-tools-and-settings
+
+
+
+# Whats wrong with storing datetime in UTC?
+#  - https://codeblog.jonskeet.uk/2019/03/27/storing-utc-is-not-a-silver-bullet/
+#  - http://www.creativedeletion.com/2015/03/19/persisting_future_datetimes.html
+# [stop using utcnow & utcfromtimestamp](https://blog.ganssle.io/articles/2019/11/utcnow.html)
+# 
+
+
+# Problems ... Timezone
+# [The Problem with Time & Timezones - Computerphile](https://www.youtube.com/watch?v=-5wpm-gesOY&ab_channel=Computerphile)
+# [Why Leap Seconds Cause Glitches](https://www.youtube.com/watch?v=Uqjg8Kk1HXo&ab_channel=TomScott)
+# [2038 problem](https://www.youtube.com/watch?v=QOeWxA9sXFY)
+
+
+# [The Complexity of Time Data Programming](https://www.mojotech.com/blog/the-complexity-of-time-data-programming/)
+# [North Korea changes its time zone to match South](https://www.bbc.com/news/world-asia-44010705)
+# 
+
+# https://www.guru99.com/date-time-and-datetime-classes-in-python.html
+
+# DST? Timezone?
+# https://www.prokerala.com/travel/timezones/Asia/Seoul?mode=history
+
+
+# ### locale 모듈
+
+# https://sondho.tistory.com/16?category=391192
+
+# +
+import locale
+
+locale.setlocale(locale.LC_ALL, '')
+my_money = float(input())
+#my_money = locale.format('%.2f', my_money, 1)
+#DeprecationWarning: This method will be removed in a future version of Python.
+my_money = locale.format_string('%.2f', my_money, 1)
+print(my_money)
+# -
+
+# ### openedx localization
+#
+# * https://openedx.atlassian.net/wiki/spaces/LOC/overview?homepageId=2490375
+
+# ### Babel
+#
+# * http://babel.pocoo.org/en/latest/dates.html#date-and-time
+
+# ### 참고
+# * https://phrase.com/blog/posts/translate-python-gnu-gettext/
+#
+
+# ### Diagram
+#
+# * http://daplus.net/python-datetime-timestamp-및-datetime64-간-변환/
+
+# ### leap second 관련
+#
+# * https://bugs.python.org/issue2568
+# * https://www.ucolick.org/~sla/leapsecs/onlinebib.html
+# * https://stackoverflow.com/questions/19332902/extract-historic-leap-seconds-from-tzdata
+# * https://marc.info/?l=openbsd-tech&m=92682843416159&w=2
+# * https://en.wikipedia.org/wiki/Leap_second
+# * 
+
+
+
 
 
