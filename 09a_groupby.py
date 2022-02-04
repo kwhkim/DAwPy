@@ -92,7 +92,7 @@ dat.groupby('g').mean()
 # dat.gropuby('g').agg(np.mean)
 
 # %% [markdown]
-# 만약 문자열 `'mean'`을 입력한다면, `agg()` 함수는 입력된 데이터 프레임에 `dat`에서 `getattr(dat, 'mean')`을 찾아서 실행한다. 다시 말해 `dat.mean()`을 실행하는 것이다. 좀더 자세한 내용은 마지막의 
+# 만약 문자열 `'mean'`을 입력한다면, `agg()` 함수는 입력된 데이터 프레임에 `dat`에서 `getattr(dat, 'mean')`을 찾아서 실행한다. 다시 말해 `dat.mean()`을 실행하는 것이다. 좀더 자세한 내용은 이 절의 마지막 부록 <`s.agg(np.mean)`와 `s.agg(lambda x: np.mean(x))`의 결과가 다른 이유는?>를 참조하자.
 
 # %% [markdown]
 # 95-백분위수와 05-백분위수의 차이를 구하는 다음과 같은 함수 `perc_diff90()`를 정의해 보자.
@@ -338,11 +338,11 @@ dat.groupby('gender').transform(normalize)
 # 문제는 `gender` 열이 사라졌다는 점이다. 새롭게 붙여주거나 애시당초 `gender` 열을 인덱스로 설정할 수도 있다.
 
 # %%
-dat.groupby('gender').transform(normalize_df).assign(gender = dat['gender'])
+dat.groupby('gender').transform(normalize).assign(gender = dat['gender'])
 
 # %%
 # 첫 번째 열로 삽입한다면
-dat2 = dat.groupby('gender').transform(normalize_df)
+dat2 = dat.groupby('gender').transform(normalize)
 dat2.insert(0,"gender",dat['gender'], True) 
 dat2
 
@@ -350,13 +350,13 @@ dat2
 # 만약 `gender` 열을 인덱스로 지정한다면 다음과 같이 `.transform()` 이후의 작업이 필요없다.
 
 # %%
-dat.set_index('gender').groupby('gender').transform(normalize_df)
+dat.set_index('gender').groupby('gender').transform(normalize)
 
 # %% [markdown]
 # 기존의 인덱스를 보존하고자 한다면 다음과 같이 한다.
 
 # %%
-dat.set_index('gender', append=True).groupby('gender').transform(normalize_df) 
+dat.set_index('gender', append=True).groupby('gender').transform(normalize) 
 
 # %% [markdown]
 # ### 행렬에서 차원 축소
@@ -486,3 +486,102 @@ rapply(data, np.sum)
 # %% [markdown]
 # 위의 결과를 다시 `flatten`하는(tree 구조를 1차원으로 펴는) 방법은 다음의 링크를 참조하세요.
 # * https://winterj.me/list_of_lists_to_flatten/
+
+# %%
+
+# %%
+
+# %%
+
+# %% [markdown]
+# #### <부록> `s.agg(np.mean)`와 `s.agg(lambda x: np.mean(x))`의 결과가 다른 이유는?
+
+# %% [markdown]
+# 판다스를 사용하다보면 가끔 의도했던 결과와 다른 결과에 당황하는 경우가 있다. 판다스 시리즈 `s`에 대해 `s.agg(np.mean)`와 `s.agg(lambda x: np.mean(x))`도 비슷한 경우이다.
+
+# %%
+s = pd.Series([2,3,5,7,11], dtype=int)
+
+s.agg(np.mean)
+
+# %%
+s.agg(lambda x: np.mean(x))
+
+# %% [markdown]
+#
+# 이게 정말 이상한 것은 `np.mean()`과 `lambda x: np.mean(x)`은 동일한 결과를 산출하기 때문이다.
+
+# %%
+np.mean(s), (lambda x: np.mean(x))(s)
+
+# %% [markdown]
+# 저자는 판다스 시리즈의 `.aggregate()` 또는 `.agg()` 메쏘드[^aggr]의 소스 코드를 검토하여 다음과 같은 사실을 알아냈다.[^pandas14]
+#
+# 1. `s.agg("mean")`과 같이 `.agg()` 메쏘드의 인자가 문자열인 경우 `getattr(s, "mean")`과 같이 메쏘드를 찾아내서 적용한다.
+# 2. `s.agg(np.mean)`과 같이 특별한 함수의 경우는 `s.agg('mean')`으로 바꿔서 결과를 산출한다. 결국 `s.agg(np.mean)` 이나 `s.agg("mean")`은 `s.mean()`이 실행된다.
+# 3. `s.agg(func)`와 같이 함수가 인자로 설정된다면, 먼저 `s.apply(func)`을 해본다.[^sapply] `func`가 넘파이 배열이나 판다스 시리즈처럼 여러 값을 전제하고 있다면 `func(s[0])`은 에러를 발생시킨다. 이렇게 에러가 발생되는 경우에 `func(s)`를 시도한다.
+#
+# [^aggr]: `.agg()`는 `.aggregate()`의 다른 이름일 뿐이다. 
+#
+# [^pandas14]: pandas 버전은 1.4이었다.
+#
+# [^sapply]: `s.apply(func)`은 `func(s[0])`, `func(s[1])`, ...을 모아서 결과를 산출한다.
+
+# %% [markdown]
+# 그래서 `s.agg(lambda x: np.mean(x))`의 경우는 `s.apply(lambda x: np.mean(x))`을 먼저 실행하는데 `np.mean(s[0])`, `np.mean(s[1])` 등이 모두 에러없이 실행되기 때문에 위에서 봤던 것과 같이 `np.mean(s[0])`, `np.mean(s[1])` 등을 원소로 가지는 판다스 시리즈가 산출된다.
+
+# %% [markdown]
+# 만약 `s.agg("mean")`과 동일한 결과를 얻고 싶다면 어떻게 해야할까? `func(s[0])`은 에러가 나도록 하면 된다. `s.agg(lambda x: np.mean(x))`를 `s.agg(lambda x: np.mean(x[:]))`로 살짝 바꿔보자.
+
+# %%
+(lambda x: np.mean(x[:]))(s[0])
+
+# %% [markdown]
+# `(lambda x: np.mean(x[:]))(s[0])`는 `x=s[0]`이라고 했을 때 `x`가 정수이기 때문에 `x[:]`를 할 수 없고, 에러가 발생한다.
+
+# %% [markdown]
+# 따라서 다음과 같이 우리가 원했던 결과를 얻을 수 있다.
+
+# %%
+s.agg(lambda x: np.mean(x[:]))
+
+# %% [markdown]
+# 근데 굳이 이렇게 해야 하나? 그냥 어떤 함수 `func()`에 대해 `func(s)`가 가능하다면 그렇게 하는게 편하다.
+
+# %%
+(lambda x: np.mean(x))(s)
+
+# %% [markdown]
+# 그리고 이런 특성은 판다스 시리즈에만 적용되며, 데이터프레임이나, 집단화된 데이터프레임(`df.groupby()`)에서는 적용되지 않음을 유의하자.
+
+# %% [markdown]
+#
+# | 함수 |  문자열 |
+# |:-----|:-------|
+# |builtins.sum|`"sum"`|
+# |builtins.max|`"max"`|
+# |builtins.min|`"min"`|
+# |np.all|`"all"`|
+# |np.any|`"any"`|
+# |np.sum|`"sum"`|
+# |np.nansum|`"sum"`|
+# |np.mean|`"mean"`|
+# |np.nanmean|`"mean"`|
+# |np.prod|`"prod"`|
+# |np.nanprod|`"prod"`|
+# |np.std|`"std"`|
+# |np.nanstd|`"std"`|
+# |np.var|`"var"`|
+# |np.nanvar|`"var"`|
+# |np.median|`"median"`|
+# |np.nanmedian|`"median"`|
+# |np.max|`"max"`|
+# |np.nanmax|`"max"`|
+# |np.min|`"min"`|
+# |np.nanmin|`"min"`|
+# |np.cumprod|`"cumprod"`|
+# |np.nancumprod|`"cumprod"`|
+# |np.cumsum|`"cumsum"`|
+# |np.nancumsum|`"cumsum"`|
+
+# %%

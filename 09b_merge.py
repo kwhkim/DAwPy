@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.13.6
+#       jupytext_version: 1.13.5
 #   kernelspec:
 #     display_name: rtopython3-pip
 #     language: python
@@ -120,12 +120,15 @@ pd.merge(df1, dfPurchase)
 # 공통된 열이름 `name`을 기준으로 두 데이터 프레임을 합친다.
 
 # %% [markdown]
-# 위의 `pd.concat()` 결과와 비교해보자. 두 데이터 프레임을 합칠 때, 두 데이터 프레임에 모두 존재하는 데이터를 제외한 다른 데이터를 모두 제거할 수도 있고, 남길 수도 있다. 이는 `pd.merge()` 함수의 `how=` 매개변수로 결정한다.
+# 위의 `pd.concat()` 결과와 비교해보자. 데이터 프레임의 한 행이 하나의 사례를 나타낸다고 하자. 
+# 두 데이터 프레임 A와 B를 합칠 때, 프레임 A의 한 행(사례)와 프레임 B의 한 행(사례)를 합치게 된다. 그 결과 프레임 A의 한 행에 프레임 B의 열이 추가된다. 그리고 이렇게 두 행을 합치는 기준은 어떤 열이다. 프레임 A의 열과 프레임 B의 열이 같은 경우 합치게 되는 것이다.
 #
-# * `how = 'innter'` : 두 데이터프레임에 모두 존재하는 데이터만 남긴다.
-# * `how = 'outer'` : 모든 데이터프레임의 자료를 남긴다.
-# * `how = 'left'`: 왼쪽 데이터프레임만 남긴다.
-# * `how = 'right'`: 오른쪽 데이터프레임만 남긴다.
+# 그런데 프레임 A의 열과 합칠 수 있는 프레임 B의 열이 존재하지 않는 경우도 생길 수 있다. 예를 들어 위의 예에서 `df1`에는 `name`이 `설현`인 행이 있지만, `dfPurchase`에는 `name`이 `설현`인 행이 존재하지 않는 경우이다. 이런 경우에 어떻게 할 것인가는 `how=` 인자가 결정한다. 
+#
+# * `how = 'inner'` : 두 데이터프레임에 모두 존재하는 사례만 결과에 포함시킨다.
+# * `how = 'outer'` : 두 데이터프레임에서 한쪽에만 존재하는 사례도 모두 포함시킨다.
+# * `how = 'left'`: 왼쪽 데이터프레임의 모든 사례를 남긴다. 왼쪽 데이터프레임에 존재하지 않는 사례는 포함시키지 않는다.
+# * `how = 'right'`: 오른쪽 데이터프레임의 모든 사례를 남긴다. 왼쪽 데이터프레임에 존재하지 않는 사례는 포함시키지 않는다.
 
 # %%
 pd.merge(df1, dfPurchase, how='left') # how의 기본값은 'inner'이다.
@@ -134,19 +137,86 @@ pd.merge(df1, dfPurchase, how='left') # how의 기본값은 'inner'이다.
 pd.merge(df1, dfPurchase, how='outer')
 
 # %% [markdown]
-# 위의 결과는 다소 명확하다. 두 데이터 프레임을 어떤 변수를 기준으로 합칠 때 발생할 수 있는 예외 사항을 생각해보자. 이때 어떤 선택이 가능한가?
+# 위의 결과는 다소 명확하다. 그런데 `df1`의 `name`에 중복되는 값이 있다면 어떻게 될까?
 
 # %%
+df1
 
 # %%
+df2 = pd.concat([df1, df1.iloc[[0]]], axis=0).reset_index(drop=True)
+df2
 
 # %%
-# ?pd.merge
+pd.merge(df2, dfPurchase, how='inner')
+
+# %% [markdown]
+# 마지막으로 `how='cross'`의 경우 왼쪽 데이터프레임의 `name`과 오른쪽 데이터 프레임의 `name`을 별개로 취급하여 결과가 다음과 같다.
 
 # %%
+pd.merge(df1, dfPurchase, how='cross')
+
+# %% [markdown]
+# 두 데이터프레임을 합칠 때 기준을 데이터 프레임의 인덱스로 할 수도 있다. 왼쪽 데이터프레임의 인덱스를 사용하려면 `left_index=True`, 오른쪽 데이터프레임의 인덱스를 사용하려면 `right_index = True`로 설정한다.
+
+# %%
+df1b = df1.set_index('name')
+
+# %% [markdown]
+# 만약 `left_index=True`로 설정하면 `right_on='name'`으로 설정해야 한다. 왜냐하면 기준열이 `'name'`인 것은 오른쪽 데이터프레임에만 해당하기 때문이다.
+
+# %%
+pd.merge(df1b, dfPurchase, left_index = True, right_on='name') 
+
+# %% [markdown]
+# ### `pd.merge()` 또는 `df.join()`
+#
+# 두 데이터프레임을 합치는 다른 방법으로는 데이터프레임의 `.join()` 메쏘드를 활용하는 것이다. 결과는 `pd.merge()`와 동일하다. 두 데이터프레임 `df1`, `df2`에 대해 `df1.join(df2)`는 기본적으로 두 데이터프레임를 인덱스를 기준으로 합친다. 
 
 # %%
 df1.join(dfProduct, how='outer')
+
+# %% [markdown]
+# `dfCustomer`, `dfPurchase`, `dfProduct`의 경우 인덱스는 순번 이외에 큰 의미가 없다. `name`을 기준으로 합치려면 일단 합치려는 데이터프레임의 `name` 열을 인덱스로 바꿔줘야 한다.
+
+# %%
+df1
+
+# %%
+
+# %% [markdown]
+# `df1`과 `dfPurchase`를 합칠 때, `dfPurchase`는 기본적으로 인덱스를 기준으로 하고, `df1`의 기준을 특정열로 지정한다고자 `on='name'`으로 `df1`의 기준열을 지정한다.
+
+# %%
+df1.join(dfPurchase.set_index('name'), on='name',how='outer')
+
+# %% [markdown]
+# 왼쪽 데이터프레임(`df1`)과 오른쪽 데이터프레임(`dfPurchase`)를 합칠 때, 오른쪽 데이터프레임(`dfPurchase`)는 항상 인덱스를 기준으로 하는 것이다. 
+
+# %%
+
+# %%
+df1.join(dfPurchase[[]])
+
+# %%
+df1b
+
+# %%
+# ?df1b.join
+
+# %%
+dfProduct
+
+# %%
+dfCustomer
+
+# %%
+df1.join(dfProduct.reset_index('name'), on='name')
+
+# %%
+df1b.join(dfProduct, on='name')
+
+# %%
+df
 
 # %% [markdown]
 # 사실 `df1`과 `dfProduct`의 인덱스는 큰 의미가 없다. `dfPurchase`와 `df1`의 공통열은 `name`이다. 이를 기준으로 데이터프레임을 합쳐보자.
