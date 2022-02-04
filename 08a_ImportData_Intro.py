@@ -7,11 +7,11 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.13.5
+#       jupytext_version: 1.13.6
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: rtopython3-pip
 #     language: python
-#     name: python3
+#     name: rtopython3-pip
 # ---
 
 # %% [markdown]
@@ -94,9 +94,6 @@ with open('data/movies.csv', encoding = 'UTF-8') as f:
 with open('data/movies.pkl', 'rb') as f:
     x = f.read()
     print(x)
-    
-    #'rb'는 파일을 여는 mode인데, r은 read, w는 write, b는 binary, t는 텍스트를 의미한다.
-    # rb rt wb wt 같은 조합도 가능하다. 
 
 # %% [markdown]
 # 출력하는 방식이 약간 다르긴 하지만 지금은 크게 중요하지 않다. 텍스트 데이터 파일인 `movies.csv`의 내용은 출력했을 때 쉽게 읽고 이해할 수 있다. 하지만 바이너리 파일인 `movies.pkl`의 내용은 출력을 해도 `pandas.core.frame` 또는 `DataFrame`과 같은 일부를 제외하고는 그 의미를 알 수가 없다.[^binaryx]
@@ -151,9 +148,7 @@ dat.to_pickle('data/movies2.pkl')
 # %%
 with open('data/movies2.csv', encoding = 'UTF-8') as f:
     for x in f.readlines():
-        print(x, end='')
-        
-        #end=''는 end가 기본적으로 \n이 포함되어 있어서 그런 거고, 그걸 바꿔 주면 print 마지막에 붙여지는 게 달라진다.
+        print(x, end='')    
 
 # %%
 with open('data/movies2.pkl', 'rb') as f:

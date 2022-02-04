@@ -7,11 +7,11 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.13.6
+#       jupytext_version: 1.13.5
 #   kernelspec:
-#     display_name: rtopython3-pip
+#     display_name: Python 3 (ipykernel)
 #     language: python
-#     name: rtopython3-pip
+#     name: python3
 # ---
 
 # %% [markdown]
@@ -33,6 +33,7 @@ x = ['a', 'b', 32, ['a', 'b', 64], 128]
 import pickle
 with open('data/x.pkl', 'wb') as f:
      pickle.dump(x, f)        
+        #dump가 저장한다는 뜻. 
 
 # %% [markdown]
 # `x.pkl` 파일을 확인해보면 앞서와 마찬가지로 사람이 그 내용을 읽고 이해하기 힘들다. 피클 파일을 읽으려면 다음과 같이 한다.
@@ -110,7 +111,7 @@ diamonds.head()
 fertility.head()
 
 # %% [markdown]
-# 위에서 읽은 데이터 프레임 `diamonds`와 `fertility`를 저장하기 위해서 앞에서 배운 `.to_csv()` 함수를 사용한다면 두 파일로 나눠 저장해야 하겠지만, hdf5 파일 형식을 사용한다면 다음과 같이 할 수 있다. 
+# 위에서 읽은 데이터 프레임 `diamonds`와 `fertility`를 저장하기 위해서 앞에서 배운 `.to_csv()` 함수를 사용한다면 두 파일로 나눠 저장해야 하겠지만, hdf5 파일 형식을 사용한다면 다음과 같이 할 수 있다. # pytables 패키지 설치 필요
 
 # %%
 diamonds.to_hdf('data/dat.h5',

@@ -9,9 +9,9 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.13.5
 #   kernelspec:
-#     display_name: rtopython3-pip
+#     display_name: Python 3 (ipykernel)
 #     language: python
-#     name: rtopython3-pip
+#     name: python3
 # ---
 
 # %% [markdown]
@@ -167,9 +167,8 @@ pd.read_csv('data/numeric2.csv', # 파일이름
 # %% [markdown]
 # 어떤 문자를 특수한 용도로 사용하게 되면, 그 문자를 **원래 문자 그대로** 사용하기 위해
 # 다른 방법을 강구해야 한다. 행구분문자로 줄바꿈문자, 열구분문자로 쉼표를 사용할 경우
-# 줄바꿈문자와 쉼표를 **문자 그대로** 쓰기 위해 따옴표7로 열의 시작과 열의 끝을 표시한다고
-# 생각할 수 있다. 이때 따옴표는 열의 시작과 열의 끝을 나타내는 특별한 의미를 부여받았기
-# 때문에, 이를 문자 그대로를 의미하기 위해 다시 특별한 방법이 필요하다(만약 따옴표가
+# 줄바꿈문자와 쉼표를 **문자 그대로** 쓰기 위해 따옴표로 열의 시작과 열의 끝을 표시한다고
+# 생각할 수 있다. 이때 따옴표는 열의 시작과 열의 끝을 나타내는 특별한 의미를 부여받았기 때문에, 이를 문자 그대로를 의미하기 위해 다시 특별한 방법이 필요하다(만약 따옴표가
 # 문자열에 포함되지 않는다면 문제가 되지 않는다). 이때 보통은 **따옴표를 두번 연속** 사용
 # 해서 문자 따옴표를 나타내는 방식을 사용한다. 예를 들어 다음과 같다.
 
@@ -324,13 +323,13 @@ pd.read_csv('data/string5.csv',
 def guess_encoding01(file_path, n_lines=20):
     '''Predict a file's encoding using chardet'''
     import chardet
-
+    #
     # Open the file as binary data
     with open(file_path, 'rb') as f:
         # Join binary lines for specified number of lines
         #rawdata = b''.join([f.readline() for _ in range(n_lines)])
         rawdata = b''.join([f.read() for _ in range(n_lines*79)])
-
+    #
     return chardet.detect(rawdata)['encoding']
 
 
@@ -340,7 +339,7 @@ from bs4 import UnicodeDammit
 def guess_encoding02(filename):    
     with open(filename, 'rb') as file:
         content = file.read()
-
+    #
     suggestion = UnicodeDammit(content)
     return suggestion.original_encoding   
 
@@ -351,8 +350,8 @@ guess_encoding01('R/서울특별시 공공자전거 대여소별 이용정보(�
 # %%
 guess_encoding02('R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv')
 
-# %% [markdown]
-# 위의 결과는 정확하지 않다. `서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv`는 윈도우에서 작성되어 `CP949`로 인코딩되었다. 하지만 아래에서 확인할 수 있듯이 인코딩을 `EUC-KR`과 `CP949` 중 하나로 설정하면 결과는 동일하다.
+# %%
+위의 결과는 정확하지 않다. `서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv`는 윈도우에서 작성되어 `CP949`로 인코딩되었다. 하지만 아래에서 확인할 수 있듯이 인코딩을 `EUC-KR`과 `CP949` 중 하나로 설정하면 결과는 동일하다.
 
 # %% [markdown]
 # (아래 삭제 예정)
