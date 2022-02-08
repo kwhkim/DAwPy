@@ -297,7 +297,7 @@ dat.groupby(['h_if', 'gender', 'num']).size().unstack(['gender'])
 dat.groupby(['h_if', 'gender', 'num']).size()
 
 # %% [markdown]
-# `.unstack()`과 `.stack()` 서로 역함수의 관계이다.
+# `.unstack()`과 `.stack()` 서로 역함수의 관계이다. #뒤에서 더 설명
 
 # %%
 dat.groupby(['h_if', 'gender', 'num']).size().unstack().unstack().stack(dropna=False).stack(dropna=False)
