@@ -36,6 +36,8 @@
 # )
 
 # %%
+import numpy as np
+import pandas as pd
 
 # %% [markdown]
 # 먼저 데이터는 다음과 같다.
@@ -68,744 +70,223 @@ dfPurchase
 # %%
 dfProduct
 
-# %% [raw] magic_args="language=\"R\""
-# dfCustomer <- data.frame(
-#   id = c(1,2,3,4,5),
-#   name = c("김희선","박보검","설현","김수현","전지현"),
-#   addr = c("서울시","부산시","인천시","강릉시","목포시")
-# )
-# df1 = dfCustomer %>% slice(1,2)
-# df2 = dfCustomer %>% slice(3,4)
-# df3 = dfCustomer %>% slice(5)
+# %% [markdown]
+# 둘 이상의 데이터프레임을 합치는 것을 보통 join 또는 merge(병합?)이라고 한다. 파이썬의 함수는 크게 `pd.concat()`, `pd.merge()` 그리고 `.join()` 메소드로 나눠볼 수 있다.
+
+# %% [markdown]
+# ### `pd.concat()`
+
+# %% [markdown]
+# 먼저 어떤 조건없이 둘 이상의 데이터 프레임을 합치고 싶을 때가 있다. 예를 들어 `dfCustomer.iloc[:3]`과 `dfPurchase.iloc[:3]`, 그리고 `dfProduct.iloc[:3]`을 가로로 합치고자 한다면 `pd.concat([ ], axis=1, ignore_index=True)`를 한다. 여기서 `axis=1`은 가로로 합친다는 의미이고, `ignore_index = True`는 인덱스 또는 컬럼은 무시한다는 의미이다. concat은 **concat**enate의 약자이다.
+
+# %%
+dfA = dfCustomer.iloc[:3]
+dfB = dfPurchase.iloc[:3]
+dfC = dfProduct.iloc[:3]
+
+# %%
+pd.concat([dfA, dfB, dfC], axis=1, ignore_index = True)
+
+# %% [markdown]
+# 세로로 합친다면 다소 번거로운데 다음과 같이 할 수 있다.
+
+# %%
+dfA = dfCustomer.iloc[:, :2]
+dfB = dfPurchase.iloc[:, :2]
+dfC = dfProduct.iloc[:, :2]
+
+# %%
+pd.DataFrame(np.concatenate([dfA.values, dfB.values, dfC.values], axis=0))
+
+# %% [markdown]
+# 왜 이렇게 번거로운가? 우선 `pd.concat()`의 경우 데이터 프레임을 합칠 때 데이터 프레임의 인덱스와 컬럼을 맞춘다.[^pdconcat] 다음을 보자.
 #
-# rbind(df1, df2, df3)
-# dplyr::bind_rows(df1, df2, df3)
+# [^pdconcat]: 사실 대부분의 데이터프레임 함수는 별다른 얘기가 없다면 인덱스와 컬럼을 맞춘다.
+
+# %%
+pd.concat([dfA, dfB], axis=0)
 
 # %% [markdown]
-# 데이터 프레임을 합칠 때에는 `pd.concat()`을 쓴다.
-
-# %%
-df1 = dfCustomer.iloc[[0,1+1],:] # 0-번째부터 1-번째
-df2 = dfCustomer.iloc[[2,3+1],:] # 2-번째부터 3-번째
-df3 = dfCustomer.iloc[[4],:]     # 4-번째 .iloc[4,:]과 결과를 비교해보자.
-
-import pandas as pd
-pd.concat([df1,df2,df3], axis=0) # 세로 방향(axis=0)으로 데이터프레임을 합친다.
+# `dfA`와 `dfB`의 열이름을 고려하여 데이터프레임이 합쳐졌다. `axis=0`의 경우도 마찬가지이다. 그래서 위에서 `ignore_index=True`를 한 것이다. 하지만 `axis=0`일 때 필요한 `ignore_columns=`는 없기 때문에 다른 방법을 강구해야 한다.
 
 # %% [markdown]
-# 이때 데이터 프레임의 인덱스나 열이름이 중요하다. 다음을 보자.
+# `dfA.values`와 `dfB.values`는 데이터프레임의 모든 값을 넘파이 배열로 담고 있다. 넘파이 배열에는 인덱스와 열이름이 없다.
 
 # %%
-pd.concat([df1,dfProduct], axis=0)
-
-# %%
-pd.concat([df1,dfProduct], axis=1)
+dfA.values
 
 # %% [markdown]
-# 보통 데이터프레임을 합칠 때에는 어떤 변수를 기준으로 한다. 위의 `pd.concat()` 결과를 보자. `pd.concat( , axis=1)`에서 데이터프레임을 데이터 프레임의 인덱스를 기준으로 데이터프레임을 합친다.
+# 따라서 `np.concatenate()`(넘파이 배열을 합치는 함수)를 활용하여 넘파이 배열을 합친 후, 데이터프레임을 만들어 준 것이다. 
 
 # %% [markdown]
-# `pd.merge()` 함수는 기준을 명확하게 정한다. 만약 아무 설정을 하지 않는다면 `pd.merge()`는 공통의 열을 기준으로 합친다.
-
-# %%
-pd.merge(df1, dfProduct)
+# * 문제 : `dfCustomer`와 `dfPurchase`를 합쳐서 각 행에서 `id`, `name`, `addr`, `product` 정보를 얻을 수 있게 해보자(각 행을 통해 이름이 `name`이고 아이디가 `id`이며 주소가 `addr`인 사람이 상품 `product` 구매했음을 알 수 있다). 이때 한 사람은 `name`으로 유일하게 결정된다.
 
 # %% [markdown]
-# 두 데이터 프레임의 공통열이 없다. 다시 `df1`과 `dfPurchase`를 합쳐보자.
+# * 첫 번째 시도
 
 # %%
-pd.merge(df1, dfPurchase) 
+pd.concat([dfCustomer.set_index('name'), dfPurchase.set_index('name')],axis=1)
 
 # %% [markdown]
-# 공통된 열이름 `name`을 기준으로 두 데이터 프레임을 합친다.
+# `dfPurchase.set_index('name')`에서 `InvalidIndexError`가 발생했다. `dtype`이 `object`인 열을 인덱스로 만들 경우 값이 중복될 수 없다. 그렇다고 방법이 없는 것은 아니다.
+
+# %%
+dfPurchase.assign(name = dfPurchase['name'].astype('category')).set_index('name')
 
 # %% [markdown]
-# 위의 `pd.concat()` 결과와 비교해보자. 데이터 프레임의 한 행이 하나의 사례를 나타낸다고 하자. 
-# 두 데이터 프레임 A와 B를 합칠 때, 프레임 A의 한 행(사례)와 프레임 B의 한 행(사례)를 합치게 된다. 그 결과 프레임 A의 한 행에 프레임 B의 열이 추가된다. 그리고 이렇게 두 행을 합치는 기준은 어떤 열이다. 프레임 A의 열과 프레임 B의 열이 같은 경우 합치게 되는 것이다.
-#
-# 그런데 프레임 A의 열과 합칠 수 있는 프레임 B의 열이 존재하지 않는 경우도 생길 수 있다. 예를 들어 위의 예에서 `df1`에는 `name`이 `설현`인 행이 있지만, `dfPurchase`에는 `name`이 `설현`인 행이 존재하지 않는 경우이다. 이런 경우에 어떻게 할 것인가는 `how=` 인자가 결정한다. 
-#
-# * `how = 'inner'` : 두 데이터프레임에 모두 존재하는 사례만 결과에 포함시킨다.
-# * `how = 'outer'` : 두 데이터프레임에서 한쪽에만 존재하는 사례도 모두 포함시킨다.
-# * `how = 'left'`: 왼쪽 데이터프레임의 모든 사례를 남긴다. 왼쪽 데이터프레임에 존재하지 않는 사례는 포함시키지 않는다.
-# * `how = 'right'`: 오른쪽 데이터프레임의 모든 사례를 남긴다. 왼쪽 데이터프레임에 존재하지 않는 사례는 포함시키지 않는다.
-
-# %%
-pd.merge(df1, dfPurchase, how='left') # how의 기본값은 'inner'이다.
-
-# %%
-pd.merge(df1, dfPurchase, how='outer')
-
-# %% [markdown]
-# 위의 결과는 다소 명확하다. 그런데 `df1`의 `name`에 중복되는 값이 있다면 어떻게 될까?
-
-# %%
-df1
-
-# %%
-df2 = pd.concat([df1, df1.iloc[[0]]], axis=0).reset_index(drop=True)
-df2
-
-# %%
-pd.merge(df2, dfPurchase, how='inner')
-
-# %% [markdown]
-# 마지막으로 `how='cross'`의 경우 왼쪽 데이터프레임의 `name`과 오른쪽 데이터 프레임의 `name`을 별개로 취급하여 결과가 다음과 같다.
-
-# %%
-pd.merge(df1, dfPurchase, how='cross')
-
-# %% [markdown]
-# 두 데이터프레임을 합칠 때 기준을 데이터 프레임의 인덱스로 할 수도 있다. 왼쪽 데이터프레임의 인덱스를 사용하려면 `left_index=True`, 오른쪽 데이터프레임의 인덱스를 사용하려면 `right_index = True`로 설정한다.
-
-# %%
-df1b = df1.set_index('name')
-
-# %% [markdown]
-# 만약 `left_index=True`로 설정하면 `right_on='name'`으로 설정해야 한다. 왜냐하면 기준열이 `'name'`인 것은 오른쪽 데이터프레임에만 해당하기 때문이다.
-
-# %%
-pd.merge(df1b, dfPurchase, left_index = True, right_on='name') 
-
-# %% [markdown]
-# ### `pd.merge()` 또는 `df.join()`
-#
-# 두 데이터프레임을 합치는 다른 방법으로는 데이터프레임의 `.join()` 메쏘드를 활용하는 것이다. 결과는 `pd.merge()`와 동일하다. 두 데이터프레임 `df1`, `df2`에 대해 `df1.join(df2)`는 기본적으로 두 데이터프레임를 인덱스를 기준으로 합친다. 
-
-# %%
-df1.join(dfProduct, how='outer')
-
-# %% [markdown]
-# `dfCustomer`, `dfPurchase`, `dfProduct`의 경우 인덱스는 순번 이외에 큰 의미가 없다. `name`을 기준으로 합치려면 일단 합치려는 데이터프레임의 `name` 열을 인덱스로 바꿔줘야 한다.
-
-# %%
-df1
-
-# %%
-
-# %% [markdown]
-# `df1`과 `dfPurchase`를 합칠 때, `dfPurchase`는 기본적으로 인덱스를 기준으로 하고, `df1`의 기준을 특정열로 지정한다고자 `on='name'`으로 `df1`의 기준열을 지정한다.
-
-# %%
-df1.join(dfPurchase.set_index('name'), on='name',how='outer')
-
-# %% [markdown]
-# 왼쪽 데이터프레임(`df1`)과 오른쪽 데이터프레임(`dfPurchase`)를 합칠 때, 오른쪽 데이터프레임(`dfPurchase`)는 항상 인덱스를 기준으로 하는 것이다. 
-
-# %%
-
-# %%
-df1.join(dfPurchase[[]])
-
-# %%
-df1b
-
-# %%
-# ?df1b.join
-
-# %%
-dfProduct
+# * 두 번째 시도
 
 # %%
 dfCustomer
 
 # %%
-df1.join(dfProduct.reset_index('name'), on='name')
+dfA = dfCustomer.set_index('name')
+dfA
 
 # %%
-df1b.join(dfProduct, on='name')
+dfB = dfPurchase.assign(name = dfPurchase['name'].astype('category')).set_index('name')
+dfB
 
 # %%
-df
+pd.concat([dfA, dfB], axis=1)
+
+# %%
+pd.concat([dfCustomer.set_index('name'), dfPurchase.assign(name = dfPurchase['name'].astype('category')).set_index('name')],axis=1)
 
 # %% [markdown]
-# 사실 `df1`과 `dfProduct`의 인덱스는 큰 의미가 없다. `dfPurchase`와 `df1`의 공통열은 `name`이다. 이를 기준으로 데이터프레임을 합쳐보자.
-
-# %%
-df1.join(dfProduct, how='outer', on='name')
+# 하지만! `pd.concat([,,,], axis=1)`은 인덱스를 기준으로 둘 이상의 데이터프레임을 합치지만 인덱스는 중복이 있을 수 없다!
 
 # %% [markdown]
-# 문제는 `df1.join()`의 경우 기본적으로 `df1`의 인덱스를 활용한다.
-
-# %%
-df1.set_index('name').join(dfCustomer, on='name')
-
-# %%
-dfCustomer
-
-# %%
-df1.join(dfCustomer.set_index('name'), on='name', how='outer', lsuffix='_')
-
-# %%
-# ?pd.merge
-
-# %%
-df1.set_index('name').join(dfCustomer, on='name', how='outer', lsuffix='_')
-
-# %%
-# ?pd.join
-
-# %%
-# ?pd.concat
-
-# %%
-
-# %%
-# ?df1.join
-
-# %%
-dfProduct.join(dfCustomer)
-summary_set(dfProduct.columns, dfCustomer.columns)
-# 그냥 정수 index를 기준으로 병합
+# 그 밖에도 `pd.concat()`은 인덱스 또는 컬럼이 다수준일 때 각 수준을 이름을 고려하지 않는다.
 
 # %% [markdown]
-# R에서 동일한 형식의 데이터프레임이 DF1, DF2, DF3으로 나눠져 있을 때, 다음의 함수를 쓸 수 있다.
-
-
-# %% [raw]
-# rbind(DF1, DF2, DF3)
-# dplyr::bind_rows(DF1,DF2,DF3)
-# data.table::rbindlist(list(DF1, DF2, DF3))
-
+# ### `pd.merge()`
 
 # %% [markdown]
-# python에서는 `pd.concat()`을 사용한다.
+# `pd.concat()`의 한계는 분명하다. 인덱스는 항상 중복이 없어야 한다. 하지만 위에서 봤듯이 `dfPurchase`에는 같은 사람이 여러 번 구매할 수도 있다. 만약 `dfCustomer`와 `dfPurchase`를 합치려고 한다면 어떻게 해야 하는가?
 
+# %% [markdown]
+# 이렇게 첫 번째 데이터프레임의 한 행이 두 번째 데이터프레임의 여러 행과 대응하여 합치는 방법을 강구해야 한다(이런 관계에서 데이터 프레임을 합치는 것을 "1-n 병합"이라고도 한다).
 
-# %% [raw]
-# pd.concat([DF1, DF2, DF3]) # 인덱스를 기준으로 
+# %% [markdown]
+# `pd.merge()`는 `pd.concat([,], axis=1)`의 "1:1 병합" 뿐 아니라 "1:n 병합", "n:1 병합", 그리고 "n:n 병합"까지도 할 수 있는 함수이다. 단지 `pd.concat()`은 여러 데이터프레임을 한꺼번에 합칠 수 있지만, `pd.merge()`는 두 데이터 프레임을 합친다.
 
+# %% [markdown]
+# 먼저 `pd.concat([dfA, dfB], axis=1)`은 `pd.merge(dfA, dfB, left_index = True, right_index = True)`로 쓸 수 있다.
 
 # %%
-# 공유하는 열이 없을 떄는 NaN 값이 뜬다.
+dfA = dfCustomer.iloc[:3].set_index('name')
+dfB = dfPurchase.iloc[:2].set_index('name')
 
-#2 DF1.append(DF2)
-# DF2가 한행의 데이터프레임일 때
+# %%
+dfA
 
+# %%
+dfB
 
-# 두 데이터에 공통으로 존재하는 열을 기준으로 두 데이터 프레임을 합칠 때
-# merge(DF1, DF2)
-# dyplyr::left_join(DF1, DF2)
+# %%
+pd.concat([dfA, dfB], axis=1)
 
-#1 pd.merge(DF1, DF2, on='key')
-#pd.merge(left, right, # merge할 DataFrame 객체 이름
-            #  how='inner', # left, rigth, inner (default), outer
-            #  on=None, # merge의 기준이 되는 Key 변수
-            #  left_on=None, # 왼쪽 DataFrame의 변수를 Key로 사용
-            #  right_on=None, # 오른쪽 DataFrame의 변수를 Key로 사용
-            #  left_index=False, # 만약 True 라면, 왼쪽 DataFrame의 index를 merge Key로 사용
-            #  right_index=False, # 만약 True 라면, 오른쪽 DataFrame의 index를 merge Key로 사용
-            #  sort=True, # merge 된 후의 DataFrame을 join Key 기준으로 정렬
-            #  suffixes=('_x', '_y'), # 중복되는 변수 이름에 대해 접두사 부여 (defaults to '_x', '_y'
-            #  copy=True, # merge할 DataFrame을 복사
-            #  indicator=False) # 병합된 이후의 DataFrame에 left_only, right_only, both 등의 출처를 알 수 있는 부가 정보 변수 추가
-#2 DF1.join(DF2)
-# DataFrame.join(other, on=None, how='left', lsuffix='', rsuffix='', sort=False)[source]
-
+# %%
+pd.merge(dfA, dfB, left_index = True, right_index = True)
 
 # %% [markdown]
-# ## 9.2.1 기준열을 사용하지 않는 경우
+# `pd.merge()`는 기본적으로 공통된 열을 기준으로 합친다. 보통 인덱스는 아이디처럼 유일성이 보장되는 경우가 많지 않은가? 하지만 열은 꼭 그렇지 않다. `dfPurchase`와 같이 구매이력에서 한 행은 구매이며, 어떤 사람이 여러 번 구매를 할 수 있다. 이런 경우 보통은 구매 번호를 인덱스로 삼기 마련이다(구매 번호는 구매를 유일하게 나타낸다).
 
-# %% language="R"
-# knitr::kable(left_join(dfPurchase, dfProduct), booktabs=TRUE, 
-#              caption='소비자의 구매목록', longtable=FALSE)
+# %% [markdown]
+# `dfCustomer`와 `dfPurchase`를 보면 공통열로 `name`이 있다. `pd.merge()`는 `name`을 기준으로 n:n 병합을 실시한다.
 
+# %%
+pd.merge(dfCustomer, dfPurchase)
 
-# %% language="R"
-# knitr::kable(list(dfPurchase, dfProduct),
-#              booktabs=TRUE, longtable=FALSE,
-#              caption='소비자의 구매목록과 상품목록')
-# #knitr::kable(dfProduct)
+# %% [markdown]
+# 하지만 자료는 여러 가지 다양한 방식으로 존재하기 마련이고, 처음부터 이렇게 `pd.merge()`만 써서 성공적으로 병합을 할 수 있는 경우가 많지 않다.
 
-
-# %% language="R"
-# dfCustomer <- data.frame(
-#   id = c(1,2,3,4,5),
-#   name = c("김희선","박보검","설현","김수현","전지현"),
-#   addr = c("서울시","부산시","인천시","강릉시","목포시"),
-#   phonenumber = c('0104432332', '0106642632', '01059382', '0109958372', '0102929484')
-# )
+# %% [markdown]
+# 몇 가지 경우를 생각해보자.
 #
-# ## 설현 전화번호 두자리 부족
-
-
-# %%
-dfCustomer = pd.DataFrame({"id":[1,2,3,4,5],
-                          "name":["김희선","박보검","설현","김수현","전지현"],
-                          "addr":["서울시","부산시","인천시","강릉시","목포시"],
-                           "phonenumber":['0104432332', '0106642632', '01059382', '0109958372', '0102929484']})
-## 설현 전화번호 두자리 부족                
-
-# %% language="R"
-# knitr::kable(list(dfCustomer[,(1:2)], dfCustomer[,(3:4)]),
-#              booktabs=TRUE,  longtable=FALSE,
-#              caption='동일한 행 갯수, 다른 변수를 가진 두 데이터프레임')
-# #knitr::kable(dfCustomer[,(3:4)])
-
-
-# %% language="R"
-# x <- dfCustomer[1:3, ]; y <- dfCustomer[4:5,]
-# knitr::kable(list(x, y),
-#              booktabs=TRUE,  longtable=FALSE,
-#              caption='열의 갯수가 동일하고 동일한 변수를 저장하고 있는 두 데이터프레임')
-#
-# #knitr::kable(dfCustomer[1:3,])
-# #knitr::kable(dfCustomer[-(1:3),])
-
-
-# %% language="R"
-# x <- dfCustomer[1:3,c(1,2,3,4)]
-# y <- dfCustomer[-(1:3),c(2,3,1)]
-# knitr::kable(list(x,
-#                   y),
-#              booktabs=TRUE,  longtable=FALSE,
-#              caption='동일한 열이름, 다른 순서')
-# #knitr::kable(dfCustomer[1:3,c(1,2,3,4)])
-# #knitr::kable(dfCustomer[-(1:3),c(2,3,1)])
-
-
-# %%
-## 동일한 열이름으로 저장되어 있지만 열의 순서와 갯수가 다르면 다음의 두가지 방법 사용
-
-## data.table::rbindlist(list(DF1,DF2), fill=TRUE)
-## dplyr::bind_rows(DF1, DF2)
-
-## 데이터프레임 모양 동일, 변수 순서 동일하고 열이름만 다르다면 열이름 통일
-## # colnames(DF2) <- colnames(DF1)
-# %%
-# python에서 동일한 열이름이지만, 열의 순서와 갯수가 다른 두 데이터프레임을 합치려면, `pd.concat([...], axis=0)`을 사용하면 된다.
-
-# %%
-DF1 = dfCustomer.iloc[[0,1,2],:]
-DF2 = dfCustomer.iloc[[3,4],:][['name', 'phonenumber', 'addr']]
-DF2
-
-# %%
-pd.concat([DF1, DF2], axis=0)
-
-# %%
-DF3 = dfCustomer.iloc[[3,4],:][['name', 'phonenumber', 'addr']]
-
-# %%
-pd.concat([DF1, DF3], axis=0)
-
-# %%
-DF3.rename(columns = {'phonenumber':'phone', 'addr':'ad'}, inplace=True)
-# rename() 메쏘드를 쓸 때, `columns=`를 잊지 말자.
-DF3
-
-# %%
-pd.concat([DF1, DF3], axis=0)
+# 1. 공통열이 인덱스에 존재할 때
+# 2. 공통열의 열이름이 다를 때
 
 # %% [markdown]
-# ## 9.2.2 기준열을 사용하는 경우
-
-# %% language="R"
-# DF1 <- dfCustomer[c(1,5,4,3,2),c(2,3)]
-# DF2 <- dfCustomer[c(2,4,3,5,1),c(2,4)]
-#
-# full_join(DF1, DF2)
-
-# %% language="R"
-# knitr::kable(list(dfCustomer[c(1,5,4,3,2),c(2,3)],
-#                   dfCustomer[c(2,4,3,5,1),c(2,4)]),
-#              booktabs=TRUE, longtable=FALSE,
-#              caption='행의 순서가 다른 두 데이터프레임')
-
-
-# %% language="R"
-# knitr::kable(list(dfCustomer[c(1,4,3,2),c(2,3)],
-#                   dfCustomer[c(2,5,1),c(2,4)]),
-#              booktabs=TRUE, longtable=FALSE,
-#              caption='행을 1대1 대응할 수 없는 두 데이터프레임')
-
-
-# %% language="R"
-# DF1 <- dfCustomer[c(1,5,4,3,2),c(2,3)]
-# DF2 <- dfCustomer[c(2,4,3,5,1),c(2,4)]
-#
-# full_join(DF1, DF2)
-
-# %% language="R"
-# DF1 <- dfCustomer[c(1,5,4,3,2),c(2,3)]
-# DF2 <- dfCustomer[c(2,5,1), c(1,4)]
-# full_join(DF1, DF2)
-
-# %%
-DF1 = dfCustomer
-DF2 
-
-#pd.merge(DF1, DF2, on=)
+# #### 공통열이 인덱스에 존재할 때
 
 # %% [markdown]
-# ## 9.2 데이터프레임 합치기
-
-# %% language="R"
-# DF1 <- dfCustomer1 <- data.frame(
-#   id = c(3,4,1,5,2),
-#   name = c("김희선","박보검","설현","김수현","전지현"),
-#   phonenumber = c('0104432332', '0106642632', '01059382', '0109958372', '0102929484')
-# )
-# DF2 <- dfCustomer2 <- data.frame(
-#   id = c(2,3,4,5), 
-#   name = c("박보검","설현","김수현","전지현"),
-#   addr = c("부산시","인천시","강릉시","목포시")
-# )
-
-# %%
-DF1 = pd.DataFrame({"id":[3,4,1,5,2],
-                    "name":["김희선","박보검","설현","김수현","전지현"], 
-                    "phonenumber":['0104432332', '0106642632', '01059382', '0109958372', '0102929484']})
-DF2 = pd.DataFrame({"id":[2,3,4,5],
-                   "name":["박보검","설현","김수현","전지현"],
-                   "addr":["부산시","인천시","강릉시","목포시"]})
-
-
-# %% language="R"
-# install.packages('knitr')
-
-# %% language="R"
-# install.packages('dplyr')
-
-# %% language="R"
-# #knitr::kable(dfCustomer1 %>% arrange(id))
-# #knitr::kable(dfCustomer2 %>% arrange(id))
-# library(dplyr)
-# knitr::kable(list(dfCustomer1 %>% arrange(id),
-#                   dfCustomer2 %>% arrange(id)),
-#              booktabs=TRUE,  longtable=FALSE,
-#              caption='name과 id가 다른 두 데이터프레임')
-
-
-# %%
-DF1
-
-# %%
-DF2
-
-# %% language="R"
-# full_join(DF1, DF2)  # 동일한 컬럼을 기준으로
-
-
-# %% language="R"
-# full_join(DF1, DF2, by='name') # 컬럼 name을 기준으로
-
-
-# %%
-pd.merge(DF1, DF2, how='outer')  # full_join -> pd.merge(A, B, how='outer')
-
-# %%
-DF1.columns, DF2.columns
-
-# %%
-## 공통의 컬럼
-cols_on = list(set(DF1.columns.values) & set(DF2.columns.values))
-## !!! .intersection() or &
-cols_on
-
-# %%
-pd.merge(DF1, DF2, on='name')
+# 만약 첫 번째 데이터프레임의 공통열이 인덱스에 존재한다면 `left_index = True`를 한다. 만약 두 번째 데이터프레임의 공통열이 인덱스에 존재한다면 `right_index = True`를 한다.
 
 # %% [markdown]
+# #### 공통열의 일부만을 고려할 때
+
+# %% [markdown]
+# 공통열의 갯수가 하나 이상일 경우에는 모든 공통열을 고려하여 데이터프레임을 병합한다. 만약 일부만을 고려하고자 한다면 `on=`에 고려하고자 하는 열이름을 나열한다.
+
+# %%
+dfPurchase2 = pdDataFrame(id=c(10,11),
+                          name = c('김희선', '박보검'),
+                          product = c('바지', '샴푸'))
+
+# %% [markdown]
+# `dfPurchase2`는 `dfPurchase`와 달리 `dfCustomer`와 공통열이 둘이다. 하지만 `pd.merge()`를 해보면 다음과 같다.
+
+# %%
+pd.merge(dfCustomer, dfPurchase2)
+
+# %% [markdown]
+# 왜냐하면 공통열이 모두 대응하는 경우가 없기 때문이다. 이렇게 공통열이 존재하지 않는 경우는 어떻게 해야 하나?
+
+# %% [markdown]
+# 그 원인을 밝혀야 한다. 그리고 우리가 원하는 결과를 생각해야 한다.
+
+# %% [markdown]
+# 첫 번째로 가능한 원인은 `dfPurchase2`의 `id`가 잘못된 경우이다. 아마도 여기서 `id`는 구매번호를 의미할 수도 있다. 그렇다면 `id`는 병합시 고려하지 않아야 한다. 방법은 다음과 같다.
+
+# %%
+pd.merge(dfCustomer, dfPurchase2, on=['name'])
+
+# %% [markdown]
+# `on=['name']`은 명시적으로 두 데이터프레임을 병합할 때 `name` 열만 고려하라고 알려준다. 결과를 보면 열이름이 같은 `id`를 구분하기 위해 `id_x`(첫 번째 데이터 프레임의 `id`)와 `id_y`(두 번째 데이터 프레임의 `id`)로 열이름이 변형되었다.
+
+# %% [markdown]
+# 두 번째 가능한 원인은 `dfPurchase2`의 `id`와 `dfCustomer`의 `id`는 같은 의미를 가지며, 자료 손실 등의 이유 대응되는 자료가 없는 경우이다. 
+
+# %% [markdown]
+# 그런데 병합을 하려는 이유가 모든 구매에 대해 주소(`addr`)과 같은 구매자의 정보를 알아보는 것이라고 한다면 `pd.merge()`의 결과로 빈 데이터프레임이 나타나는 것은 바람직하지 않다. 자료 손실 등으로 구매자 정보가 없더라도 구매자 정보가 없다는 것을 나타낼 필요가 있다.
+
+# %%
+pd.merge(dfCustomer, dfPurchase2)
+
+# %%
+pd.merge(dfCustomer, dfPurchase2, how='right')
+
+# %% [markdown]
+# `how='right'`은 대응하는 데이터가 없더라도 두 번째 데이터프레임의 모든 행을 남긴다. 다음은 `how=`의 의미이다.
+
+# %% [markdown]
+# | `how=` | 의미    |
+# |:-------|:-------|
+# |`"outer"`| 두 데이터프레임의 모든 행을 남긴다
+# |`"inner"` | 두 데이터프레임의 공통 행을 남긴다
+# |`"left"`  | 첫 번째 데이터프레임의 모든 행을 남긴다
+# |`"right"` | 두 번째 데이터프레임의 모든 행을 남긴다
+# |`"cross"` | (`help(pd.merge)`로 확인하자)
+
+# %% [markdown]
+# ### `.join()` 메소드
+
+# %% [markdown]
+# 앞에서 `pd.concat([dfCustomer.set_index('name'), dfPurchase.assign(name = dfPurchase['name'].astype('category')).set_index('name')],axis=1)`는 오류를 발생시켰다.
+
+# %% [markdown]
+# `pd.concat()`은 중복된 인덱스를 다룰 수 없기 때문이다.
 #
-# ## 세로형/가로형 변환
-
-# %%
-
-
-# %% language="R"
-# #install.packages('tidyr')
-
-# %% language="R"
-# #데이터준비
-# library(dplyr)
-# library(tidyr)
-# mtcars$name = rownames(mtcars); rownames(mtcars) = NULL
-# mtcars %>% select(name, mpg, cyl, disp) -> mtcars01
-# head(mtcars01, 4)
-
-
-# %%
-import numpy as np
-#from pydataset import data
-#mtcars = data('mtcars')
-mtcars = pd.read_csv('dataset/pydataset/mtcars.csv')
-
-# %%
-mtcars01 = mtcars.copy()
-mtcars01.reset_index(inplace=True)
-mtcars01.rename(columns = {'index':'name'}, inplace=True)
-#mtcars01.rename({'index':'name'}, axis=1, inplace=True) # 위와 동일한 역할
-#mtcars01.rename({'index':'name'}, axis='columns', inplace=True) # 위와 동일한 역할
-mtcars01.head()
-
-# %%
-# inplace = True를 안 쓰면
-mtcars01 = mtcars.copy()
-mtcars01 = mtcars01.reset_index().rename(columns = {'index':'name'})
-mtcars01.head()
-
-# %%
-columns = ["name","mpg","cyl","disp"] 
-mtcars01= mtcars01[columns]
-mtcars01.head()
-
-# %%
-
-# %%
-# %% [markdown]
-# ## 9.3.1 패키지 tidyr을 활용한 세로형/가로형 변환
-
-# %% language="R"
-# mtcars01 %>% gather(key='key', value='value', mpg, cyl, disp) -> mtcarsLong
-# head(mtcarsLong, 4)
-
-
-# %%
-mtcarsLong = pd.melt(mtcars01, id_vars=["name"])
-mtcarsLong.head()
-
-# %% language="R"
-# mtcarsLong %>% spread(key='key', value='value') -> mtcars02
-# head(mtcars02,4)
-
-
-# %%
-mtcars02 = mtcarsLong.pivot(index="name", columns="variable", values="value")
-mtcars02.head()
-
-# %%
-mtcars02 = mtcarsLong.pivot(index="name", columns="variable", values="value").reset_index()
-mtcars02.head()
-
-# %%
-mtcars02.index.name, mtcars02.index
-
-# %%
-mtcars02.columns.name
-# !!! ??? 근데 컬럼에 이름을 붙여줄 이유가 있을까?
-# 여러 방식으로 컬럼을 설정할 수 있다면... level과 같은 의미...?
-
-# %% language="R"
-# all.equal(mtcars01, mtcars02)
-
-
-# %%
-mtcars01.equals(mtcars02)
-
-# %% language="R"
-# all.equal(mtcars01 %>% arrange(name), 
-#           mtcars02 %>% select(name, mpg, cyl, disp) %>% arrange(name))
-
-
-# %%
-mtcars01.head(), mtcars02[['name', 'mpg', 'cyl', 'disp']].head()
-
-# %%
-mtcars02.columns.name = None
-
-# %%
-mtcars01.sort_values('name').head(), mtcars02[['name', 'mpg', 'cyl', 'disp']].sort_values('name').head()
-
-# %%
-# # #mtcars01.sort_values?
-
-# %%
-#mtcars01 = mtcars01.sort_values('name')
-#mtcars01.sort_values('name', inplace=True) # 인덱스가 바뀜
-mtcars01.sort_values('name', inplace=True)
-mtcars01.reset_index(drop=True, inplace=True)
-
-# %%
-mtcars02b = mtcars02[['name', 'mpg', 'cyl', 'disp']].sort_values('name').astype({'cyl':int})
-
-# %%
-mtcars02b.info()
-
-# %%
-mtcars01.info()
-
-# %%
-mtcars01.index
-
-# %%
-mtcars02b.index
-
-# %%
-mtcars02b.reset_index(drop=True, inplace=True)
-mtcars01.equals(mtcars02b)
-
-# %%
-mtcars02b.reset_index(drop=True, inplace=True)
-mtcars02b.index
-
-# %%
-mtcars01.info()
-
-# %%
-mtcars02b.info()
-
-# %%
-mtcars01.equals(mtcars02b)
-
-# %% [markdown]
-# ## 9.3.2 패키지 reshpae2의 활용
-
-# %% language="R"
-# #install.packages('reshape2')
-
-# %% language="R"
-# library(reshape2)
-# mtcarsLong <- mtcars %>% select(am, name, mpg, cyl, disp) %>%
-#   gather(-name, -am, 
-#          mpg, cyl, disp, 
-#          key='key', value='value', 
-#          factor_key=TRUE) 
-# head(mtcarsLong)
-
-# %% language="R"
-# mtcarsWide <- 
-#   mtcarsLong %>% spread(key='key', value='value') 
-# head(mtcarsWide)
-
-# %%
-mtcars01 = mtcars.copy()
-mtcars01 = mtcars01[['am', 'mpg', 'cyl', 'disp']].\
-    reset_index().rename(columns = {'index':'name'})
-
-# %%
-mtcars01.head()
-
-# %%
-#mtcars01.pivot(index=['name', 'am'], columns = ['mpg', 'cyl', 'disp'], values=['mpg', 'cyl', 'disp'])
-mtcarsLong = \
-    pd.melt(mtcars01, 
-            id_vars=["name", "am"], 
-            value_vars = ['mpg', 'cyl', 'disp'], 
-            var_name='key', value_name='value')  # 기본값: var_name='variable', value_name='value'
-mtcarsLong.head()
-
-# %%
-# origin
-#  label type  value
-#0     x    a      1
-#1     x    b      2
-#2     x    c      3
-#3     y    a      4
-# equivalent of R spread
-
-# 1. origin.pivot(index='label', columns='type')['value']
-# 2. origin.pivot_table(values='value', index='label', columns='type')
-# 3. origin.groupby(['label', 'type'])['value'].aggregate('mean').unstack()
-
-# %%
-#mtcarsLong.pivot(index=['name', 'am'], columns = 'key')
-
-# %%
-mtcarsLong.set_index(['name', 'am']).head()
-
-# %%
-# mtcarsLong.pivot(index = ['name', 'am'], columns = 'key') # ERROR
-# print(pd.__version__)  # 1.1.4에서도 에러
-mtcarsLong.set_index(['name', 'am']).pivot(columns='key').head()
-
-# %%
-mtcarsLong.\
-    pivot_table(values='value', index=['name', 'am'], columns = 'key').head()
-
-# %%
-mtcarsLong.groupby(['name', 'am', 'key'])['value'].mean().unstack(level=2).head()
-
-# %%
-mtcarsWide = mtcarsLong.groupby(['am', 'name','key'])['value'].mean().unstack(level=2).reset_index()
-
-# %%
-mtcarsWide.head()
-
-# %% language="R"
-# mtcarsLong2 <- mtcars %>% select(am, name, mpg, cyl, disp) %>%
-#   melt(id=c("am", "name"),
-#        measure.vars = c("mpg", "cyl", "disp"),
-#        variable.name = "key", value.name = 'value')
-# mtcarsWide2 <- 
-#   mtcarsLong2 %>% dcast(am + name ~ key) -> mtcarsWide2
 #
-# head(mtcarsLong2)
+
+# %% [markdown]
+# `.join()` 메소드는 `pd.merge()`와 동일하다. 한 가지 다른 점은 공통열이 인덱스에 있다는 것을 전제하고 있다.
 
 # %%
-mtcarsLong2 = \
-    pd.melt(mtcarsWide, 
-            id_vars=['am', 'name'], 
-            value_vars=['mpg', 'cyl', 'disp'], 
-            var_name='key', value_name='value')
-mtcarsLong2.head()
+dfA = dfCustomer.assign(name = dfPurchase['name'].astype('category')).set_index('name')
+dfB = dfPurchase.assign(name = dfPurchase['name'].astype('category')).set_index('name')
 
 # %%
-mtcarsLong.head()
-
-# %% language="R"
-# all.equal(mtcarsLong, mtcarsLong2)
-# all.equal(mtcarsWide, mtcarsWide2)
-
-
-# %%
-
-# %% language="R"
-# dcast(mtcarsLong2, am ~ key, fun.aggregate=mean)
-
-
-# %%
-mtcarsLong.groupby(['am', 'key']).agg('mean').unstack(1)
-
-# %%
-mtcarsLong.pivot_table(index=['am'], columns=['key'], aggfunc='mean').fillna(0)
-
-# %% language="R"
-# dcast(mtcarsLong2, name + am ~ key, fun.aggregate=mean) %>% head(5)
-
-
-# %%
-mtcarsLong.groupby(['name', 'am', 'key']).agg('mean').unstack(2).head()
-
-# %%
-mtcarsLong.pivot_table(index=['name', 'am'], columns=['key'], aggfunc='mean').\
-    fillna(0).head()
-
-# %% language="R"
-# dcast(mtcarsLong2, key ~ am, fun.aggregate=mean)
-
-
-# %%
-mtcarsLong.groupby(['am', 'key']).agg('mean')
-
-# %%
-mtcarsLong.pivot_table(index=['am'], columns=['key'], aggfunc='mean').\
-    stack().head()
-
-# %% language="R"
-# dcast(mtcarsLong2, . ~ am + key, fun.aggregate=mean)
-
-# %%
-#mtcarsLong.groupby(['am', 'key']).agg('mean').unstack().unstack()의 결과가 pd.Series이기 때문에
-pd.DataFrame(mtcarsLong.groupby(['am', 'key']).agg('mean').unstack().unstack()).T
-
-# %%
-pd.DataFrame(mtcarsLong.pivot_table(columns = ['key', 'am'], aggfunc='mean')).T
-
-# %% language="R"
-# dcast(mtcarsLong2, am + key ~ ., fun.aggregate=mean)
-
-# %%
-mtcarsLong.groupby(['am', 'key']).agg('mean')
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
-
-# %%
+dfA.join(dfB)
