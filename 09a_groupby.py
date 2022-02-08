@@ -118,7 +118,9 @@ dat.groupby('g').agg(perc_diff90)
 # %%
 res = {} # res는 result의 약자
 for g in dat['g'].unique():
-    res[g] = dat[dat['g'] == g].mean().item() 
+    res[g] = dat.loc[dat['g'] == g, ['v']].mean().item() 
+    # 만약 그냥 dat.loc[dat['g'] == g, :].mean().item()을 하면,
+    # FutureWarning: Dropping of nuisance columns in DataFrame reductions (with 'numeric_only=None') is deprecated; in a future version this will raise TypeError.  Select only valid columns before calling the reduction.
     # .mean()의 결과가 판다스 시리즈이기 때문에 .item()으로 스칼라 값으로 변환
 res
 
@@ -151,6 +153,8 @@ v.groupby(g).agg(perc_diff90)
 
 # %% [markdown]
 # ### 데이터프레임에서 집단별 요약 통계치 구하기(예)
+#
+# 다음을 빈도표를 구하는 함수와 `.groupby()`을 활용하여 빈도표를 구하는 함수를 비교하면서, `.groupby()`를 활용하는 방법을 소개한다.
 
 # %% [markdown]
 # #### 빈도표
@@ -277,8 +281,17 @@ dat.groupby(['h_if', 'gender', 'num']).size().unstack(['gender'])
 # %%
 dat.groupby(['h_if', 'gender', 'num']).size()
 
+# %% [markdown]
+# `.unstack()`과 `.stack()` 서로 역함수의 관계이다.
+
 # %%
 dat.groupby(['h_if', 'gender', 'num']).size().unstack().unstack().stack(dropna=False).stack(dropna=False)
+
+# %% [markdown]
+# `unstack()`은 `level=` 매개변수를 활용하여 특정한 인덱스를 선택할 수 있다. 아래에서 `level=`에 `0`,`1`,`2`를 대입하여 그 의미를 알아보자.
+
+# %%
+dat.groupby(['h_if', 'gender', 'num']).size().unstack(level=1)
 
 # %% [markdown]
 # 다음은 R의 `table()`과 비슷한 형식으로 출력한다.
@@ -333,6 +346,9 @@ dat.groupby('gender')['h'].transform(normalize)
 
 # %%
 dat.groupby('gender').transform(normalize)
+
+# %% [markdown]
+# 위에서 `h_if` 열에 `NaN`는 집단 내에 `h_if` 값이 모두 동일하기 때문이다.
 
 # %% [markdown]
 # 문제는 `gender` 열이 사라졌다는 점이다. 새롭게 붙여주거나 애시당초 `gender` 열을 인덱스로 설정할 수도 있다.
@@ -450,7 +466,7 @@ np_apply(b, (0,), np.median) # R과 마찬가지로 np_apply(arr, axis, func)에
 np.median(b[:,0,:]), np.median(b[:,1,:])
 
 # %%
-np_apply(b, 1, np.median)
+np_apply(b, [1], np.median)
 
 # %% [markdown]
 # 만약 학교와 성별 차원을 남기고 싶다면 다음과 같이 할 수 있다.
