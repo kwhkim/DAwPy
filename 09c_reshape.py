@@ -136,6 +136,8 @@ datLong3.head(n=2)
 # %% [raw]
 # pd.wide_to_long(datWide, stubnames = "height", i=["name", "gender"], sep = '_y', j="year")
 
+# %%
+
 # %% [markdown]
 # 먼저 `datWide`는 세로형을 변환할 데이터 프레임이다. `id`열은 `i=`으로 지정한다. 이제 남은 것은 위의 `.melt()`에서 `var_name`과 `value_name`을 지정하는 것, 그리고 열이름을 적절히 수정하는 것이다.
 

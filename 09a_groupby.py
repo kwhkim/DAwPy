@@ -394,6 +394,8 @@ dat.set_index('gender', append=True).groupby('gender').transform(normalize)
 
 # %% [markdown]
 # R에서 `apply()`함수는 배열의 차원을 축소할 때 사용할 수 있다. 예를 들어 3차원 배열 `a`에 대해 `apply(a, mean, c(1,2))`를 하면 `a`의 1,2차원을 제외한 나머지 차원은 제거된다. 이때 제거하는 방법은 1,2차원을 제외한 차원이 다른 원소를 모두 모아 `mean`을 구하게 된다. 파이썬에서도 이런 **종류**의 기능을 하는 함수 `np.apply_along_axis()`와 `np.apply_over_axes()`가 마련되어 있지만, R의 `apply()`와 완전히 같지 않다.
+#
+# axis는 0, 1, 2, .. 로 증가하는데, 0축(1차원)은 행, 1축(2차원)은 열, 2축(3차원)은 대각선(?) 으로 값을 읽는다. 
 
 # %% [markdown]
 # `np.apply_along_axis()`는 `axis`가 단수형인 것에서 짐작할 수 있듯이 한 차원에 대해 함수를 적용한다. 
@@ -451,13 +453,13 @@ np.apply_over_axes(np.median, b, (2,1))
 # 첫 번째 계산 결과는 `np.median(b, axis=1, keepdims=True)`를 한 후에 그 결과에 `np.median( , axis=2, keepdims=True)`를 하고, 두 번째 결과는  `np.median(b, axis=2, keepdims=True)`를 한 후에 그 결과에 `np.median( , axis=1, keepdims=True)`를 하게 된다.
 
 # %% [markdown]
-# 만약 R의 `apply()`처럼 1-번째 차원과 2-번째 차원을 전부 통틀어서 `np.meidan()`을 하고자 한다면? 다시 말해 `np.median(b[0,:,:])`, `np.median(b[1,:,:])`, `np.median(b[2,:,:])`를 구하고자 한다면?
+# 만약 R의 `apply()`처럼 1-번째 차원과 2-번째 차원을 전부 통틀어서 `np.median()`을 하고자 한다면? 다시 말해 `np.median(b[0,:,:])`, `np.median(b[1,:,:])`, `np.median(b[2,:,:])`를 구하고자 한다면?
 
 # %%
 np.median(b[0,:,:]), np.median(b[1,:,:]), np.median(b[2,:,:])
 
 # %%
-b.reshape(b.shape[0], -1)
+b.reshape(b.shape[0], -1) # -1 은 나머지 원소의 차원을 자동으로 결정하는 명령어
 
 # %%
 b
@@ -484,7 +486,7 @@ np.median(b[:,0,:]), np.median(b[:,1,:])
 np_apply(b, [1], np.median)
 
 # %% [markdown]
-# 만약 학교와 성별 차원을 남기고 싶다면 다음과 같이 할 수 있다.
+# 만약 학교와 성별 차원을 남기고 싶다면 다음과 같이 할 수 있다. #4장 참조
 
 # %%
 np_apply(b, (0,1), np.median)

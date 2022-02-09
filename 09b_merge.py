@@ -9,9 +9,9 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.13.5
 #   kernelspec:
-#     display_name: rtopython3-pip
+#     display_name: venv
 #     language: python
-#     name: rtopython3-pip
+#     name: venv
 # ---
 
 # %% [markdown]
