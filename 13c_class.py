@@ -17,7 +17,20 @@
 # %% [markdown]
 # ## 클래스
 #
-# * 참고 자료 : https://docs.python.org/3.8/tutorial/classes.html
+# * 참고 자료 
+#   - https://docs.python.org/3.8/tutorial/classes.html
+#   - https://docs.python.org/3.8/reference/datamodel.html
+
+# %%
+x=3
+
+
+# %%
+
+# %% [markdown]
+# 클래스는 새로운 타입을 만들 수 있다. 초기에 설명했듯이 타입이란 메모리의 이진수를 해석하는 방식이라고 생각할 수 있다. 
+
+# %%
 
 # %% [markdown]
 # Namespace에 관한 내용. 
@@ -270,9 +283,5 @@ getattr(f, 'xxx')
 f.__dict__
 # double underbar의 의미!
 # 
-# Footnote from https://docs.python.org/3.8/tutorial/classes.html
-# Except for one thing. Module objects have a secret read-only attribute called
-# __dict__ which returns the dictionary used to implement the module’s namespace; the name __dict__ is an attribute but not a global name. Obviously, using this violates the abstraction of namespace implementation, and
-# should be restricted to things like post-mortem debuggers.
 
 # %%

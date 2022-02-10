@@ -5,6 +5,11 @@
 # %% [markdown]
 # #### R의 함수
 #
+# !!! TO-DO : 변수 scope에 대한 얘기 추가 필요
+# !!! global, local이 필요한 예시가 필요할 듯 
+# 비교. local assignment
+#      nonlocal assignment
+#      global assignment
 # R에서 함수 호출할 때, 인자는 매개변수 이름을 지정해 줄 수도 있다.
 # R에서는 매개변수에 인자가 배정되는 방식은 다음과 같다.
 # 먼저 **매개변수를 지정한 인수**를 배정한다.

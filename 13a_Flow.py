@@ -1,17 +1,33 @@
 # -*- coding: utf-8 -*-
 # ## 흐름제어
-#
 
-# 1. 분기
+# **흐름**제어에서 **흐름**은 파이썬의 모듈 파일에서 일련의 함수가 순차적으로 실행되는 **흐름**을 의미한다. 물이 흘러가는 흐름은 여러 가지 이유에서 바뀔 수 있다. 파이썬의 흐름도 몇 가지 방법으로 **제어**할 수 있다.
+
+# 1. 분기 : 조건에 따라 다른 문/함수를 실행한다.
 #     - if/else, if/elif/elif/else
 #     - switch
-# 2. 반복
+# 2. 반복 : 조건이 만족하는 동안, 또는 주어진 횟수만큼 일정한 부분을 반복 실행한다.
 #     - while
 #     - for
 #
 
 # ### 1. 분기
 # #### if/elif/else
+#
+# `if/elif/else`의 구조는 다음과 같다.
+
+# + active=""
+# if cond1:
+#     do somethingA
+# elif cond2:
+#     do somethingB
+# else:
+#     do somethingC
+# -
+
+# 만약 `cond1`이 참이라면 `do somethingA`를 실시하고 `if`-문 다음을 실행한다. 만약 `cond1`이 거짓이라면 `cond2`을 확인하다. `cond2`가 참이라면 `do somethingB`를 실행한다. 그리고 `if`-문 다음을 실행한다. `cond1`이 거짓이고, `cond2`도 거짓이라면 `else:` 이후를 실행하고, `if`-문 다음으로 제어를 옮긴다.
+
+# 다음 예를 보자. 
 
 import sys
 
@@ -22,7 +38,7 @@ if choice == 'y':
     print('Thank you. Going to do ...')
 elif choice == 'n':
     print('Going to quit')
-    sys.exit()  
+    # sys.exit()  
     # exit() -> Kernel shuts down
 else:
     print('I do not know what you mean')    
