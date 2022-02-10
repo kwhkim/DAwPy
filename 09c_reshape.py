@@ -136,6 +136,8 @@ datLong3.head(n=2)
 # %% [raw]
 # pd.wide_to_long(datWide, stubnames = "height", i=["name", "gender"], sep = '_y', j="year")
 
+# %%
+
 # %% [markdown]
 # 먼저 `datWide`는 세로형을 변환할 데이터 프레임이다. `id`열은 `i=`으로 지정한다. 이제 남은 것은 위의 `.melt()`에서 `var_name`과 `value_name`을 지정하는 것, 그리고 열이름을 적절히 수정하는 것이다.
 
@@ -411,6 +413,46 @@ pd.pivot_table(datBLong2, values=['height', 'weight'],
 
 # %% [markdown]
 # ## === END OF DOCUMENT
+
+# %%
+(예제) 개인통관고유부호 발급현황.csv (https://www.data.go.kr/data/15063083/fileData.do)
+
+import pandas as pd
+
+dat=pd.read_csv('관세청_개인통관고유부호 발급현황_20211231.csv')
+
+1) dat의 인덱스를 연도로 만든 후, stack() 함수를 적용해 보자.
+
+dat1 = dat.set_index(['연도'])
+dat1.stack()
+
+
+2) dat의 인덱스를 연도/월로 만든 후, stack() 함수를 적용해 만들어 보자.
+
+dat2 = dat.set_index(['연도', '월'])
+dat2.stack()
+
+
+1과 2는 무엇을 ID로 삼고 무엇을 측정값으로 삼는지에 따라 출력값의 모양이 달라짐을 보여준다. 또한, stack()과 unstack()을 사용할 때 출력되는 결과값의 모양에도 주목하자. 
+가령, 예제 2의 결과를 다음 결과과 비교해보라
+
+
+예제 1) y축을 연도, x축을 월로 table을 변환해 보라
+dat3 = dat.set_index(['연도','월'])
+dat3.unstack()
+
+
+예제 2) 개인통관부호 발급 연별 평균을 구하려면?
+
+dat3.unstack().mean()
+
+예제 3) 개인통관부호 발급 월별 평균을 구하려면?
+
+dat3.unstack().mean(axis=1)
+
+
+
+# %%
 
 # %%
 

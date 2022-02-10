@@ -12,7 +12,7 @@
 # 1. **주어진 데이터에서 집단별 요약치를 구하거나 집단별로 함수를 적용하기** : 예를 들어 학년별 평균 체중을 구하거나, 학급별 평균 체중을 구하는 경우를 생각해보자. 또는 우리나라 광역도시별로 개인의 소득분위수를 구하고 싶다면 어떻게 해야 하는가? 데이터를 특정한 변수를 기준으로 분리한 후 요약통계치를 구하거나(`.aggregate()`), 어떤 변환 작업(`.transform()`)을 한 후, 결과를 모아 합치는 작업을 파이썬에서 어떻게 할 수 있을까?
 #
 # 2. **분리된 데이터를 합치기** : 자료는 여기저기 흩어져 있는 경우가 많다. GDP 자료는
-# 통계청에서, 무역자료는 관세청에서 구했다. 이 둘을 적절하게 합쳐서 새로운 자료를 만들거나, 분석을 해야 경제와 무역에 관한 새로운 통찰을 얻을 수 있을 것이다. 어쨋든 우선 두 자료를 하나로 합쳐야 한다. 
+# 통계청에서, 무역자료는 관세청에서 구했다. 이 둘을 적절하게 합쳐서 새로운 자료를 만들거나, 분석을 해야 경제와 무역에 관한 새로운 통찰을 얻을 수 있을 것이다. 어쨌든 우선 두 자료를 하나로 합쳐야 한다. 
 #
 # 3. **가로형 데이터를 변환하여 세로형으로 만들거나 반대 방향으로 변환하기** : 가로형은
 # 가로로 긴 형태의 자료이고, 세로형은 세로로 긴 형태의 자료이다. 영어로는 Wide-form, Long-form이라고 칭한다. 기본적으로 가로형은 한 행에 여러 관측값이 나열되어 있고, 세로형은 한 행에 하나의 관측값이 적혀 있다. 시각화, 자료 제출, 분석 등 목적과 요구에 따라 자료를 두 가지 형태로 변환할 수 있어야 한다.
@@ -88,11 +88,11 @@ dat.groupby('g').mean()
 # (`mean()`뿐 아니라 사용자 함수도 적용 가능한) 일반적인 과정은 다음과 같다.
 
 # %% [raw]
-# dat.gropuby('g').agg('mean')
-# dat.gropuby('g').agg(np.mean)
+# dat.groupby('g').agg('mean')
+# dat.groupby('g').agg(np.mean)
 
 # %% [markdown]
-# 만약 문자열 `'mean'`을 입력한다면, `agg()` 함수는 입력된 데이터 프레임에 `dat`에서 `getattr(dat, 'mean')`을 찾아서 실행한다. 다시 말해 `dat.mean()`을 실행하는 것이다. 좀더 자세한 내용은 이 절의 마지막 부록 <`s.agg(np.mean)`와 `s.agg(lambda x: np.mean(x))`의 결과가 다른 이유는?>를 참조하자.
+# 만약 문자열 `'mean'`을 입력한다면, `agg()` 함수는 입력된 데이터 프레임에 `dat`에서 `getattr(dat, 'mean')`을 찾아서 실행한다. (#agg 함수는 dplyr의 summarize와 유사하다. 5장 참고) 다시 말해 `dat.mean()`을 실행하는 것이다. 좀더 자세한 내용은 이 절의 마지막 부록 <`s.agg(np.mean)`와 `s.agg(lambda x: np.mean(x))`의 결과가 다른 이유는?>를 참조하자.
 
 # %% [markdown]
 # 95-백분위수와 05-백분위수의 차이를 구하는 다음과 같은 함수 `perc_diff90()`를 정의해 보자.
@@ -118,7 +118,9 @@ dat.groupby('g').agg(perc_diff90)
 # %%
 res = {} # res는 result의 약자
 for g in dat['g'].unique():
-    res[g] = dat[dat['g'] == g].mean().item() 
+    res[g] = dat.loc[dat['g'] == g, ['v']].mean().item() 
+    # 만약 그냥 dat.loc[dat['g'] == g, :].mean().item()을 하면,
+    # FutureWarning: Dropping of nuisance columns in DataFrame reductions (with 'numeric_only=None') is deprecated; in a future version this will raise TypeError.  Select only valid columns before calling the reduction.
     # .mean()의 결과가 판다스 시리즈이기 때문에 .item()으로 스칼라 값으로 변환
 res
 
@@ -146,11 +148,28 @@ v.groupby(g).agg(perc_diff90)
 # * 생각해 볼 문제: `v.groupby(g)` 대신 `v.groupby('g')`를 해보자. 무엇이 문제인가?
 #     - 힌트: 위에 `dat.groupy('g')`의 경우는 `dat.groupby(dat['g'])`와 동일하다고 한다.
 
+# %%
+
 # %% [markdown]
 # * 문제 : 위의 결과를 보며 `Female`이 `Male`에 우선한다. 알파벳 순서에 따른 것이다. 만약 `Male`을 우선 출력하고 싶다면 어떻게 할 수 있을까? 데이터 프레임의 데이터 타입을 타입을 적절하게 변환해보자.
 
 # %% [markdown]
+# * 해결방법 : 문자열의 경우 순서는 알파벳 순서를 따른다.
+
+# %%
+'a' < 'b'
+
+# %% [markdown]
+# 범주형의 경우는 순서를 우리가 지정해 줄 수 있다.
+
+# %%
+g= g.astype(ordered(['Male', 'Female']))
+v.groupby(g).agg(perc_diff90)
+
+# %% [markdown]
 # ### 데이터프레임에서 집단별 요약 통계치 구하기(예)
+#
+# 다음을 빈도표를 구하는 함수와 `.groupby()`을 활용하여 빈도표를 구하는 함수를 비교하면서, `.groupby()`를 활용하는 방법을 소개한다.
 
 # %% [markdown]
 # #### 빈도표
@@ -277,8 +296,17 @@ dat.groupby(['h_if', 'gender', 'num']).size().unstack(['gender'])
 # %%
 dat.groupby(['h_if', 'gender', 'num']).size()
 
+# %% [markdown]
+# `.unstack()`과 `.stack()` 서로 역함수의 관계이다. #뒤에서 더 설명
+
 # %%
 dat.groupby(['h_if', 'gender', 'num']).size().unstack().unstack().stack(dropna=False).stack(dropna=False)
+
+# %% [markdown]
+# `unstack()`은 `level=` 매개변수를 활용하여 특정한 인덱스를 선택할 수 있다. 아래에서 `level=`에 `0`,`1`,`2`를 대입하여 그 의미를 알아보자.
+
+# %%
+dat.groupby(['h_if', 'gender', 'num']).size().unstack(level=1)
 
 # %% [markdown]
 # 다음은 R의 `table()`과 비슷한 형식으로 출력한다.
@@ -335,6 +363,9 @@ dat.groupby('gender')['h'].transform(normalize)
 dat.groupby('gender').transform(normalize)
 
 # %% [markdown]
+# 위에서 `h_if` 열에 `NaN`는 집단 내에 `h_if` 값이 모두 동일하기 때문이다.
+
+# %% [markdown]
 # 문제는 `gender` 열이 사라졌다는 점이다. 새롭게 붙여주거나 애시당초 `gender` 열을 인덱스로 설정할 수도 있다.
 
 # %%
@@ -363,6 +394,8 @@ dat.set_index('gender', append=True).groupby('gender').transform(normalize)
 
 # %% [markdown]
 # R에서 `apply()`함수는 배열의 차원을 축소할 때 사용할 수 있다. 예를 들어 3차원 배열 `a`에 대해 `apply(a, mean, c(1,2))`를 하면 `a`의 1,2차원을 제외한 나머지 차원은 제거된다. 이때 제거하는 방법은 1,2차원을 제외한 차원이 다른 원소를 모두 모아 `mean`을 구하게 된다. 파이썬에서도 이런 **종류**의 기능을 하는 함수 `np.apply_along_axis()`와 `np.apply_over_axes()`가 마련되어 있지만, R의 `apply()`와 완전히 같지 않다.
+#
+# axis는 0, 1, 2, .. 로 증가하는데, 0축(1차원)은 행, 1축(2차원)은 열, 2축(3차원)은 대각선(?) 으로 값을 읽는다. 
 
 # %% [markdown]
 # `np.apply_along_axis()`는 `axis`가 단수형인 것에서 짐작할 수 있듯이 한 차원에 대해 함수를 적용한다. 
@@ -420,13 +453,13 @@ np.apply_over_axes(np.median, b, (2,1))
 # 첫 번째 계산 결과는 `np.median(b, axis=1, keepdims=True)`를 한 후에 그 결과에 `np.median( , axis=2, keepdims=True)`를 하고, 두 번째 결과는  `np.median(b, axis=2, keepdims=True)`를 한 후에 그 결과에 `np.median( , axis=1, keepdims=True)`를 하게 된다.
 
 # %% [markdown]
-# 만약 R의 `apply()`처럼 1-번째 차원과 2-번째 차원을 전부 통틀어서 `np.meidan()`을 하고자 한다면? 다시 말해 `np.median(b[0,:,:])`, `np.median(b[1,:,:])`, `np.median(b[2,:,:])`를 구하고자 한다면?
+# 만약 R의 `apply()`처럼 1-번째 차원과 2-번째 차원을 전부 통틀어서 `np.median()`을 하고자 한다면? 다시 말해 `np.median(b[0,:,:])`, `np.median(b[1,:,:])`, `np.median(b[2,:,:])`를 구하고자 한다면?
 
 # %%
 np.median(b[0,:,:]), np.median(b[1,:,:]), np.median(b[2,:,:])
 
 # %%
-b.reshape(b.shape[0], -1)
+b.reshape(b.shape[0], -1) # -1 은 나머지 원소의 차원을 자동으로 결정하는 명령어
 
 # %%
 b
@@ -450,10 +483,10 @@ np_apply(b, (0,), np.median) # R과 마찬가지로 np_apply(arr, axis, func)에
 np.median(b[:,0,:]), np.median(b[:,1,:])
 
 # %%
-np_apply(b, 1, np.median)
+np_apply(b, [1], np.median)
 
 # %% [markdown]
-# 만약 학교와 성별 차원을 남기고 싶다면 다음과 같이 할 수 있다.
+# 만약 학교와 성별 차원을 남기고 싶다면 다음과 같이 할 수 있다. #4장 참조
 
 # %%
 np_apply(b, (0,1), np.median)
