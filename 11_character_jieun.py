@@ -1,8 +1,49 @@
 # -*- coding: utf-8 -*-
 # %% [markdown]
-# ## to-do
+# ### 기본적인 내용
+#
+# 먼저 다음 링크(https://wikidocs.net/13)에서 기본적인 내용을 확인하세요.
+#
+# * 문자열 연산하기
+#   - `+`, `*`, `%`, `len()`
+# * 문자열 인덱싱과 슬라이싱
+#   - `s[index]`
+#   - `s[start:stop:step]`
+# * 문자열 포매팅
+#   - `%`
+#   - `.format()`
+#   - `f''`
+# * 문자열 관련 함수들
+#   - `.count()
+#   - `.find()` & `.index()` 
+#     - `.rfind()` & `.rindex()`
+#   - `.join()`
+#   - `.upper()` & `.lower()`
+#   - `.strip()` & `.lstrip()` & `.rstrip()`
+#   - `.replace()`
+#   - `.split()`
+
+# %% [markdown]
+# ### 추가 사항
+#
+# * 유니코드 관련(파이썬의 기본 타입 `str`은 유니코드를 쓴다. 정확히는 UTF-8?)
+#     - 유니코드 관련 함수
+#         - https://docs.python.org/ko/3.8/howto/unicode.html
+#     - 문자열 정렬
+#
+# * `string` 모듈?
+# * 인코딩 관련
+#     - `bytes`, `bytearray` : R의 `raw`와 비슷
+#     - 표준 인코딩 라이브러리 : https://docs.python.org/ko/3.8/library/codecs.html#standard-encodings
+#
 # * 글자 갯수. 화면에 비치는 너비. 바이트 수 구분
-#     
+#     - `unicodedata.east_asian_width()`
+#                                                                                                                                                   
+
+# %% [markdown]
+# ## 도입
+#
+# 여기를 읽고 링크(https://wikidocs.net/13)에서 기본적인 내용을 확인하세요.
 
 # %%
 import rpy2.rinterface
@@ -242,6 +283,354 @@ res = lst[0]
 for x in lst[1:]:
     res = res + s + x
 res
+
+# %%
+
+# %%
+
+# %%
+
+# %% [markdown]
+# ### 유니코드 관련
+#
+# 파이썬 버전 3+에서는 문자열을 저장하기 위해 유니코드를 사용한다.
+#
+# +++ 유니코드에 대한 기본적인 내용
+
+# %%
+import unicodedata
+
+# %%
+# dir(unicodedata)
+
+# UCD, bidirectional, category, combining, decimal,
+# decomposition, digit, east_asian_width, is_normalized
+# lookup, mirrored, name, normalize, numeric, ucd_3_2_0
+# ucnhash_CAPI, unidata_version
+
+# %% [markdown]
+# 주어진 문자열이 어떤 문자로 구성되었으며, 문자별로 유니코드 코드포인트, 유니코드 범주, 유니코드 문자이름을 확인하려면 다음과 같이 한다. 
+
+# %%
+# Adopted from https://docs.python.org/ko/3.8/howto/unicode.html
+
+u = '한글 ' + chr(233) + chr(0x0bf2) + chr(3972) + chr(6000) + chr(13231)
+
+print("no let. UNICODE category  num letter name")
+print("=========================================")
+for i, c in enumerate(u):
+    #print(i, c, '%04x' % ord(c), unicodedata.category(c), end=" ")
+    #print(f'{i:02d} {c:2s} {ord(c):04x}') 
+    # 완벽히 맞출 수 없을 듯... GUI의 역할이라서??? # tab을 쓰면?
+    print(f'{i:02d} {c:2s} \t{ord(c):06x}\t{unicodedata.category(c):4s} ', end='') 
+    try:
+        print('%8.2f ' % unicodedata.numeric(c), end='')
+    except:
+        print(' '*(8+1), end='')
+    print(unicodedata.name(c))
+    #print(unicodedata.east_asian_width(c))
+# Get numeric value of second character
+#print(unicodedata.numeric(u[1]))
+
+# %%
+
+# %%
+dir(unicodedata)
+
+
+# %%
+# Adopted from https://docs.python.org/ko/3.8/howto/unicode.html
+def unicode_info(u):
+    if not type(u)==str:
+        raise ValueError('! input u should be unicode string')
+    print('* str input = ')
+    print('  '+ u)
+    print('* str normalized = ')
+    print('  '+ unicodedata.normalize('NFC', u))
+    print("no let. wid UNICODE     category  num letter name")
+    print("=================================================")
+    for i, c in enumerate(u):
+        print(f'{i:02d} {c:2s}\t{unicodedata.east_asian_width(c):3s} {ord(c):06x}\t{unicodedata.category(c):4s} ', end='') 
+        try:
+            print('%8.2f ' % unicodedata.numeric(c), end='')
+        except:
+            print(' '*(8+1), end='')
+        print(unicodedata.name(c))
+
+
+
+# %%
+unicode_info(u)
+
+# %% [markdown]
+# * 참고 : 유니코드 카테고리 
+#   - http://www.unicode.org/reports/tr44/#General_Category_Values
+
+# %% [markdown]
+# ## 유니코드 문자열 정규화
+
+# %%
+unicodedata.normalize('NFD', s)
+# NFC, NFKC
+# NFD, NFKD
+# NFD : 웹표준
+
+# %% [raw]
+# # 출처 : https://unicode.org/reports/tr15/
+# The W3C Character Model for the World Wide Web 1.0: Normalization [CharNorm] and other W3C Specifications (such as XML 1.0 5th Edition) recommend using Normalization Form C for all content, because this form avoids potential interoperability problems arising from the use of canonically equivalent, yet different, character sequences in document formats on the Web. See the W3C Character Model for the Word Wide Web: String Matching and Searching [CharMatch] for more background.
+
+# %% [markdown]
+# ## 유니코드 문자열 비교
+
+# %% [markdown]
+# * ??? 근데 문자열 비교에는 로케일에 대한 내용이 있어야???
+
+# %%
+# from https://docs.python.org/ko/3.8/howto/unicode.html
+import unicodedata
+
+def compare_strs(s1, s2):
+    def NFD(s):
+        return unicodedata.normalize('NFD', s)
+
+    return NFD(s1) == NFD(s2)
+
+single_char = 'ê'
+multiple_chars = '\N{LATIN SMALL LETTER E}\N{COMBINING CIRCUMFLEX ACCENT}'
+print('length of first string=', len(single_char))
+print('length of second string=', len(multiple_chars))
+print(compare_strs(single_char, multiple_chars))
+
+# %% [markdown]
+# ### 알파벳 대소문자를 무시하고 비교
+
+# %%
+import unicodedata
+
+def compare_caseless(s1, s2):
+    def NFD(s):
+        return unicodedata.normalize('NFD', s)
+
+    return NFD(NFD(s1).casefold()) == NFD(NFD(s2).casefold())
+
+# Example usage
+single_char = 'ê'
+multiple_chars = '\N{LATIN CAPITAL LETTER E}\N{COMBINING CIRCUMFLEX ACCENT}'
+
+print(compare_caseless(single_char, multiple_chars))
+
+# %% [markdown]
+# ## 유니코드 문자열 정렬
+
+# %%
+
+# %% language="R"
+# Sys.getlocale('LC_COLLATE') #알파벳 순서에 대한 정보
+# x <- c("ä", "A", "D", "P", "Z", "CH", "C", "H", "Ü")
+# x <- stringi::stri_trans_nfkc(x)
+# cat(paste0(x, collpase=" "), "\n")
+# sort(x)
+
+
+# %%
+import locale
+x = ["ä", "A", "D", "P", "Z", "CH", "C", "H", "Ü"]
+sorted(x)
+sorted(x, key=locale.strxfrm)
+
+# %% [markdown]
+# ??? 한글의 경우???
+
+# %%
+#x <- c("ä", "A", "D", "P", "Z", "CH", "C", "H", "Ü")
+#x <- stringi::stri_trans_nfkc(x)
+#stri_sort(x, opts_collator = stri_opts_collator(locale='de'))
+# stri_sort(x, opts_collator = stri_opts_collator(locale='fi'))
+# stri_sort(x, opts_collator = stri_opts_collator(locale='en'))
+# stri_sort(x, opts_collator = stri_opts_collator(locale='cs'))
+# stri_sort(x, opts_collator = stri_opts_collator(locale='ko'))
+
+import icu
+# package pyicu & pycld2?
+# https://github.com/aboSamoor/polyglot/issues/10
+
+collator = icu.Collator.createInstance(icu.Locale('de_DE.UTF-8'))
+sorted(x, key=collator.getSortKey)
+#['A', 'ä', 'C', 'CH', 'D', 'H', 'P', 'Ü', 'Z']
+
+collator = icu.Collator.createInstance(icu.Locale('fi_FI.UTF-8'))
+sorted(x, key=collator.getSortKey)
+#['A', 'C', 'CH', 'D', 'H', 'P', 'Ü', 'Z', 'ä']
+
+collator = icu.Collator.createInstance(icu.Locale('en_EN.UTF-8'))
+sorted(x, key=collator.getSortKey)
+#['A', 'ä', 'C', 'CH', 'D', 'H', 'P', 'Ü', 'Z']
+
+# %%
+
+# %% [markdown]
+# ## `bytes`, `bytearray`
+
+# %% [markdown]
+# 바이트(byte)란 정보의 기본단위 비트(bit)가 8개 모여 만들어진다. `bytes` 타입은 이 바이트가 여러 개 모여 만들어진다. 문자(character)와 문자열(string)의 차이와 비슷하다. 문자열은 흔히 character array라고도 한다 
+
+# %% [markdown]
+# `bytes`와 `bytesarray`는 거의 비슷하다. 한 가지 다른 점은 `bytes`는 `str`과 비슷하게 불변(immutable) 객체이고, `bytesarray`는 가변 객체이다
+
+# %% [markdown]
+# `bytes` 타입의 객체를 생성하기 위해 보통 문자열과 비슷한 방법을 사용한다. 단지 앞에 `b`를 붙여 `bytes`임을 나타낸다.
+
+# %%
+x = b'abc'
+
+# %%
+x
+
+# %% [markdown]
+# 하지만 문자열과는 다르다. `bytes`의 목적은 하나 또는 여러 바이트를 저장하는 것이다. 단지 편의에 의해 바이트를 문자열로 나타내는 것뿐이다.
+
+# %%
+x
+
+# %%
+x[0], x[1], x[2]
+
+# %%
+x[0] = 0x40
+
+# %% [markdown]
+# 다음은 변수 `x`의 `bytes` 객체를 `bytearray` 타입으로 변환한다.
+
+# %%
+y = bytearray(x)
+
+# %%
+type(y)
+
+# %%
+y
+
+# %%
+y[0], y[1], y[2]
+
+# %% [markdown]
+# `y`는 `bytearray`이기 때문에 수정이 가능하다.
+
+# %%
+y[0] = 0x41  # 알파벳 대문자 A의 ASCII 코드는 0x41
+
+# %%
+y
+
+# %% [markdown]
+# 위에서 확인할 수 있듯이 `y[0]`를 `0x41` 또는 `65`로 바꿔도 출력시에는 해당하는 ASCII 코드의 문자가 출력된다. 
+
+# %% [markdown]
+# `bytes`와 `bytearray`는 모두 8바이트 정수의 나열이지만, 출력 또는 생성할 때 편의를 위해 ASCII 문자를 사용한다고 생각하면 된다. 
+
+# %% [markdown]
+# * 참고 : https://docs.python.org/3.8/reference/lexical_analysis.html#strings
+
+# %%
+for i in range(255):
+    x = bytearray(1)
+    x[0] = i
+    print(f"{i:03d} {hex(i)[2:]:3s} {chr(i):2s}\t",x)
+
+# %% [markdown]
+# 위의 결과에서 확인할 수 있듯이 16진수 20(`' '`)부터 7e(`'~'`)까지는 ASCII 문자로 출력된다(이때 `\`는 `'\\'`로 출력된다). 16진수 20 이전의 제어 문자나 7e 이후는 '\x7f'와 같이 탈출문자를 사용하여 16진수를 그대로 적어 출력된다. 예외적으로 탭(16진수 09)은 `'\t'`, 뉴라인(16진수 0a)은 `'\n'`, 캐리지리턴(16진수 13)은 `\r'`로 출력된다. 입력할 때에는 `'\x0a'` 꼴과 `'\t`를 모두 사용할 수 있다.
+
+# %%
+x = b'\x0a'; y = b'\n'
+
+# %%
+x, y
+
+# %% [markdown]
+# ## 문자 인코딩
+
+# %% [markdown]
+# 컴퓨터는 다양한 방식으로 문자를 인코딩한다. 여기서 인코딩이란 주어진 문자 또는 문자열을 수로 변환하는 방식을 의미한다. 유니코드 역시 인코딩 방법이다. 
+
+# %% [markdown]
+# 문자열(`str`)의 `.encode()` 메소드를 사용한다.
+
+# %%
+x = 'abc'
+x.encode('UTF-8')
+
+# %%
+x.encode('CP949')
+
+# %% [markdown]
+# ASCII 코드 문자는 대부분 인코딩에 관계없이 동일한 방식으로 인코딩된다. 한글과 같은 비로마자는 다르다.
+
+# %%
+x = '한글'
+x.encode('UTF-8')
+
+# %%
+x.encode('CP949')
+
+# %% [markdown]
+# 주어진 바이트 또는 바이트 어레이를 문자로 디코드할 수도 있다. (여기서 decode란 encode의 역을 의미한다.)
+
+# %%
+x.encode('UTF-8').decode('UTF-8')
+
+# %%
+x.encode('CP949').decode('CP949')
+
+# %% [markdown]
+# UTF-8로 인코딩한 16진수를 CP949로 생각하여 디코딩을 하면 엉뚱한 결과를 얻을 수밖에 없다. 따라서 인코딩 또는 디코딩을 할 때에는 어떤 인코딩을 사용할 지 결정하는 것이 중요하다.
+
+# %%
+x.encode('UTF-8').decode('CP949')
+
+# %% [markdown]
+# 위의 오류를 보자. `UniocdeDecodeError:` 이하를 보면 `x.encode("UTF-8")`의 첫 번째 값 `0xed`를 유니코드로 해석(디코드)할 수 없음을 나타낸다. 이렇게 주어진 인코딩으로 적절하게 해석할 수 없는 숫자를 처리하는 방법은 `.decode('', errors=)`의 `errors=`로 정할 수 있다. 기본값은 `'strict'`이다.
+#
+# * `errors='strict'` : 오류를 발생시킨다.
+# * `errors='ignore'` : 무시한다.
+#
+
+# %%
+x.encode('UTF-8').decode('CP949', errors='ignore')
+
+# %% [markdown]
+# ### 파이썬 파일의 인코딩
+
+# %% [markdown]
+# 현재 파이썬 파일의 인코딩은 다음과 같이 확인할 수 있다.
+
+# %%
+import sys
+sys.getfilesystemencoding()
+
+# %% [markdown]
+# 파이썬 파일의 인코딩은 파일 처음에 다음의 문구 중 하나를 넣어서 지정할 수 있다([PEP 263](https://www.python.org/dev/peps/pep-0263/)). 
+#
+
+# %% [raw]
+# # coding=<encoding name>
+
+# %% [raw]
+# !/usr/bin/python
+# # -*- coding: <encoding name> -*-
+
+# %% [raw]
+# !/usr/bin/python
+# # vim: set fileencoding=<encoding name> :
+
+# %%
+
+# %% [markdown]
+# ## 파이썬에서 텍스트 파일 열 때 인코딩?
+
+# %%
+
+# %% [markdown]
+# ### === END OF DOCUMENT
 
 # %%
 
@@ -768,7 +1157,17 @@ str.capitalize() # 문자열 맨 첫글자만 대문자로
 s = "\U000903a9 딸기!"
 byt = s.encode()
 
+print(s)
 len(s) #4 򐎩 딸기
+
+# %%
+# 글자의 너비 구하기
+# 참조: https://www.programcreek.com/python/example/5938/unicodedata.east_asian_width
+
+# %%
+for c in s:
+    print(unicodedata.east_asian_width(c))
+    # F, Na, W, Na
 
 # %%
 len(byt) #11 b'\xf2\x90\x8e\xa9 \xeb\x94\xb8\xea\xb8\xb0'
