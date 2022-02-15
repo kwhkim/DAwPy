@@ -38,6 +38,10 @@
 #
 # * 글자 갯수. 화면에 비치는 너비. 바이트 수 구분
 #     - `unicodedata.east_asian_width()`
+#
+# * 포맷팅?
+#     - https://realpython.com/python-f-strings/
+#     - https://realpython.com/python-string-formatting/
 #                                                                                                                                                   
 
 # %% [markdown]
@@ -333,6 +337,17 @@ for i, c in enumerate(u):
 #print(unicodedata.numeric(u[1]))
 
 # %%
+
+# %% [raw]
+#
+# # https://stackoverflow.com/questions/32555015/how-to-get-the-visual-length-of-a-text-string-in-python
+# # unicodedata.east_asian_width()
+# ea ; A         ; Ambiguous
+# ea ; F         ; Fullwidth
+# ea ; H         ; Halfwidth
+# ea ; N         ; Neutral
+# ea ; Na        ; Narrow
+# ea ; W         ; Wide
 
 # %%
 dir(unicodedata)
