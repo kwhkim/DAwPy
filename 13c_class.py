@@ -9,9 +9,9 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.13.5
 #   kernelspec:
-#     display_name: rtopython3-pip
+#     display_name: venv
 #     language: python
-#     name: rtopython3-pip
+#     name: venv
 # ---
 
 # %% [markdown]
@@ -195,7 +195,7 @@ z
 # 이처럼 클래스는 객체에 저장되는 내용, 객체가 어떻게 작동하는지 등을 모두 결정한다. 그런데 `def __repr__():`은 함수를 정의하는 꼴이다. 실제로 이는 `__repr__()` 함수를 정의하고, 이 함수는 `Patient`라는 클래스의 이름공간(namespace)에서 찾을 수 있다.
 
 # %%
-Patient.__repr__
+Patient2.__repr__
 
 # %% [markdown]
 # 객체의 이름공간에서도 찾을 수 있다.
@@ -228,7 +228,7 @@ class Patient3():
 w = Patient3('han seok-bong')
 
 # %%
-w.upname()
+w.upname
 
 # %% [markdown]
 # 클래스 `Patient` 아래 `upname()`이라는 함수를 정의하였다. `upname()`의 정의를 살펴보면 `self`라는 인자를 받는다. 그런데 `w.upname()`을 보면 인자가 주어지지 않는 것처럼 보인다. 이것이 함수(function)과 메소드(method)의 차이이다. 메소드는 `w.upname()`처럼 객체의 속성으로 함수를 호출한다. 그리고 첫 번째 인자는 항상 현재 객체(`w.upname()`에서 `w`)가 입력된다. 
@@ -247,6 +247,8 @@ w.upname()
 
 # %% [markdown]
 # ## 다시 객체
+#
+# 객체-클래스-메소드로 이어지는 설명의 흐름이 이해가 잘 되었는데, 다시 객체로 돌아오면서 흐름에 다소 혼동이 발생. 
 
 # %% [markdown]
 # 이렇게 클래스란 어떤 정보를 저장하기 위한 **템플릿**으로 생각할 수도 있다. 
@@ -299,7 +301,7 @@ w.upname2(w)
 # 객체는 객체만의 특별한 정보를 담고 있으므로 객체를 만들 때에 이런 정보를 지정해줄 수 있다. 위에서 `__init__()`은 이런 역할을 하는 함수이다.
 
 # %% [markdown]
-# 다시 말해 `w=Patient3(name='han seokbong')`을 실행하면 `Patient3` 클래스에서 정의된 함수 `__init__(self, name)`이 실행되고 첫 번째 인자는 `w=Patient3(name='han seokbon')`을 통해 만들어질 객체를 나타낸다. 두 번째 인자는 `Patient()`의 첫 번째 인자이다. 그리고 `__init__()`는 항상 `self`를 반환하게 된다. 이를 위의 `Patient3`의 정의에 대해 구체적으로 풀어보자.
+# 다시 말해 `w=Patient3(name='han seokbong')`을 실행하면 `Patient3` 클래스에서 정의된 함수 `__init__(self, name)`이 실행되고 첫 번째 인자는 `w=Patient3(name='han seokbong')`을 통해 만들어질 객체를 나타낸다. 두 번째 인자는 `Patient()`의 첫 번째 인자이다. 그리고 `__init__()`는 항상 `self`를 반환하게 된다. 이를 위의 `Patient3`의 정의에 대해 구체적으로 풀어보자.
 
 # %% [markdown]
 # ### 클래스의 `__init__()` 
@@ -322,7 +324,7 @@ w.upname2(w)
 w = Patient3('han seok-bong')
 
 # %% [markdown]
-# `Patient3('han seok-bong')`의 `'han seok-bong'`은 `__init__(self, name)`에서 `name`에 대응한다. 그렇다면 `self`는 무엇일까? `self`는 `Patient3('han seok-bong')`으로 생성되는 새로운 객체를 가리키기 위해 사용된다. 이는 다른 메소드에서 사용되는 방식과 비슷하다. 
+# `Patient3('han seok-bong')`의 `'han seok-bong'`은 `__init__(self, name)`에서 `name`에 대응한다. 그렇다면 `self`는 무엇일까? `self`는 `Patient3('han seok-bong')`으로 생성되는 새로운 객체를 가리키기 위해 사용된다. (#위에서는 w) 이는 다른 메소드에서 사용되는 방식과 비슷하다. 
 
 # %% [markdown]
 # `def __init__(self, name):` 아래 `__init__()` 함수의 구체적 내용을 보면 `self.name=name`에서 `Patient3('han seok-bong')`에서 입력된 `'han seok-bong'`을 `self.name`이 가리키게 된다. 그래서 새롭게 생성되는 객체(`self`)의 속성 `name`은 `'han seok-bong'`을 가리키게 된다. 다음을 보자.
@@ -392,6 +394,8 @@ a.name
 
 # %% [markdown]
 # 위의 `Patient4` 클래스 정의에서 `name`이라는 변수이름은 객체 `'환자정보'`를 가리키게 된다. 다시 말해 이름 공간 (클래스) `Patient4`의 `name`은 `'환자정보'`를 가리킨다. 
+
+# %%
 
 # %% [markdown]
 # 이제 인스턴스 `a`의 이름공간에서 `name`을 찾으면 없다. 이런 경우 파이썬은 인스턴스의 클래스의 이름공간(즉, `Patient4`)에서 `name`을 찾는다. 그래서 `a.name`과 `Patient4.name`은 같은 객체를 가리킨다. 
@@ -467,9 +471,23 @@ class Patient5():
 
 
 # %%
+Patient5.n
+
+# %%
 a = Patient5()
+
+# %%
+Patient5.n
+
+# %%
+
+# %%
 b = Patient5()
 c = Patient5()
+
+# %%
+
+# %%
 
 # %% [markdown]
 # 위에서 클래스 `Patient5` 아래 정의된 함수 `BMI()`는 그냥 함수이다.
@@ -579,7 +597,7 @@ d.printn()
 
 
 # %% [markdown]
-# 앞에서 클래스 `Patient5`에서 정의된 `BMI()`는 인스턴스 메소드를 염두하지 않았다. 이렇게 인스턴스 메소드도 아니고, 클래스 메소드도 아님에도 클래스 아래 정의된 함수는 정적함수로 지정할 수 있다. 이렇게 정적함수로 지정하면 인스턴스를 통해 접근해도 첫 번째 인자로 인스턴스가 자동 입력되지 않기 때문에 그냥 함수로 쓸 수 있다. 다음을 보자.
+# 앞에서 클래스 `Patient5`에서 정의된 `BMI()`는 인스턴스 메소드를 염두하지 않았다. 이렇게 인스턴스 메소드도 아니고, 클래스 메소드도 아님에도 클래스 아래 정의된 함수는 정적메소드로 지정할 수 있다. 이렇게 정적메소드로 지정하면 인스턴스를 통해 접근해도 첫 번째 인자로 인스턴스가 자동 입력되지 않기 때문에 그냥 함수로 쓸 수 있다. 다음을 보자.
 
 # %%
 class Patient5b():
@@ -743,7 +761,8 @@ a.printn2 is b.printn2
 
 # %%
 
-# %%
+# %% [markdown]
+# ### END OF DOCUMENT
 
 # %%
 
