@@ -10,6 +10,12 @@
 #     - while
 #     - for
 #
+#
+# cf) indent 문제
+#
+# 파이썬에는 R과 다르게 indent가 중요한 영향을 미친다. indent는 콜론(:) 뒤에 온다. 콜론은 if/else/elif/for/while/contextmanager 뒤에 오거나, 함수 정의할 때 사용된다. indent는 스페이스바, tab 등으로 서로 다른 간격을 만들 수 있는데, 하나의 콜론 내부(동일한 수준)에서는 간격이 동일해야 한다. 호응되는 
+#
+# contextmanager(with open('') as f:) -> 일정한 부분에서만 적용하려고 할 때. open()과 close()가 있는데, contextmanager를 사용하면 특정 구간에서 세팅을 돕고, indent가 끝나면 자동으로 close()가 된다. 
 
 # ### 1. 분기
 # #### if/elif/else
@@ -128,7 +134,7 @@ x[-7:2:-3]
 
 i = len(x)-7
 step = -3
-sign = step/abs(step)
+sign = step/abs(step) #abs(): 절대값
 while i*sign < 2*sign:
     print(x[i], end=', ')
     i = i + step
@@ -139,7 +145,7 @@ while i*sign < 2*sign:
 start = len(x)-7
 stop = 2
 step = -3
-sign = step/abs(step)
+sign = step/abs(step) #부호(step이 음수냐 양수냐)
 
 i = start
 if sign > 0:
@@ -271,7 +277,7 @@ for i, (x,y, z) in enumerate(zip(lstA, lstB, lstC)):
 
 # ####  continue
 #
-# `continue`는 반복되는 스크립트의 나머지 부분을 건너뛰고, 반복의 처음으로 가라는 의미이다. 보통 해당 반복에서 할 일을 모두 마쳤을 때 실행한다.
+#     `continue`는 반복되는 스크립트의 나머지 부분을 건너뛰고, 반복의 처음으로 가라는 의미이다. 보통 해당 반복에서 할 일을 모두 마쳤을 때 실행한다. #반복되는 스크립트가 어디까지인지, 해당 반복이 무엇인지. continue는 반복문(for, while)의 시작 지점으로 돌아간다. 만약 for나 while이 여러 개 중첩되어 있다면 가장 가까운 곳으로 돌아간다.
 
 for i in range(10):
     if i in [2,3,5,7]:
@@ -284,7 +290,7 @@ for i in range(10):
 
 # 그리고 `break`없이 반복스크립트가 모두 마쳤을 때는 `else:` 이후가 실행된다.
 
-lst = input('input numbers')
+lst = input('input numbers') #직접 숫자 몇 개 입력 33, 44, 10, ..
 lst2 = lst.split(',')
 lst2 = [int(x.strip()) for x in lst2]
 print("Your numbers are ", lst2)
@@ -299,6 +305,7 @@ else:
 
 # 아래를 실행하고 `1,2,3`과 `1,10,3`을 입력해보자.
 
+# +
 lst = input('input numbers')
 lst2 = lst.split(',')
 lst2 = [int(x.strip()) for x in lst2]
@@ -310,5 +317,9 @@ for i in lst2:
     print(i, end=',')    
 else:
     print('all done')
+    
+# 이 경우 for-else 구문이기 때문에 for과 else의 indentation이 서로 호응한다. for else 구문은 for가 다 시행된 후에 else가 시행된다. 
+# 하지만 for문 안에 break가 있고, 그 break가 시행되어 for문에서 탈출하면 else구문은 실행되지 않는다. 
+# -
 
 
