@@ -9,9 +9,9 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.13.5
 #   kernelspec:
-#     display_name: venv
+#     display_name: rtopython3-pip
 #     language: python
-#     name: venv
+#     name: rtopython3-pip
 # ---
 
 # %% [markdown]
@@ -759,7 +759,47 @@ a.printn2(), b.printn2()
 # %%
 a.printn2 is b.printn2
 
+
+# %% [markdown]
+# ### 이름 공간 확인
+
 # %%
+def dir_class(cls, indent = ''):
+    print()
+    print('0*1*2*3*4*5*6*7*8*9********************')
+    
+    print(indent + '* CLASS : ', cls.__name__)
+    for x in cls.__dict__:
+        if x == "__dict__":
+            continue
+        #print(x)
+        print(indent + f"{x:20s}:{str(getattr(cls, x)):40s}")
+    
+    indent = indent + '  '
+    if len(cls.__bases__):
+        for bcls in cls.__bases__:
+            dir_class(bcls, indent)
+
+def dir2(x, indent = ''):
+    
+    if isinstance(x, type):
+        dir_class(x)
+    elif isinstance(x, object):
+        print()
+        print('i*0*1*2*3*4*5*6*7*8*9********************')
+        print(indent + '* INSTANCE : ')
+        for a in x.__dict__:
+            if a == "__dict__":
+                continue
+            #print(x)
+            print(indent + f"{a:20s}:{str(getattr(x, a)):40s}")
+        indent = indent + '  '
+        dir_class(x.__class__, indent)
+
+
+
+# %%
+dir2(a)
 
 # %% [markdown]
 # ### END OF DOCUMENT
