@@ -312,6 +312,106 @@ datBLong1.pivot(index=['name','gender'], columns = ['variable', 'year'], values=
 # ???위의 FutureWarning 의미???
 
 # %% [markdown]
+# ### `pd.pivot_table()`
+
+# %% [markdown]
+# 위에서 나열한 가로형, 세로형 변환 함수는 입력 데이터프레임의 모든 정보가 보존된다.
+
+# %% [markdown]
+# 예를 들어 `datBLong2`와 이를 가로형을 바꾼 `datBLong2.unstack()`를 비교해자.
+
+# %%
+datBLong2
+
+# %%
+datBLong2.unstack()
+
+# %% [markdown]
+# 인덱스의 `year` 변수가 열(컬럼)으로 옮겨졌지만, 측정된 모든 값은 보존되었다. 만약 `year` 변수를 생략한다면 어떨까?
+
+# %% [markdown]
+# 전형적인 세로형 데이터 프레임의 골격을 다시 생각해보자. `id`와 조건 변수, 그리고 측정변수로 구분해 볼 수 있다. 이때 조건변수를 활용하여 요약을 구할 수 있다.
+
+# %% [markdown]
+# `datBLong2`을 예로 들어보자. `name`을 기준으로 `groupby()` 후 `mean()`을 구할 수 있다. 결과에 `year` 변수는 사라진다.
+
+# %%
+datBLong2.groupby(['name']).mean()
+
+# %% [markdown]
+# 결과를 보자. `height` 값은 `name`과 `year`에 따라 결정된다. 그런데 위의 데이터프레임에는 `year`가 아예 없다. 따라서 `ChangSik Park`의 `height` 108.075는 `year` 2014와 2015의 값을 평균한 값이다.
+
+# %% [markdown]
+# `year`를 기준으로도 가능하다. `ChangSik Park`과 `EunJung Lee`의 값이 `.mean()`된다.
+
+# %%
+datBLong2.groupby(['year']).mean()
+
+# %% [markdown]
+# 이를 `pd.pivot_table()`로 다시 표현하면 다음과 같다.
+
+# %%
+# ?pd.pivot_table
+
+# %%
+pd.pivot_table(datBLong2, values=['height', 'weight'], index = 'name', columns = None)
+
+# %%
+pd.pivot_table(datBLong2, values=['height', 'weight'], index = 'year', columns = None)
+
+# %% [markdown]
+# 위의 결과를 살펴보자. 관측 변수가 정해지면, `id` 또는 조건 변수는 인덱스 또는 컬럼으로 정할 수 있다. 다음을 보자.
+
+# %%
+pd.pivot_table(datBLong2, values=['height', 'weight'], index='name', columns = 'year')
+
+# %%
+pd.pivot_table(datBLong2, values=['height', 'weight'], index='year', columns = 'name')
+
+# %% [markdown]
+# 만약 `id` 또는 관찰변수를 하나 이상 생략한다면 하나의 셀에 여러 값이 들어가야하는 경우가 생긴다. 이때에는 `aggfunc=`가 작동한다.
+
+# %%
+pd.pivot_table(datBLong2, values=['height', 'weight'], index='year', columns = None, aggfunc='mean')
+
+# %% [markdown]
+# `columns='name'`이 `columns=None`로 바뀌었고, 하나의 셀에 두 명(`ChangSik Park`, `EunJung Lee`)의 값이 `aggfunc='mean'` 함수가 적용되어 들어간다.
+
+# %%
+pd.pivot_table(datBLong2, values=['height', 'weight'], index='year', columns = None, aggfunc=np.sum)
+
+
+# %%
+def prod(a):
+    return a.prod()
+
+
+# %%
+pd.pivot_table(datBLong2, values=['height', 'weight'], index='year', columns = None, aggfunc=prod)
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+
+# %%
+pd.pivot_table(datBLong2, values=['height', 'weight'],
+    index=['name'],
+    columns=None,
+    aggfunc="mean") 
+
+# %%
+
+# %%
+
+# %%
+
+# %% [markdown]
 # ## === END OF DOCUMENT
 
 # %%
