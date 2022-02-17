@@ -761,6 +761,72 @@ a.printn2 is b.printn2
 
 
 # %% [markdown]
+# ### 속성(변수, 함수 등) 대체
+
+# %% [markdown]
+# 속성 오버로드. 상속한 부모 클래스의 속성은 자식 클래스에서 새롭게 정의할 수 있는데 이를 오버로드(overload)라고 한다. 만약 부모 클래스의 함수를 사용하고 싶다면 `super().<method>`의 형태를 사용한다. 다음을 보자.
+
+# %%
+class A():
+    def __init__(self, x):
+        self.x = x
+        
+    def printx(self):
+        print(self.x)
+        
+        
+class B(A):
+    def __init__(self, x, y):
+        super().__init__(x)
+        self.y = y
+        
+    def printxy(self):
+        super().printx()
+        print(self.y)
+        
+
+
+# %% [markdown]
+# `class B(A):`에서 클래스 `B`는 클래스 `A`를 상속하고 있다. 그래서 `B`에서 정의되지 않은 함수(메소드) `printx()`도 사용할 수 있다. 새로운 함수 `printxy()`를 정의할 때에도 부모 클래스의 `printx()`를 사용하고 싶다면 `super().printx()`로 사용할 수 있다.
+
+# %%
+a = A(3)
+
+# %%
+b = B(5,10)
+
+# %%
+a.x
+
+# %%
+b.x, b.y
+
+# %%
+a.printx()
+
+# %%
+b.printxy()
+
+
+# %% [markdown]
+# `self()`의 의미에 대해 알아보자. `super().printx()`의 역할은 무엇인가? 클래스 `A`의 인스턴스 `a`의 경우에는 `a.printx()`를 쓸 수 있다. 이를 비교해 보자.
+#
+# ```
+# a.printx()
+# super().printx()
+# ```
+#
+# `def printxy(self, x, y):`에서 인스턴스는 `self`이다. 그리고 부모 클래스의 메소드 `printx()`를 호출하기 위해 필요한 것은 인스턴스 `self`의 클래스를 현재 `B`에서 `A`로 바꿔주는 것이다. 그래서 `super(self, B)`라고 쓰기도 한다. `self`의 클래스를 `B`에서 부모 또는 상위(`super`) 클래스로 바꿔달라는 의미라고 해석할 수 있다. 
+#
+# 그런데 사실 `def printxy(self, x, y):`에서는 `super().printx()`를 쓸 필요가 없다. 그냥 `self.printx()`를 써도 된다. 왜냐하면 클래스 `B`에서 클래스 `A`를 상속 받았고, 메소드 `printx()`를 오버로드하지 않았기 때문이다. 다시 말해 객체 `self`를 사용해서 `self.printx()`를 하면 객체 `self`의 이름 공간에 `printx`가 없기 때문에 클래스 `B`에서 `printx`를 찾고, 여기서도 없기 때문에 상속받은 클래스(부모 클래스) `A`에서 `printx`를 찾아 함수를 실행한다. 
+#
+# 그래서 `super().<method>`는 클래스의 메소드가 오버로드 되었을 때, 부모(상위) 클래스의 메소드를 사용하고 싶을 때 사용한다. 
+
+# %%
+# new super()
+# https://www.python.org/dev/peps/pep-3135/
+
+# %% [markdown]
 # ### 이름 공간 확인
 
 # %%
@@ -773,7 +839,8 @@ def dir_class(cls, indent = ''):
         if x == "__dict__":
             continue
         #print(x)
-        print(indent + f"{x:20s}:{str(getattr(cls, x)):40s}")
+        content = str(getattr(cls, x))[:40]
+        print(indent + f"{x:20s}:{content:s}")
     
     indent = indent + '  '
     if len(cls.__bases__):
@@ -792,7 +859,8 @@ def dir2(x, indent = ''):
             if a == "__dict__":
                 continue
             #print(x)
-            print(indent + f"{a:20s}:{str(getattr(x, a)):40s}")
+            content = str(getattr(x, a))[:40]
+            print(indent + f"{a:20s}:{content:s}")
         indent = indent + '  '
         dir_class(x.__class__, indent)
 
