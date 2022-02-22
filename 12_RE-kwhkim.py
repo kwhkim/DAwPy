@@ -624,9 +624,7 @@ re.search(patt1b, "Won won")
 # 위의 형식 만약 순번 `id`로 저장된 문자열이 있다면 `yes-pattern`, 그렇지 않다면 `no-pattern`을 의미한다.
 
 # %% [markdown]
-# 다음을 보자.
-
-# %%
+# 다음에서 여러 문자열(`'소리는'`, `'소리은'` 등)에서 한글 보조사 "은"/"는"을 정확하게 사용한 문자열을 찾고자 한다. 한글 보조사 "은"/"는"은 앞에 오는 단어가 종성이 존재하는지에 따라 달라진다. 이를 확인하기 앞에서 소개한 유니코드 decomposition을 사용한다. `unicodedata.normalize('NFKD', x)`를 사용하면 한글 문자열 `x`의 각 문자를 초성/중성/종성으로 분할한다.   
 
 # %%
 import unicodedata
@@ -640,39 +638,48 @@ y = unicodedata.normalize('NFKD', x)
 # %%
 from mypack.utils import unicode_info
 
-# %%
+# %% [raw]
 # %load_ext autoreload
 # %autoreload 2
 
 # %%
 unicode_info(y)
 
-# %%
-unicodedata.decomposition(x)
+# %% [markdown]
+# 위에서 문자열 `y`를 출력하면 문자열 `x`와 동일하지만 구성은 다르다. 문자열 `x`는 한글 한 글자들로 구성되어 있으며(`unicode_info(x)`를 해보자), 문자열 `y`는 한글이 분해되어 초성,중성,종성으로 구성되어 있다.
 
-# %%
-x = '\u11a8'
-
-# %%
-unicodedata.name(x)
-
-# %%
-unicodedata.lookup('HANGUL JONGSEONG KIYEOK')
-
-# %%
-import unicodedata
-
-# %%
-
-# %%
-dir(unicodedata)
+# %% [markdown]
+# 다음의 `patt_jongseong`, `patt_jungseong`은 한글 중성과 종성을 나타내는 정규표현식이다.
 
 # %%
 patt_jongseong = r'[\u11a8-\u11ff\ud7cb-\ud7fb]'
-patt_no_jongseong = r'[^\u11a8-\u11ff\ud7cb-\ud7fb]'
+patt_jungseong = r'[\u0ebf-\u0f06\ud1c0-\ud1d6]'
 
 # %%
-patt2a = f'(({patt_jongseong})|({patt_no_jongseong}))(?(2)은|는)'
+print('\u11a8\u11a9 ... \u11ff, \ud7cb\ud7cc ... \ud7fb')
+print('\u0ebf\u0ec0 ... \u0f06, \ud1c0\ud1c1 ... \ud1d6')
+
+# %% [markdown]
+# 지원되는 폰트에 따라 출력 결과가 이상할 수 있으므로 다시 `unicode_info()`를 활용해서 확인하거나 Unicode chart에서 확인해보자.
+
+# %%
+unicode_info('\u11a8\u11a9\u11fe\u11ff \ud7cb\ud7cc\ud7fa\ud7fb')
+
+# %% [markdown]
+# 이제 종성이 존재하는 경우에 `은`, 그렇지 않을 경우에 `는`을 다음의 패턴을 사용하여 정규표현식으로 나타내는 방법을 생각해보자. 
+
+# %% [raw]
+# (?(id/name)yes-pattern|no-pattern)
+
+# %% [markdown]
+# 저자가 생각해 낸 방법은 다음과 같다.
+
+# %%
+patt2a = f'(({patt_jongseong})|({patt_jungseong}))(?(2)은|는)'
+print(patt2a)
+
+# %% [markdown]
+# 마지막에 `(?(2)은|는)`을 정규표현식으로 해석하자면 `2`번째 괄호로 시작된 문자열이 저장되어 있다면 `은`, 그렇지 않다면 `는`을 의미한다. 그렇다면 `2`번째로 시작하는 괄호는 `(([\u11a8-\u11ff\ud7cb-\ud7fb])...`에서 `([\u11a8-\u11ff\ud7cb-\ud7fb])`를 가리키고 이는 분해된 문자열에서 종성을 의미한다. 
 
 # %%
 txt1 = '소리는'
@@ -697,6 +704,7 @@ patt2a = unicodedata.normalize('NFKD', patt2a)
 [re.search(patt2a, y) for y in ys]
 
 # %%
+여기서 분해된 문자열에 `은` 또는 `는`을 찾기 때문에 정규표현식의 `은`과 `는` 
 
 # %%
 
