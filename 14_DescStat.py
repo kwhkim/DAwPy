@@ -56,27 +56,13 @@
 import numpy as np
 np.random.seed(0)
 x = np.random.normal(0,1,7)
-xmeans = np.array([x.mean()+1]*3)
-x = np.concatenate([x, [np.nan], xmeans])
-x
+x = np.concatenate([x, [0.3, 0.3, 0.3]])
 
 # %%
-np.nanmean(x)                # NA를 제외한 평균
+np.mean(x)                   # 평균, x.mean() : 결측값이 있다면 np.nanmean(x)을 쓴다.
 
 # %%
-np.mean(x)                   # 평균, x.mean() : 결측값이 있다면 nan
-
-# %%
-np.mean(x[~np.isnan(x)])
-
-# %%
-np.nanmedian(x)
-
-# %%
-np.median(x)                 # 중앙값, x.median() : 결측값이 있다면 nan
-
-# %%
-np.median(x[~np.isnan(x)])
+np.median(x)                 # 중앙값, x.median() : 결측값이 있다면 np.nanmedian(x)
 
 # %%
 # numpy에는 mode를 구하는 함수가 없기 때문에
@@ -84,16 +70,10 @@ np.median(x[~np.isnan(x)])
 from scipy.stats import mode
 mode(x)       # 최빈값
 
-# %% [markdown]
-# 절사 평균을 구하는 `scipy` 패키지의 `trim_mean()` 함수는 결측값(`np.nan`)이 존재할 경우에 결과값에 오류가 있다(현재 버전 1.7.3). 따라서 결측값이 존재하는 경우에는 결측값을 모두 제거한 후 `traim_mean()`을 사용해야 한다.
-
 # %%
 # 절사평균을 구하기 위해 scipy 패키지를 활용한다
 from scipy.stats import trim_mean
 trim_mean(x, 0.2)
-
-# %%
-trim_mean(x[~np.isnan(x)], 0.2)
 
 # %%
 # 0.2-절사평균을 구하는 다른 방법
@@ -103,53 +83,27 @@ x[int(x.shape[0]*0.2):int(x.shape[0]*0.8)].mean()
 # 위의 scipy 결과와 다를 수 있다.
 
 # %%
-n_na = np.isnan(x).sum()
-
-# %%
-n_na_quotient, n_na_remainder = divmod(n_na, 2)
-
-# %%
-na_replacement = [-np.inf, np.inf]*n_na_quotient + [-np.inf]*n_na_remainder
-
-# %%
-na_replacement = [np.inf, -np.inf]*n_na_quotient + [np.inf]*n_na_remainder
-
-# %%
-x[np.isnan(x)] = na_replacement  
-
-
-# %% [markdown]
-# 그런데 이 방법의 문제는 `np.nan`를 매우 작거나 큰 값(극단값)으로 취급하고 있다는 것이다. 따라서 만약 이렇게 하는 것이 단순히 `np.nan`를 밖으로 몰아내려는 것이라면 그에 맞춰서 비율을 변경할 필요가 있다.
-
-# %%
 trim_mean(x, 0.2)
-
-# %%
-# 만약 결측값이 많다면 위의 방법은 오류가 발생할 수 있다.
-# 왜냐하면 x.sort()의 결과로 nan은 모두 뒤쪽으로 밀려나기 때문이다.
-x.sort()
-x2 = x[~np.isnan(x)]
-x2[int(x2.shape[0]*0.2):int(x2.shape[0]*0.8)].mean()
 
 # %% [markdown]
 # 만약 데이터가 **판다스 시리즈**라면 다음과 같이 한다.
 
 # %%
 import pandas as pd
-x2 = pd.Series(x)
+s = pd.Series(x)
 
 # %%
-x2.mean()
+s.mean()
 
 # %%
-x2.median()
+s.median()
 
 # %%
-x2.mode()
+s.mode()
 
 # %%
 from scipy.stats import trim_mean
-trim_mean(x2, 0.2)
+trim_mean(s, 0.2)
 
 # %% [markdown]
 # 분포의 퍼짐 정도를 구하는 요약 통계량은 다음과 같다.
@@ -198,13 +152,187 @@ def MAD(x):
 MAD(x)
 
 # %% [markdown]
-# 만약 판다스 시리즈 `x2`에 자료가 저장되어 있다면 다음과 같이 한다.
+# 만약 판다스 시리즈 `s`에 자료가 저장되어 있다면 다음과 같이 한다.
 
 # %%
-x2.mad() # MAD : Mean Absolute Deviation
-x2.std() # 표준편차(standard deviation)
-x2.var() # 분산(variance)
+s.max()-s.min() # 범위
 
+# %%
+IQR(s) # 사분점간 범위
+
+# %%
+s.var() # 분산(variance)
+
+# %%
+s.std() # 표준편차(standard deviation)
+
+# %%
+s.mad() # MAD : Mean Absolute Deviation
+
+
+# %% [markdown]
+# 참고로 백분위수는 중앙값, 최댓값, 최솟값 등을 모두 나타낼 수 있는 개념이다. 파이썬에서 판다스 시리즈에 대해 `.quantile()`로 구할 수 있다.
+
+# %%
+s.quantile(q=0.5) # 중앙값
+
+# %% [markdown]
+# 만약 넘파이 배열이라면 `pd.Series()`로 판다스 시리즈로 변환한 후 `.qunatile()`을 활용하자.
+
+# %%
+pd.Series(x).quantile(q=0.5)
+
+# %%
+s.quantile(q=0) # 최솟값 
+
+# %%
+s.quantile(q=1) # 최댓값
+
+# %% [markdown]
+# 분포의 모양은 보통 **왜도**(skewness)와 **첨도**(kurtosis)로 나타낸다. 
+
+
+# %%
+s.kurtosis()
+
+# %%
+s.skew()
+
+
+# %% [markdown]
+# **왜도**와 **첨도**에 대해서는 몇 가지 부연 설명이 필요할 듯 하다. 모분산을 구하는 공식과 비편향(unbiased) 표준분산을 구하는 공식이 다르듯이 왜도와 첨도도 모수를 구하는 방법과 표본 통계량을 구하는 방법이 다르다.
+
+# %% [markdown]
+# * 모분산 :  $\mathbb{E}\left[\left(X-\mu\right)^2\right]$
+# * 표본분산 : $\sum_{i}^n \frac{x_i - \bar{x}}{n-1}$
+
+# %% [markdown]
+# !!! TO-DOs : 왜도 첨도 관련 이론 추가
+
+# %% [markdown]
+# #### 범주형 자료에서 기술 통계량
+
+# %% [markdown]
+# 만약 범주형 또는 순위형 변수에 대해 요약 통계치를 구하고자 한다면 앞에서 얘기한 많은 통계량이 쓸모 없다. 범주형을 예를 들어보자. 만약 서울, 부산, 대구를 `1`, `2`, `3`으로 코딩을 하고, 빈수가 2, 1, 3일 때 평균을 구하면 2.167이다. 하지만 이게 무슨 의미가 있는가?
+
+# %% [markdown]
+# 서울, 부산, 대구를 `1`, `2`, `3`으로 코딩한 것은 단순히 편의를 위해서이다. 서울, 부산, 대구를 `3`, `2`, 1`로 코딩하거나, `2`, `1`, `3`으로 코딩해도 무방하다. 하지만 코딩 방법에 따라 평균은 달라진다!
+
+# %% [markdown]
+# 분산이나 표준편차의 경우도 평균과 마찬가지로 코딩 방법에 따라 달라진다. 범주형 변수에서 사용할 수 있는 변산성 측정치는 엔트로피(entropy)와 지니불순도(gini impurity index)가 있다.[^cat01]
+#
+# [^cat01]: 엔트로피와 지니불순도는 범주형 데이터의 산포도를 나타낼 수 있는 통계량이지만 자주 쓰이지는 않는다. 범주의 갯수가 작다면 빈도표로도 충분하기 때문이다.
+
+# %% [markdown]
+# 다음에는 `np.nan`이 없을 때 손쉽게 사용할 수 있는 `gini()` 함수와 `entropy()` 함수를 정의한다.
+
+# %%
+from mypack.utils import ordered, unordered
+
+# %%
+s = pd.Series(['a', 'a', 'b', 'b', 'a', 'c'])
+
+
+# %%
+def gini(prob):
+    return 1-np.sum(np.square(prob))
+
+
+# %%
+s.value_counts()
+
+# %%
+s.value_counts()/len(s)
+
+# %%
+gini(s.value_counts()/len(s))
+
+
+# %%
+def entropy(prob):
+    return -1 * np.sum(np.log2(prob)*prob)
+
+
+# %%
+entropy(s.value_counts()/len(s))
+
+# %% [markdown]
+# 만약 범주의 갯수가 많지 않다면 그냥 표를 제시하는 것도 한 방법이다. 파이썬에서 범주형 또는 문자형 시리즈에 대해 빈도표를 작성하기 위해 `.value_counts()` 메소드를 사용한다.
+
+# %%
+s.value_counts()
+
+# %% [markdown]
+# 비율을 확인하고자 한다면 `s.value_counts()/len(s)`를 사용할 수 있다.
+
+# %%
+s.value_counts()/len(s)
+
+# %% [markdown]
+# ### 데이터 프레임의 모든 변수(컬럼)에 대해 요약통계치 구하기
+
+# %%
+import pandas as pd
+
+# %%
+dat = pd.read_csv('dataset/pydataset/mtcars.csv')
+
+# %%
+dat = dat.rename(columns = {'Unnamed: 0':'name'})
+
+# %% [markdown]
+# R의 `mtcars` 데이터를 활용하겠다. 먼저 범주형 데이터를 범주형으로 변환한다.
+
+# %%
+dat['am'] = dat['am'].astype(unordered([0,1])).cat.rename_categories(['automatic', 'manual'])
+
+# %%
+dat['vs'] = dat['vs'].astype(unordered([0,1])).cat.rename_categories(['V-shaped', 'straight'])
+
+# %%
+dat['gear'] = dat['gear'].astype(unordered([3,4,5]))
+
+# %% [markdown]
+# 데이터 프레임의 모든 열에 대해 요약 통계치를 구하기 위해서는 `.describe()` 메소드를 사용한다.
+
+# %%
+dat.describe()
+# dat.select_dtypes([int, float]).describe()
+
+# %% [markdown]
+# `.describe()`는 기본적으로 수치형 변수만을 골라서 갯수(`count`), 평균(`mean`), 표준편차(`std`), 최솟값(`min`) 등의 요약통계치를 구한다. 만약 범주형 또는 문자열에 대해서 요약통계치를 구하고자 한다면 `.select_dtypes(["O", "cateogry"])`로 먼저 해당 데이터타입의 열을 선택한 후 `.describe()`를 한다. 
+
+# %%
+dat.select_dtypes(["O", "category"]).describe()
+
+# %% [markdown]
+# 하지만 확인할 수 있는 통계량을 많지 않다. 총 갯수(`count`), 유일한 값의 갯수(`unique`), 최빈값(`top`)과 그 빈도(`freq`) 정도이다.
+#
+# 모든 컬럼에 대해 데이터타입에 따른 요약통계치를 구하고자 한다면, `.describe(include='all')`를 활용한다.
+
+# %%
+dat.describe(include='all')
+
+# %% [markdown]
+# `pandas_profiling` 패키지는 데이터 프레임의 자료에 대해 자동적으로 분석 문서를 생성한다.
+
+# %%
+import pandas_profiling
+
+pr = dat.profile_report()
+
+pr.to_file('./pd_profile_dat.html')
+
+pr
+
+# https://dandyrilla.github.io/2017-08-12/pandas-10min/
+# https://pandas.pydata.org/docs/getting_started/intro_tutorials/06_calculate_statistics.html
+
+# %% [markdown]
+# ## === END OF DOCUMENT
+
+# %%
+## !! TO-DO : 결측치 관련?
 
 # %%
 
@@ -697,19 +825,15 @@ mpg2
 # %%
 import pandas_profiling
 
-
-# %%
 pr = mpg2.profile_report()
 
-# %%
 pr.to_file('./14_DescStat_report.html')
 
-# %%
 pr
 
-# %%
 # https://dandyrilla.github.io/2017-08-12/pandas-10min/
 # https://pandas.pydata.org/docs/getting_started/intro_tutorials/06_calculate_statistics.html
+
 
 # %%
 
