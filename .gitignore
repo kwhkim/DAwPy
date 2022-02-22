@@ -1,3 +1,4 @@
 get_pcinfo.py
 *.ipynb
 *.pyc
+.Rproj.user
