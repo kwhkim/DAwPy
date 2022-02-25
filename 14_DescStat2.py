@@ -7,11 +7,11 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.13.6
+#       jupytext_version: 1.13.5
 #   kernelspec:
-#     display_name: rtopython3-pip
+#     display_name: Python 3 (ipykernel)
 #     language: python
-#     name: rtopython3-pip
+#     name: python3
 # ---
 
 # %% [markdown]
@@ -28,7 +28,7 @@
 
 # %% [markdown]
 # 1. 분포의 중심를 나타내는 통계량
-# 2. 분포의 퍼짐 정도를 나타내는 통계량
+# 2. 분포의 퍼짐 정도를 나타내는 통계량 
 # 3. 분포의 모양을 나타내는 통계량
 
 # %% [markdown]
@@ -57,6 +57,8 @@ import numpy as np
 np.random.seed(0)
 x = np.random.normal(0,1,7)
 x = np.concatenate([x, [0.3, 0.3, 0.3]])
+
+# %%
 
 # %%
 np.mean(x)                   # 평균, x.mean() : 결측값이 있다면 np.nanmean(x)을 쓴다.
@@ -300,7 +302,7 @@ dat.describe()
 # dat.select_dtypes([int, float]).describe()
 
 # %% [markdown]
-# `.describe()`는 기본적으로 수치형 변수만을 골라서 갯수(`count`), 평균(`mean`), 표준편차(`std`), 최솟값(`min`) 등의 요약통계치를 구한다. 만약 범주형 또는 문자열에 대해서 요약통계치를 구하고자 한다면 `.select_dtypes(["O", "cateogry"])`로 먼저 해당 데이터타입의 열을 선택한 후 `.describe()`를 한다. 
+# `.describe()`는 기본적으로 수치형 변수만을 골라서 갯수(`count`), 평균(`mean`), 표준편차(`std`), 최솟값(`min`) 등의 요약통계치를 구한다. 만약 범주형 또는 문자열에 대해서 요약통계치를 구하고자 한다면 `.select_dtypes(["O", "category"])`로 먼저 해당 데이터타입의 열을 선택한 후 `.describe()`를 한다. 
 
 # %%
 dat.select_dtypes(["O", "category"]).describe()
