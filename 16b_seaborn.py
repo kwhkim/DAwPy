@@ -9,9 +9,9 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.13.5
 #   kernelspec:
-#     display_name: rtopython3-pip
+#     display_name: Python 3 (ipykernel)
 #     language: python
-#     name: rtopython3-pip
+#     name: python3
 # ---
 
 # %% [markdown]
@@ -113,9 +113,20 @@ g = sns.relplot(kind='scatter',
             alpha=0.9,      # 진한 정도
             data=tips)
 
+# %%
+sns.set_theme(context="notebook")
+g = sns.relplot(kind='scatter',
+            x='total_bill', y='tip', 
+            hue='time',     # R의 ggplot2에서는 col
+            size='size',
+            style = 'day',  # R의 ggplot2에서는 shape
+            col='sex',      # R의 ggplot2에서는 + facet_grid()
+            alpha=0.9,      # 진한 정도
+            data=tips)
+
 #g.axes[0,0].axhline(y=0)
 #g.axes[0,0].axvline(x=0)
-for ax in g.axes.flatten():
+for ax in g.axes.flatten():#g.axes.flatten()??
     ax.axhline(y=0)
     ax.axvline(x=0)
     ax.axline((0,0), slope = 0.15, linestyle = 'dotted', color = 'grey') 
@@ -124,6 +135,8 @@ for ax in g.axes.flatten():
     # cf) ax.hline, ax.vline
 
 
+
+# %%
 
 # %% [markdown]
 # * 점의 모양으로 요일을 구분할 수는 있지만 쉽게 들어오지 않는다(위에서는 너무도 쉽게 목요일은 점심 손님이 많고 토/일요일은 저녁 손님이 대부분이라는 것을 파악할 수 있다).
@@ -204,10 +217,10 @@ sns.catplot(kind='strip',
 # ### `sns.catplot()` : x 또는 y 좌표에 범주형
 
 # %% [markdown]
-# `sns.catplot()`은 x 또는 y 좌표에 범주형 변수를 시각화할 때 쓰인다. `sns.catplot()`의 `kind=`는 다음과 같다.
+# `sns.catplot()`은 x 또는 y 좌표에 범주형 변수를 시각화할 때 쓰인다. `sns.catplot()`의 `kind=`는 다음과 같다. 
 
 # %% [markdown]
-#
+# # kind = 'xx' :  뒷 부분의 'sns.xxplot()'은 삭제하는 것이 이해에 도움이 될 것 같습니다 
 # - 사례 플롯
 #     - `kind='strip'` : `sns.stripplot()`
 #     - `kind='swarm'` : `sns.swarmplot()`
@@ -264,7 +277,7 @@ sns.catplot(kind='boxen',
 # #### 요약 통계량 시각화
 
 # %% [markdown]
-# 평균과 표준오차(standard error)를 시각화하기 `sns.catplot()`에서 `kind='point'` 또는 `kind='bar'`를 사용할 수 있다. `kind='point'`는 평균을 점으로, 표준오차를 바(bar)로 시각화하며, `kind='bar'`는 평균을 막대그림으로 시각화한다. 
+# 평균과 표준오차(standard error)를 시각화하기 위해 `sns.catplot()`에서 `kind='point'` 또는 `kind='bar'`를 사용할 수 있다. `kind='point'`는 평균을 점으로, 표준오차를 바(bar)로 시각화하며, `kind='bar'`는 평균을 막대그림으로 시각화한다. 
 #
 # 관련된 설정사항은 `join=False`(점을 선으로 연결하지 않음), `dodge=True`(점이 겹칠 경우 위치를 살짝 이동) 등이 있다.
 #
@@ -314,7 +327,7 @@ sns.lmplot(x='total_bill', y='tip', col='day',
 # `sns.catplot()`의 `kind='box'`, `'violin'`, `'boxen'`은 모두 범주에 따른 연속형 변수의 분포를 시각화했다. `sns.displot()`은 좀더 전문적으로 **분포**(**dist**ribution)를 시각화한다.
 
 # %% [markdown]
-# `sns.displot(kind='hist', )`는 주어진 자료에 대해 히스토그램을 그린다. 만약 `x=`만 주어진다면 우리가 익히 아는 히스트로그램이 그려지고, `x=`, `y=`를 모두 입력하면 2차원 상에서 색으로 빈도를 표시한다.
+# `sns.displot(kind='hist', )`는 주어진 자료에 대해 히스토그램을 그린다. 만약 `x=`만 주어진다면 우리가 익히 아는 히스토그램이 그려지고, `x=`, `y=`를 모두 입력하면 2차원 상에서 색으로 빈도를 표시한다.
 
 # %%
 sns.displot(kind='hist', 
@@ -350,6 +363,11 @@ sns.displot(kind='ecdf',
 # 자세한 설정 사항은 다음을 참조하라
 # https://seaborn.pydata.org/generated/seaborn.kdeplot.html
 
+# %%
+sns.displot(kind='hist',
+           x='total_bill', col='day',
+           hue='time', data=tips)
+
 # %% [markdown]
 # kde로 추정된 분포에서 cdf(**c**umulative **d**ensity **f**unction)을 시각화라면 다음과 같이 `sns.displot(kind='kde', cumulative = True, )`를 사용한다. 다음의 예를 보자. 
 
@@ -362,6 +380,10 @@ sns.displot(kind='kde',
             common_norm=False, 
             common_grid=True,
             data = tips)
+
+# %%
+# relplot, catplot, displot의 차이와 각각에서 사용가능한 plot을 표나 그림으로 마지막에 정리해주면 훨씬 좋을 것 같습니다!
+# 참고: https://www.inflearn.com/questions/98630
 
 # %% [markdown]
 # ## Figure 수준의 결과와 Axes 수준의 결과
@@ -435,7 +457,7 @@ sns.scatterplot(x='total_bill', y='tip',
 # * `dogplot()` : 그냥 개 사진(필자가 이해하지 못하는 농담)
 
 # %% [markdown]
-# 이들 중 `pairplot()`은 탐색적 데이터 분석을 위해 요긴하게 사용할 수 있다. 
+# 이들 중 `pairplot()`은 산점도 행렬(scatterplot matrix)을 출력하며, 탐색적 데이터 분석을 위해 요긴하게 사용할 수 있다. 
 
 # %%
 g = sns.pairplot(tips, hue='time')
@@ -469,6 +491,18 @@ sns.rugplot(x='total_bill',
             ax = g.axes[1,0])
 
 plt.show()
+
+# %%
+g = sns.relplot(kind='scatter',
+            x='total_bill', y='tip', 
+            style= 'sex', data=tips, 
+            col='sex', row='time')
+g.fig.set_figheight(4)
+g.fig.set_figwidth(6)
+
+# %%
+
+# %%
 
 # %% [markdown]
 # ### === END OF DOCUMENT
