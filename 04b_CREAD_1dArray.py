@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-# %%
-## TO-DOs
 
-* duck-typing
-* 
+# %% [markdown]
+# ## TO-DOs
+# 
+# * duck-typing
+# * 
 
 # %% [markdown]
 # # 1차원 넘파이 배열
@@ -1182,7 +1183,7 @@ y = x[(x>10) & (x<20)]; print(y)
 # %%
 np.where(y % 2 == 0)[0]
 
-# %%
+# %% [markdown]
 이 경우에 바로 쓸 수 없으므로, 확장성을 위해 코드를 조금 변경해 보았다.
 
 
@@ -1314,6 +1315,7 @@ b[0] = 100
 print(a,b)
 
 # %% [markdown]
+# ## == END OF DOCUMENT
 # ## READINGLIST
 #
 # ### type vs class
