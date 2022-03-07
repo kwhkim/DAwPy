@@ -1133,7 +1133,7 @@ x[0]; print(x[0])
 x[len(x)-1]; print(x[len(x)-1])
 
 # %% [raw]
-x[len(x)]; print(x[len(x)])
+# x[len(x)]; print(x[len(x)])
 
 
 # %% [markdown]

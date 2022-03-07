@@ -46,7 +46,7 @@ with open('data/movies.csv', encoding = 'UTF-8') as f:
 # 행구분과 열구분을 어떻게 하느냐이다. 텍스트 데이터 파일의 가장 큰 장점이 사람들이
 # 데이터를 쉽게 읽을 수 있다는 점이라고 할 때, 사람이 가장 읽기 쉬운 방법은 fwf(fixed
 # with file) 형식을 사용하는 것이다.
-# 이 방법은 행의 구분은 "\n"(줄바꿈)으로 하고, 각 열의 위치가 고정되어 있다. 예를 들어
+# 이 방법은 행의 구분은 `"\n"`(줄바꿈)으로 하고, 각 열의 위치가 고정되어 있다. 예를 들어
 # 다음과 같은 방법이다.
 
 # %% [raw]
@@ -346,10 +346,10 @@ def guess_encoding02(filename):
 
 
 # %%
-guess_encoding01('R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv')
+guess_encoding01('data/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv')
 
 # %%
-guess_encoding02('R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv')
+guess_encoding02('data/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv')
 
 # %% [markdown]
 # 위의 결과는 정확하지 않다. `서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv`는 윈도우에서 작성되어 `CP949`로 인코딩되었다. 하지만 아래에서 확인할 수 있듯이 인코딩을 `EUC-KR`과 `CP949` 중 하나로 설정하면 결과는 동일하다.
@@ -379,7 +379,7 @@ def check_bom_file(filename):
 
 
 # %%
-#fn = 'R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv'
+#fn = 'data/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv'
 fn = 'data/서울시 한강공원 이용객 현황 (2009_2013년).csv'
 check_bom_file(fn)
 
@@ -387,16 +387,16 @@ check_bom_file(fn)
 # 인코딩을 확인해보자.
 
 # %%
-dat = pd.read_csv('R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv')
+dat = pd.read_csv('data/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv')
 # UnicodeDecodeError: 'utf-8' codec can't decode byte 0xb4 in position 1: invalid start byte
 
 # %%
-dat = pd.read_csv('R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv',
+dat = pd.read_csv('data/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv',
                  encoding = 'EUC-KR')
 dat.head()
 
 # %%
-dat2 = pd.read_csv('R/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv',
+dat2 = pd.read_csv('data/서울특별시 공공자전거 대여소별 이용정보(월간)_2017_1_12.csv',
                  encoding = 'CP949')
 dat2.head()
 
