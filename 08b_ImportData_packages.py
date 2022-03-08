@@ -7,11 +7,11 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.13.6
+#       jupytext_version: 1.13.7
 #   kernelspec:
-#     display_name: rtopython3-pip
+#     display_name: rtopython4
 #     language: python
-#     name: rtopython3-pip
+#     name: rtopython4
 # ---
 
 # %% [markdown]
@@ -28,7 +28,7 @@ import statsmodels.api as sm
 dat = sm.datasets.get_rdataset('diamonds', package='ggplot2')
 
 # %% [markdown]
-# 데이터는 `.data`에 저장되며, `.title` 또는 `.doc`을 통해 데이터의 이름과 설명을 확인할 수 있다. 
+# 데이터는 `.data`에 저장되어 있으며, `.title` 또는 `.doc`을 통해 데이터의 이름과 설명을 확인할 수 있다. 
 
 # %%
 dat.data.head()

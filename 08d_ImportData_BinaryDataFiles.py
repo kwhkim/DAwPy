@@ -7,12 +7,16 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.13.6
+#       jupytext_version: 1.13.7
 #   kernelspec:
-#     display_name: rtopython3-pip
+#     display_name: rtopython4
 #     language: python
-#     name: rtopython3-pip
+#     name: rtopython4
 # ---
+
+# %% [markdown]
+# ### TODO
+# * 바이너리를 바로 bytearray로 읽기?
 
 # %% [markdown]
 # ## 바이너리 파일 읽기
@@ -35,7 +39,16 @@ with open('data/x.pkl', 'wb') as f:
      pickle.dump(x, f)        
 
 # %% [markdown]
-# `x.pkl` 파일을 확인해보면 앞서와 마찬가지로 사람이 그 내용을 읽고 이해하기 힘들다. 피클 파일을 읽으려면 다음과 같이 한다.
+# `x.pkl` 파일을 확인해보자.
+
+# %%
+with open('data/x.pkl', 'rb') as f:
+    dat = f.read()
+    for x in dat:
+        print(f"{x:02x}", end=" ")        
+
+# %% [markdown]
+#  위의 출력을 보자. 사람이 그 내용을 읽고 이해하기 힘들다. 피클 파일을 읽으려면 다음과 같이 한다.
 
 # %%
 with open('data/x.pkl', 'rb') as f:
